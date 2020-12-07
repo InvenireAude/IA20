@@ -1,5 +1,8 @@
-#Wed 02 Dec 2020 03:28:33 PM CET
+#Mon 07 Dec 2020 08:51:22 AM CET
 FILES+=ia20/net/conn/Address
 FILES+=ia20/net/conn/mcast/Socket
+FILES+=ia20/net/engine/raft/LogEntry
+FILES+=ia20/net/engine/raft/LogFile
+FILES+=ia20/net/engine/raft/Logger
 FILES+=ia20/net/engine/raft/RaftEngine
 MAINFILES+=ia_test_raft

@@ -15,6 +15,8 @@
 #include <string.h>
 #include <netinet/in.h>
 
+#include "Definitions.h"
+
 namespace IA20 {
 namespace Net {
 namespace Conn {
@@ -33,14 +35,6 @@ class RaftEngine {
 public:
 
 	virtual ~RaftEngine() throw();
-
-
-  typedef uint32_t IndexType;
-  typedef uint16_t TermType;
-  typedef uint8_t  ServerIdType;
-
-  static const int CMaxServers = 255;
-  static const int CSeverNull  = 255;
 
   struct Message {
 
