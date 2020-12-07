@@ -1,0 +1,36 @@
+{
+  "folders": [
+    {
+      "path": "IA20-BuilderTools"
+    },
+    {
+      "path": "IA20-CommonLib"
+    },
+    {
+      "path": "IA20-CommonLib-Tests"
+    },
+    {
+      "path": "IA20-AdHoc"
+    }
+  ],
+  "settings": {
+    "files.associations": {
+      "sstream": "cpp",
+      "array": "cpp",
+      "*.tcc": "cpp",
+      "cctype": "cpp",
+      "cinttypes": "cpp",
+      "cmath": "cpp",
+      "cstdint": "cpp",
+      "cstdio": "cpp",
+      "cstdlib": "cpp",
+      "cwchar": "cpp",
+      "cwctype": "cpp",
+      "functional": "cpp",
+      "tuple": "cpp",
+      "type_traits": "cpp",
+      "utility": "cpp",
+      "unordered_map": "cpp"
+    }
+  }
+}
