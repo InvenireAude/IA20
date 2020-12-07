@@ -1,0 +1,43 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "make all",
+            "type": "shell",
+            "options": {
+                "env": {
+                }
+            },
+            "command": "make -j8 all",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "make clean",
+            "type": "shell",
+            "options": {
+                "env": {
+                }
+            },
+            "command": "make -j clean",
+            "problemMatcher": [    
+            ],
+        },
+        {
+            "label": "make basenames",
+            "type": "shell",
+            "options": {
+                "env": {}
+            },
+            "command": "make basenames",
+            "problemMatcher": [],
+        }
+    ]
+}
