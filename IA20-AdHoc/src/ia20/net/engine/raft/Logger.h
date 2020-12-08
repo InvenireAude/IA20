@@ -34,10 +34,13 @@ public:
     String strPath;
     size_t iLogFileSize;
 
+    Configuration(String strPath, size_t iLogFileSize):
+      strPath(strPath),
+      iLogFileSize(iLogFileSize){};
+
     Configuration(const Configuration& other):
       strPath(other.strPath),
       iLogFileSize(other.iLogFileSize){};
-
 
     Configuration& operator=(const Configuration& other){
       strPath = other.strPath;
@@ -53,11 +56,12 @@ public:
                   const void* pSrcData);
 
 
-	Logger(const Configuration& configuration);
+	Logger(const Configuration& configuration, ServerIdType iMyServerId);
 
 protected:
 
   Configuration configuration;
+  ServerIdType  iMyServerId;
 
   std::unique_ptr<LogFile> ptrActiveFile;
 

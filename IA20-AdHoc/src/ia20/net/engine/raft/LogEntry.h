@@ -49,6 +49,22 @@ public:
     return sizeof(LogEntry) + iEntryDataSize;
   };
 
+  inline TermType getTerm()const{
+    return iTerm;
+  };
+
+  inline IndexType getIndex()const{
+    return iIndex;
+  };
+
+  inline LogEntrySizeType  getEntryDataSize()const{
+    return iEntryDataSize;
+  };
+
+  inline uint32_t getCheckSum()const{
+    return iCheckSum;
+  };
+
 protected:
 
   TermType          iTerm;

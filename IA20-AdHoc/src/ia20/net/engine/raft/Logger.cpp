@@ -16,8 +16,9 @@ namespace Engine {
 namespace Raft {
 
 /*************************************************************************/
-Logger::Logger(const Configuration& configuration):
+Logger::Logger(const Configuration& configuration, ServerIdType iMyServerId):
   configuration(configuration),
+  iMyServerId(iMyServerId),
   iFileIdx(0){
 	IA20_TRACER;
 }
@@ -27,8 +28,12 @@ Logger::~Logger() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-static inline String _createFileName(const String& strPath,  size_t iFileIdx){
-  return strPath + "/LOG" + TypeTools::LongToString(iFileIdx) + ".log";
+static inline String _createFileName(const String& strPath, ServerIdType iMyServerId, size_t iFileIdx){
+  StringStream ss;
+  ss<<strPath<<"/LOG";
+  ss<<TypeTools::IntToString(iMyServerId)<<"/";
+  ss<<TypeTools::LongToString(iFileIdx)<<".log";
+  return ss.str();
 }
 /*************************************************************************/
 void Logger::allocateFileIfNeeded(LogEntrySizeType iNewEntryDataSize){
@@ -36,7 +41,7 @@ void Logger::allocateFileIfNeeded(LogEntrySizeType iNewEntryDataSize){
   if(ptrActiveFile && LogEntry::ComputeSpace(iNewEntryDataSize) )
     return;
 
-  std::unique_ptr<LogFile> ptrNewLogFile(new LogFile(_createFileName(configuration.strPath, iFileIdx + 1), configuration.iLogFileSize));
+  std::unique_ptr<LogFile> ptrNewLogFile(new LogFile(_createFileName(configuration.strPath, iMyServerId, iFileIdx + 1), configuration.iLogFileSize));
 
   //TODO keep old files until can be rolled and realeased.
 

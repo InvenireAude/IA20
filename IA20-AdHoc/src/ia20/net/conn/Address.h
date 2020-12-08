@@ -7,8 +7,8 @@
  */
 
 
-#ifndef _IA20_Data_Msg_Address_H_
-#define _IA20_Data_Msg_Address_H_
+#ifndef _IA20_Net_Conn_Address_H_
+#define _IA20_Net_Conn_Address_H_
 
 #include <ia20/commonlib/commonlib.h>
 #include <sys/types.h>
@@ -53,4 +53,4 @@ std::ostream& operator<<(std::ostream& os, const Address& a);
 }
 }
 
-#endif /* _IA20_Data_Msg_Address_H_ */
+#endif /* _IA20_Net_Conn_Address_H_ */

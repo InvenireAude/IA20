@@ -30,7 +30,9 @@
       "tuple": "cpp",
       "type_traits": "cpp",
       "utility": "cpp",
-      "unordered_map": "cpp"
+      "unordered_map": "cpp",
+      "*.inc": "cpp",
+      "*.def": "cpp"
     }
   }
 }

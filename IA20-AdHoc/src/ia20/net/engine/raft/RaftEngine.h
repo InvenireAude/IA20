@@ -16,16 +16,19 @@
 #include <netinet/in.h>
 
 #include "Definitions.h"
+#include "Packet.h"
+#include "Logger.h"
 
 namespace IA20 {
 namespace Net {
-namespace Conn {
-namespace MCast {
-  class Socket;
-}
-}
 namespace Engine {
 namespace Raft {
+
+
+class VoteRequestMessage;
+class VoteResponseMessage;
+class AppendEntriesRequest;
+class AppendEntriesResponse;
 
 /*************************************************************************/
 /** The RaftEngine class.
@@ -36,20 +39,36 @@ public:
 
 	virtual ~RaftEngine() throw();
 
-  struct Message {
-
-  };
-
   class Sender {
     public:
-    virtual void send(const Message* pMessage) = 0;
+    virtual void send(const Packet& packet) = 0;
   };
 
-	RaftEngine(Sender* pSender);
+	RaftEngine(ServerIdType iMyServerId, const Logger::Configuration& cfgLogger, Sender* pSender);
+
+  void onStart();
+  void onMessage();
+
+  void onMessage(const VoteRequestMessage& message);
+  void onMessage(const VoteResponseMessage& message);
+  void onMessage(const AppendEntriesRequest& message);
+  void onMessage(const AppendEntriesResponse& message);
+
+  void onPacket(Packet& packet);
+
+  void startElection();
 
 protected:
 
   Sender* pSender;
+
+  enum State {
+    ST_NONE       = 0,
+    ST_Leader     = 1,
+    ST_Follower   = 2,
+    ST_Candidate  = 3
+  };
+
 
 /*****************************************************************************/
   struct PersistentData {
@@ -81,11 +100,20 @@ protected:
 
 /*****************************************************************************/
 
-  class Data {
+  struct Data {
+    State          iState;
+    LogEntry      *pLastLogEntry;
+    ServerIdType   iMyServerId;
     PersistentData p;
     VolatileData   v;
     ServerData     servers[CMaxServers];
   };
+
+  Data data;
+
+
+
+  std::unique_ptr<Logger> ptrLogger;
 
 /*****************************************************************************/
 };

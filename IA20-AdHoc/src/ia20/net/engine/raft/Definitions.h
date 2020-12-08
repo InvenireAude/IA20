@@ -23,6 +23,7 @@ namespace Raft {
   typedef uint32_t IndexType;
   typedef uint32_t TermType;
   typedef uint8_t  ServerIdType;
+  typedef uint32_t LogIndexType;
   typedef uint32_t LogEntrySizeType;
 
   static const int CMaxServers = 255;
