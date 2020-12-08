@@ -11,44 +11,25 @@
 #include "Connection.h"
 #include "PacketFactory.h"
 
+#include <unistd.h>
+
 namespace IA20 {
 namespace Net {
 namespace Engine {
 namespace Raft {
 namespace Unix {
 
+Mutex Worker::TheMutex;
+
 /*************************************************************************/
-Worker::Worker(Connection* pConnection, RaftEngine *pRaftEngine):
+Worker::Worker(RaftEngine *pRaftEngine):
   Thread(this),
-  pConnection(pConnection),
-  pRaftEngine(pRaftEngine){
+   pRaftEngine(pRaftEngine){
 	IA20_TRACER;
 }
 /*************************************************************************/
 Worker::~Worker() throw(){
 	IA20_TRACER;
-}
-/*******************************************************s******************/
-void Worker::run(){
-	IA20_TRACER;
-
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Worker thread started !!! ");
-
-  Raft::PacketFactory::SetInstance(new PacketFactory());
-
-  SYS::Signal::ThreadRegistration tr;
-
-  pRaftEngine->onStart();
-
-  while(!SYS::Signal::GetInstance()->isStopping()){
-
-    Packet packet;
-
-    if(pConnection->receive(packet)){
-      pRaftEngine->onPacket(packet);
-    }
-
-  }
 }
 /*************************************************************************/
 }

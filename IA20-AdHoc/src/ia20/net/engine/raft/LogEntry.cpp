@@ -14,6 +14,14 @@ namespace Engine {
 namespace Raft {
 
 /*************************************************************************/
+std::ostream& operator<<(std::ostream& os, const LogEntry& entry){
+  os<<" ["<<entry.iTerm;
+  os<<","<<entry.iIndex;
+  os<<"], sz: "<<entry.iEntryDataSize;
+  os<<", at: "<<(void*)&entry;
+
+  return os;
+}
 /*************************************************************************/
 }
 }

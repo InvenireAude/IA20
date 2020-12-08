@@ -19,6 +19,8 @@
 #include "Packet.h"
 #include "Logger.h"
 
+#include <list>
+
 namespace IA20 {
 namespace Net {
 namespace Engine {
@@ -44,7 +46,7 @@ public:
     virtual void send(const Packet& packet) = 0;
   };
 
-	RaftEngine(ServerIdType iMyServerId, const Logger::Configuration& cfgLogger, Sender* pSender);
+	RaftEngine(ServerIdType iMyServerId, ServerIdType iNumServers, const Logger::Configuration& cfgLogger, Sender* pSender);
 
   void onStart();
   void onMessage();
@@ -55,6 +57,9 @@ public:
   void onMessage(const AppendEntriesResponse& message);
 
   void onPacket(Packet& packet);
+  void onTimer();
+
+  void onData(void *pEntryData, LogEntrySizeType iEntrySize);
 
   void startElection();
 
@@ -73,9 +78,9 @@ protected:
 /*****************************************************************************/
   struct PersistentData {
 
-    PersistentData():iTerm(0),iVotedFor(CSeverNull){};
+    PersistentData():iCurrentTerm(0),iVotedFor(CSeverNull){};
 
-    TermType     iTerm;
+    TermType     iCurrentTerm;
     ServerIdType iVotedFor;
   };
 
@@ -85,6 +90,8 @@ protected:
 
     IndexType iCommitIndex;
     IndexType iLastApplied;
+
+    ServerIdType iVoteCount;
   };
 
   struct ServerData {
@@ -100,20 +107,40 @@ protected:
 
 /*****************************************************************************/
 
+  struct PendingEntry{
+    const LogEntry *pEntry;
+    ServerIdType   iNumConfirmations;
+  };
+
+  typedef std::list<PendingEntry> PendingEntriesList;
+
+  PendingEntriesList lstPendingEntries;
+
+/*****************************************************************************/
   struct Data {
     State          iState;
     LogEntry      *pLastLogEntry;
     ServerIdType   iMyServerId;
     PersistentData p;
     VolatileData   v;
+    ServerIdType   iNumServers;
     ServerData     servers[CMaxServers];
+    bool           votes[CMaxServers];
   };
 
   Data data;
 
+  static const int CElectionTimeoutNS = 1000000;
+  static const int CAppendEntriesTimeoutNS = 10000000;
 
+  TimeSample tsElapsed;
 
   std::unique_ptr<Logger> ptrLogger;
+
+
+  void convertToLeader();
+  void convertToFollower();
+  void sendHeartbeat();
 
 /*****************************************************************************/
 };

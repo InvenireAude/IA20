@@ -38,6 +38,8 @@ static inline String _createFileName(const String& strPath, ServerIdType iMyServ
 /*************************************************************************/
 void Logger::allocateFileIfNeeded(LogEntrySizeType iNewEntryDataSize){
 
+	IA20_TRACER;
+
   if(ptrActiveFile && LogEntry::ComputeSpace(iNewEntryDataSize) )
     return;
 
@@ -50,8 +52,18 @@ void Logger::allocateFileIfNeeded(LogEntrySizeType iNewEntryDataSize){
   iFileIdx++;
 }
 /*************************************************************************/
-void Logger::appendEntry(TermType  iTerm, IndexType iIndex, LogEntrySizeType  iEntryDataSize, const void* pSrcData){
+const LogEntry* Logger::appendEntry(TermType  iTerm, IndexType iIndex, LogEntrySizeType  iEntryDataSize, const void* pSrcData){
+	IA20_TRACER;
+  allocateFileIfNeeded(iEntryDataSize);
 
+  return ptrActiveFile->appendEntry(iTerm, iIndex, iEntryDataSize, pSrcData);
+}
+/*************************************************************************/
+void Logger::commit(const LogEntry* pLogEntry){
+	IA20_TRACER;
+  allocateFileIfNeeded(0);
+
+  return ptrActiveFile->commit(pLogEntry);
 }
 /*************************************************************************/
 }

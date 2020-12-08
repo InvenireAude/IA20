@@ -50,11 +50,12 @@ public:
 
   };
 
-  void appendEntry(TermType  iTerm,
-                  IndexType iIndex,
-                  LogEntrySizeType  iEntryDataSize,
-                  const void* pSrcData);
+  const LogEntry* appendEntry(TermType  iTerm,
+                        IndexType iIndex,
+                        LogEntrySizeType  iEntryDataSize,
+                        const void* pSrcData);
 
+  void commit(const LogEntry* pLogEntry);
 
 	Logger(const Configuration& configuration, ServerIdType iMyServerId);
 

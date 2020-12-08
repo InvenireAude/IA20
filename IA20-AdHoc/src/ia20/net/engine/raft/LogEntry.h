@@ -35,7 +35,12 @@ public:
     iEntryDataSize(iEntryDataSize){
 
       void *pDstData = reinterpret_cast<uint8_t*>(this + 1);
-      memcpy(pDstData, pSrcData, iEntryDataSize);
+
+      if(iEntryDataSize){
+        memcpy(pDstData, pSrcData, iEntryDataSize);
+      }
+
+      IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: LogEntry, at: "<<*this);
 
       //TODO checksum ..
     };
@@ -74,6 +79,7 @@ protected:
 
   // TODO _pading uint32_t - align ?
 
+  friend std::ostream& operator<<(std::ostream& os, const LogEntry& entry);
 };
 
 /*************************************************************************/

@@ -1,5 +1,5 @@
 /*
- * File: Worker.h
+ * File: TimerWorker.h
  *
  * Copyright (C) 2020, Invenire Aude, Albert Krzymowski
  *
@@ -7,13 +7,15 @@
  */
 
 
-#ifndef _IA20_Net_Engine_Raft_Unix_Worker_H_
-#define _IA20_Net_Engine_Raft_Unix_Worker_H_
+#ifndef _IA20_Net_Engine_Raft_Unix_TimerWorker_H_
+#define _IA20_Net_Engine_Raft_Unix_TimerWorker_H_
 
 #include <ia20/commonlib/commonlib.h>
 
 #include "../RaftEngine.h"
 #include "../Message.h"
+
+#include "Worker.h"
 
 namespace IA20 {
 namespace Net {
@@ -23,21 +25,18 @@ namespace Unix {
 
 
 /*************************************************************************/
-/** The Worker class.
+/** The TimerWorker class.
  *
  */
-class Worker :
-  public Thread,
-  public Runnable{
+class TimerWorker : public Worker {
 public:
 
-	virtual ~Worker() throw();
+	virtual ~TimerWorker() throw();
 
-	Worker( RaftEngine *pRaftEngine);
-protected:
+  virtual void run();
 
-  static Mutex TheMutex;
-  RaftEngine *pRaftEngine;
+	TimerWorker(RaftEngine *pRaftEngine);
+
 };
 /*************************************************************************/
 }
@@ -46,4 +45,4 @@ protected:
 }
 }
 
-#endif /* _IA20_Net_Engine_Raft_Unix_Worker_H_ */
+#endif /* _IA20_Net_Engine_Raft_Unix_TimerWorker_H_ */

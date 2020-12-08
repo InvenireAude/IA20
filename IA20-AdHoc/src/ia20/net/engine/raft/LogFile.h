@@ -19,6 +19,8 @@ namespace Net {
 namespace Engine {
 namespace Raft {
 
+class LogEntry;
+
 /*************************************************************************/
 /** The LogFile class.
  *
@@ -34,10 +36,12 @@ public:
     return iSpaceLeft;
   };
 
-  void appendEntry(TermType  iTerm,
-                  IndexType iIndex,
-                  LogEntrySizeType  iEntryDataSize,
-                  const void* pSrcData);
+  void commit(const LogEntry* pLogEntry);
+
+  const LogEntry* appendEntry(TermType  iTerm,
+                              IndexType iIndex,
+                              LogEntrySizeType  iEntryDataSize,
+                              const void* pSrcData);
 
 protected:
 

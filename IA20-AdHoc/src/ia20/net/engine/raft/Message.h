@@ -66,11 +66,11 @@ public:
     return pHeader->iType;
   }
 
-  void setServer(ServerIdType  iDstServerId){
+  void setDstServer(ServerIdType  iDstServerId){
     pHeader->iDstServerId = iDstServerId;
   }
 
-  ServerIdType getServer()const{
+  ServerIdType getDstServer()const{
     return pHeader->iDstServerId;
   }
 
@@ -105,7 +105,7 @@ class VoteRequestMessage : public Message {
     LogIndexType   iLastLogIndexId;
   };
 
-  Request* request(){
+  Request* request()const{
     return  reinterpret_cast<Request*>(pHeader + 1);
   };
 
@@ -123,9 +123,10 @@ class VoteResponseMessage : public Message {
   struct Response {
     TermType       iTerm;
     bool           bVoteGranted;
+    ServerIdType   iVoter;
   };
 
-  Response* response(){
+  Response* response()const{
     return  reinterpret_cast<Response*>(pHeader + 1);
   };
 
@@ -140,15 +141,17 @@ class AppendEntriesRequest : public Message {
       };
 
   struct Request {
-      TermType       iTerm;
-      size_t         leaderId; //TODO
+
+      size_t         iLeaderId; //TODO
       LogIndexType   iPrevLogIndex;
       TermType       iPrevLogTerm;
       LogIndexType   iLeaderCommitIndex;
+      TermType       iTerm;
+      LogIndexType   iIndexId;
       uint16_t       iEntriesSize;
   };
 
-  Request* request(){
+  Request* request()const{
     return  reinterpret_cast<Request*>(pHeader + 1);
   };
 
@@ -167,11 +170,13 @@ class AppendEntriesResponse : public Message {
       };
 
   struct Response {
-    TermType   currentTerm;
-    bool       bSuccess;
+    TermType       currentTerm;
+    LogIndexType   iIndexId;
+    uint16_t       iEntriesSize;
+    bool           bSuccess;
   };
 
-  Response* response(){
+  Response* response()const{
     return    reinterpret_cast<Response*>(pHeader + 1);
   };
 
