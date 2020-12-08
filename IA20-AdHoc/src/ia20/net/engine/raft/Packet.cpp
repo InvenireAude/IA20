@@ -13,6 +13,19 @@ namespace Engine {
 namespace Raft {
 
 /*************************************************************************/
+void Packet::pack(const flatbuffers::FlatBufferBuilder& fb){
+  IA20_TRACER;
+
+  uint32_t iDataSize         = fb.GetSize();
+  void*    pFlatBufferStart  = fb.GetBufferPointer();
+
+  if(iDataSize){
+    memcpy(pDataStart, pFlatBufferStart, iDataSize);
+  }
+
+  setLength(iDataSize);
+}
+/*************************************************************************/
 }
 }
 }

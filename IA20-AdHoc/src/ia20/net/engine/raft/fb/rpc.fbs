@@ -1,0 +1,53 @@
+
+namespace IA20.Net.Engine.Raft.FB;
+
+
+struct Header {
+  dstServerId : uint16;
+  srcServerId : uint16;
+}
+
+struct LogEntryId {
+  term    : uint16;
+  index   : uint32;
+}
+
+table VoteRequest {
+    term       : uint16;
+    candidate  : uint16;
+    lastLogEntry : LogEntryId;
+}
+
+table VoteResponse {
+    term       : uint16;
+    candidate  : uint16;
+    granted    : bool;
+}
+
+table AppendLogRequest {
+  leader            : uint16;
+  matchLogEntry     : LogEntryId;
+  dataLogEntry      : LogEntryId;
+  leaderCommitIndex : uint32;
+  data              : [uint8];
+}
+
+table AppendLogResponse {
+  dataLogEntry      : LogEntryId;
+  success           : bool;
+}
+
+union Action {
+  VoteRequest,
+  VoteResponse,
+  AppendLogRequest,
+  AppendLogResponse
+}
+
+
+table Message {
+  header: Header;
+  action: Action;
+}
+
+root_type Message;

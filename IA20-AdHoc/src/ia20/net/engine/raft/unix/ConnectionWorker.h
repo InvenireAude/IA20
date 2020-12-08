@@ -13,7 +13,6 @@
 #include <ia20/commonlib/commonlib.h>
 
 #include "../RaftEngine.h"
-#include "../Message.h"
 #include "Worker.h"
 
 namespace IA20 {

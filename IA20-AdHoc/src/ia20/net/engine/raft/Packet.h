@@ -14,6 +14,8 @@
 #include "Definitions.h"
 #include "PacketFactory.h"
 
+#include <flatbuffers/flatbuffers.h>
+
 namespace IA20 {
 namespace Net {
 namespace Engine {
@@ -28,11 +30,19 @@ public:
 
  typedef uint16_t LengthType;
 
- inline Packet(void* pDataStart = 0, void* pCtx = 0):
+ inline Packet(uint8_t* pDataStart = 0, void* pCtx = 0):
     pDataStart(pDataStart),
     pCtx(pCtx){
         if(!pCtx)
           PacketFactory::GetInstance()->allocatePacket(*this);
+        IA20_LOG(LogLevel::INSTANCE.isDetailedInfo(), "Raft :: Packet("<<pDataStart<<", "<<pCtx<<")");
+    }
+
+ inline Packet(const flatbuffers::FlatBufferBuilder& builder):
+    pDataStart(builder.GetBufferPointer()),
+    pCtx(NULL){
+        PacketFactory::GetInstance()->allocatePacket(*this);
+        pack(builder);
         IA20_LOG(LogLevel::INSTANCE.isDetailedInfo(), "Raft :: Packet("<<pDataStart<<", "<<pCtx<<")");
     }
 
@@ -52,7 +62,7 @@ public:
     return *pLength;
   }
 
-  inline void* getDataStart()const{
+  inline uint8_t* getDataStart()const{
     return pDataStart;
   }
 
@@ -64,7 +74,7 @@ public:
     pCtx = NULL;
   }
 
-  inline void set(void* pDataStart, void* pCtx){
+  inline void set(uint8_t* pDataStart, void* pCtx){
     if(this->pCtx)
       PacketFactory::GetInstance()->freeCtx(this->pCtx);
     this->pDataStart = pDataStart;
@@ -72,12 +82,14 @@ public:
     IA20_LOG(LogLevel::INSTANCE.isDetailedInfo(), "Raft :: Packet set("<<pDataStart<<", "<<pCtx<<")");
   }
 
+  void pack(const flatbuffers::FlatBufferBuilder& fb);
+
 protected:
 
-  void  *pDataStart;
+  uint8_t *pDataStart;
   void  *pCtx;
-};
 
+};
 /*****************************************************************************/
 }
 }

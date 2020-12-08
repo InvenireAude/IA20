@@ -7,7 +7,6 @@
 
 
 #include "ConnectionWorker.h"
-#include "../Message.h"
 #include "Connection.h"
 #include "PacketFactory.h"
 

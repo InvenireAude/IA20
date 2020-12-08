@@ -7,12 +7,14 @@
 
 #include "RaftEngine.h"
 
+#include <ia20/fb/Helpers.h>
+
 #include "Logger.h"
-#include "Message.h"
 #include "Packet.h"
 
 #include "PacketFactory.h"
 #include "LogEntry.h"
+
 
 namespace IA20 {
 namespace Net {
@@ -51,59 +53,55 @@ void RaftEngine::onStart(){
   startElection();
 }
 /*************************************************************************/
-void RaftEngine::onMessage(const VoteRequestMessage& message){
+void RaftEngine::onMessage(const FB::Header* pHeader, const FB::VoteRequest* pAction){
   IA20_TRACER;
 
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: VoteRequestMessage: from: "<<(int)message.request()->iCandidate);
-
-  if(message.request()->iCandidate == data.iMyServerId)
+  if(pHeader->srcServerId() == data.iMyServerId)
     return; /* dark side of broadcasting */
 
-  Packet packetResponse;
-  VoteResponseMessage messageResponse(packetResponse);
+  bool bVoteGranted = false;
 
-  if(message.request()->iTerm < data.p.iCurrentTerm){
-      messageResponse.response()->bVoteGranted = false; // par5.1
+  if(pAction->term() < data.p.iCurrentTerm){
       IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Vote[1]");
+      bVoteGranted = false;
   }else{
-
       IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Vote[2]: votedFor: "<<(int)data.p.iVotedFor
-                <<", iLastLogTerm: "<<message.request()->iLastLogTerm<<", iCurrentTerm: "<<data.p.iCurrentTerm
-                <<", iLastLogIndexId: "<<message.request()->iLastLogIndexId<<", iLastApplied: "<<data.v.iLastApplied);
+                <<", iLastLogTerm: "<<pAction->lastLogEntry()->term()<<", iCurrentTerm: "<<data.p.iCurrentTerm
+                <<", iLastLogIndexId: "<<pAction->lastLogEntry()->index()<<", iLastApplied: "<<data.v.iLastApplied);
 
       if( (data.p.iVotedFor == CSeverNull ||
-           data.p.iVotedFor == message.request()->iCandidate) && true
+           data.p.iVotedFor == pAction->candidate()) && true
            //( //message.request()->iLastLogTerm > data.p.iCurrentTerm ||
            // (// message.request()->iLastLogTerm == data.p.iCurrentTerm  <--- log lookup
              //message.request()->iLastLogIndexId >= data.v.iLastApplied))
              ){
-               messageResponse.response()->bVoteGranted = true; // par5.2-3
+               bVoteGranted = true; // par5.2-3
              }else{
-               messageResponse.response()->bVoteGranted = false;
+               bVoteGranted = false;
              }
   }
 
-  messageResponse.response()->iTerm  = data.p.iCurrentTerm;
-  messageResponse.response()->iVoter = data.iMyServerId;
-  messageResponse.setDstServer(message.request()->iCandidate);
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Vote[3], bVoteGranted: "<<messageResponse.response()->bVoteGranted);
+  flatbuffers::FlatBufferBuilder builder;
 
-  pSender->send(packetResponse);
+  FB::Header header(pHeader->srcServerId(), data.iMyServerId);
+  auto response = FB::CreateVoteResponse(builder, pAction->term(), pAction->candidate(), bVoteGranted);
+  builder.Finish(FB::CreateMessage(builder, &header, FB::Action_VoteResponse, response.Union()));
+
+
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
+
+  Packet packet(builder);
+  pSender->send(packet);
+
 }
 /*************************************************************************/
-void RaftEngine::onMessage(const VoteResponseMessage& message){
+void RaftEngine::onMessage(const FB::Header* pHeader, const FB::VoteResponse* pAction){
   IA20_TRACER;
 
-  ServerIdType iDstServerId = message.getDstServer();
+  if(pHeader->srcServerId() == data.iMyServerId || data.iState != ST_Candidate)
+    return; /* dark side of broadcasting */
 
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: VoteResponseMessage: "<<message.response()->bVoteGranted<<" --> "<<(int)iDstServerId);
-
-  if(iDstServerId != data.iMyServerId)
-    return;
-
-  // TODO check term
-
-  if(message.response()->bVoteGranted){
+  if(pAction->granted() && pAction->term() == data.p.iCurrentTerm){
 
     data.v.iVoteCount++;
 
@@ -113,12 +111,10 @@ void RaftEngine::onMessage(const VoteResponseMessage& message){
 
 }
 /*************************************************************************/
-void RaftEngine::onMessage(const AppendEntriesRequest& message){
+void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest* pAction){
   IA20_TRACER;
 
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: AppendEntriesRequest: leaderId: "<<message.request()->iLeaderId);
-
-  if(message.request()->iLeaderId  == data.iMyServerId)
+  if(pHeader->srcServerId() == data.iMyServerId || data.iState != ST_Follower)
     return; /* dark side of broadcasting */
 
   tsElapsed.start();
@@ -128,32 +124,30 @@ void RaftEngine::onMessage(const AppendEntriesRequest& message){
                          0,
                          0);
 
-  Packet packet;
+  flatbuffers::FlatBufferBuilder builder;
 
-  AppendEntriesResponse messageResponse(packet);
-  messageResponse.setDstServer(message.request()->iLeaderId);
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: New remote entry, term: "<<data.p.iCurrentTerm);
+  FB::Header header(pHeader->srcServerId(), data.iMyServerId);
 
-  messageResponse.response()->bSuccess     = true;
-  messageResponse.response()->currentTerm  = data.p.iCurrentTerm;
-  messageResponse.response()->iIndexId     = message.request()->iIndexId;
-  messageResponse.response()->iEntriesSize = message.request()->iEntriesSize;
+  auto response = FB::CreateAppendLogResponse(builder, pAction->dataLogEntry(), true);
+  builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogResponse, response.Union()));
 
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
+
+  Packet packet(builder);
   pSender->send(packet);
 }
 /*************************************************************************/
-void RaftEngine::onMessage(const AppendEntriesResponse& message){
+void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogResponse* pAction){
   IA20_TRACER;
 
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: AppendEntriesResponse: ");
+  if(pHeader->srcServerId() == data.iMyServerId || data.iState != ST_Follower)
+    return; /* dark side of broadcasting */
 
-  ServerIdType iDstServerId = message.getDstServer();
-  if(iDstServerId != data.iMyServerId)
-    return;
+  IA20_CHECK_IF_NULL(pAction->dataLogEntry());
 
-   LogIndexType   iIndexId = message.response()->iIndexId;
+   LogIndexType  iIndexId = pAction->dataLogEntry()->index();
 
-   for(int iEntryIdx = 0; iEntryIdx < message.response()->iEntriesSize; iEntryIdx++){
+   for(int iEntryIdx = 0; iEntryIdx < 1; iEntryIdx++){
 
     for(PendingEntriesList::iterator it = lstPendingEntries.begin(); it != lstPendingEntries.end(); it++){
       PendingEntry& entry = *it;
@@ -175,28 +169,39 @@ void RaftEngine::onMessage(const AppendEntriesResponse& message){
 void RaftEngine::onPacket(Packet& packet){
   IA20_TRACER;
 
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: *** onPacket, type: "<< Message::GetType(packet));
+  const uint8_t* pDataStart = packet.getDataStart();
 
-  switch(Message::GetType(packet)){
+  flatbuffers::Verifier verifier(pDataStart, packet.getLength());
 
-    case Message::MT_VoteRequest:{
-      const VoteRequestMessage message(packet);
-      onMessage(message);
-    };
+//  if(!FB::VerifyMessageBuffer(verifier))
+//    IA20_THROW(BadUsageException("Verify message failed"));
+
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: *** onPacket : "<<
+      IA20::FB::Helpers::ToString(pDataStart, FB::MessageTypeTable()));
+
+
+  const FB::Message* pMessage = FB::GetMessage(pDataStart);
+
+  switch(pMessage->action_type()){
+
+    case FB::Action_VoteRequest:
+      onMessage(pMessage->header(), pMessage->action_as_VoteRequest());
     break;
 
-    case Message::MT_VoteResponse:{
-      const VoteResponseMessage message(packet);
-      onMessage(message);
-    };
+    case FB::Action_VoteResponse:
+      onMessage(pMessage->header(), pMessage->action_as_VoteResponse());
     break;
 
-    case Message::MT_AppendEntriesRequest:{
-      const AppendEntriesRequest message(packet);
-      onMessage(message);
-    };
+    case FB::Action_AppendLogRequest:
+      onMessage(pMessage->header(), pMessage->action_as_AppendLogRequest());
     break;
 
+    case FB::Action_AppendLogResponse:
+      onMessage(pMessage->header(), pMessage->action_as_AppendLogResponse());
+    break;
+
+    default:
+      IA20_THROW(InternalException("Unsupported FB/RPC in Raft Engine."));
   }
 }
 /*************************************************************************/
@@ -234,16 +239,19 @@ void RaftEngine::startElection(){
   data.p.iCurrentTerm++;
   data.v.iVoteCount = 1;
 
-  Packet packet;
-  VoteRequestMessage message(packet);
+  flatbuffers::FlatBufferBuilder builder;
 
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: New election, term: "<<data.p.iCurrentTerm);
-  message.setDstServer(0);
-  message.request()->iCandidate       = data.iMyServerId;
-  message.request()->iTerm            = data.p.iCurrentTerm;
-  message.request()->iLastLogTerm     = data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0 ;
-  message.request()->iLastLogIndexId  = data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0 ;
+  FB::Header header(0, data.iMyServerId);
 
+  FB::LogEntryId lastLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
+                              data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
+
+  auto request = FB::CreateVoteRequest(builder, data.p.iCurrentTerm, data.iMyServerId, &lastLogEntry);
+  builder.Finish(FB::CreateMessage(builder, &header, FB::Action_VoteRequest, request.Union()));
+
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
+
+  Packet packet(builder);
   pSender->send(packet);
 
   tsElapsed.start();
@@ -254,19 +262,25 @@ void RaftEngine::convertToLeader(){
 
   data.iState = ST_Leader;
 
-  Packet packet;
-  AppendEntriesRequest message(packet);
-  message.setDstServer(0);
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: I am a new leader, term: "<<data.p.iCurrentTerm);
 
-  message.request()->iTerm = data.p.iCurrentTerm;
-  message.request()->iLeaderId = data.iMyServerId;
+  flatbuffers::FlatBufferBuilder builder;
 
-  message.request()->iEntriesSize       = 0;
-  message.request()->iLeaderCommitIndex = data.v.iCommitIndex;
-  message.request()->iPrevLogIndex      = data.v.iLastApplied; //
-  message.request()->iPrevLogTerm       = data.p.iCurrentTerm - 1; // TODO this is bad, use the logger class for this ?
+  FB::Header header(0, data.iMyServerId);
 
+  //TODO use values form Logger instance
+
+  FB::LogEntryId matchLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
+                               data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
+  FB::LogEntryId dataLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
+                               data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
+
+  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, data.v.iCommitIndex, 0);
+  builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogRequest, request.Union()));
+
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
+
+  Packet packet(builder);
   pSender->send(packet);
 
   data.v.iLastApplied = 1;
@@ -287,21 +301,27 @@ void RaftEngine::convertToLeader(){
 void RaftEngine::sendHeartbeat(){
   IA20_TRACER;
 
-
-  Packet packet;
-  AppendEntriesRequest message(packet);
-  message.setDstServer(0);
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Heartbeat, term: "<<data.p.iCurrentTerm);
 
-  message.request()->iTerm = data.p.iCurrentTerm;
-  message.request()->iLeaderId = data.iMyServerId;
+  flatbuffers::FlatBufferBuilder builder;
 
-  message.request()->iEntriesSize       = 0;
-  message.request()->iLeaderCommitIndex = data.v.iCommitIndex;
-  message.request()->iPrevLogIndex      = data.v.iLastApplied - 1; //
-  message.request()->iPrevLogTerm       = data.p.iCurrentTerm ;
+  FB::Header header(0, data.iMyServerId);
 
+  //TODO use values form Logger instance
+
+  FB::LogEntryId matchLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
+                               data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
+  FB::LogEntryId dataLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
+                               data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
+
+  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, data.v.iCommitIndex, 0);
+  builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogRequest, request.Union()));
+
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
+
+  Packet packet(builder);
   pSender->send(packet);
+
 
   tsElapsed.start();
 }
@@ -318,7 +338,7 @@ void RaftEngine::onData(void *pEntryData, LogEntrySizeType iEntrySize){
   IA20_TRACER;
 
   if(data.iState != ST_Leader){
-    IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: I am not a leader !!!");
+    ///IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: I am not a leader !!!");
     return;
   }
 
@@ -331,23 +351,27 @@ void RaftEngine::onData(void *pEntryData, LogEntrySizeType iEntrySize){
                          pEntryData),
        iNumConfirmations : 1});
 
-  Packet packet;
+  flatbuffers::FlatBufferBuilder builder;
 
-  AppendEntriesRequest message(packet);
-  message.setDstServer(0);
+  FB::Header header(0, data.iMyServerId);
 
+  //TODO use values form Logger instance
 
-  message.request()->iTerm    = data.p.iCurrentTerm;
-  message.request()->iIndexId = data.v.iLastApplied;
+  FB::LogEntryId matchLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
+                               data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
+  FB::LogEntryId dataLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
+                               data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
 
-  message.request()->iLeaderId = data.iMyServerId;
+  auto entryData = builder.CreateVector<uint8_t>(reinterpret_cast<uint8_t*>(pEntryData), iEntrySize);
 
-  message.request()->iEntriesSize       = 1;
-  message.request()->iLeaderCommitIndex = data.v.iCommitIndex;
-  message.request()->iPrevLogIndex      = data.v.iLastApplied - 1;
-  message.request()->iPrevLogTerm       = data.p.iCurrentTerm;
+  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, data.v.iCommitIndex,  entryData);
+  builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogRequest, request.Union()));
 
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
+
+  Packet packet(builder);
   pSender->send(packet);
+
 
   tsElapsed.start();
 }

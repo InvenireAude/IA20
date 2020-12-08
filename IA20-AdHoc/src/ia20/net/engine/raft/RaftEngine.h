@@ -19,18 +19,14 @@
 #include "Packet.h"
 #include "Logger.h"
 
+#include "fb/rpc_generated.h"
+
 #include <list>
 
 namespace IA20 {
 namespace Net {
 namespace Engine {
 namespace Raft {
-
-
-class VoteRequestMessage;
-class VoteResponseMessage;
-class AppendEntriesRequest;
-class AppendEntriesResponse;
 
 /*************************************************************************/
 /** The RaftEngine class.
@@ -51,10 +47,10 @@ public:
   void onStart();
   void onMessage();
 
-  void onMessage(const VoteRequestMessage& message);
-  void onMessage(const VoteResponseMessage& message);
-  void onMessage(const AppendEntriesRequest& message);
-  void onMessage(const AppendEntriesResponse& message);
+  void onMessage(const FB::Header* pHeader, const FB::VoteRequest* pAction);
+  void onMessage(const FB::Header* pHeader, const FB::VoteResponse* pAction);
+  void onMessage(const FB::Header* pHeader, const FB::AppendLogRequest* pAction);
+  void onMessage(const FB::Header* pHeader, const FB::AppendLogResponse* pAction);
 
   void onPacket(Packet& packet);
   void onTimer();
