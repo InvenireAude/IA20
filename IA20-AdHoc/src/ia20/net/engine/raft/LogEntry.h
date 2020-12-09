@@ -26,13 +26,11 @@ namespace Raft {
 class LogEntry {
 public:
 
-	inline LogEntry(TermType          iTerm,
-                  IndexType         iIndex,
+	inline LogEntry(const LogEntryId&    entryId,
                   const LogEntry   *pPrevLogEntry,
                   LogEntrySizeType  iEntryDataSize,
                   const void* pSrcData):
-    iTerm(iTerm),
-    iIndex(iIndex),
+    entryId(entryId),
     iEntryDataSize(iEntryDataSize),
     bCommited(false){
 
@@ -85,13 +83,17 @@ public:
     return sizeof(LogEntry) + (iEntryDataSize + 7) && 0xfffffff8 ;
   }
 
-  inline TermType getTerm()const{
-    return iTerm;
+  inline const LogEntryId& getEntryId()const{
+    return entryId;
   }
 
-  inline IndexType getIndex()const{
-    return iIndex;
-  }
+  // inline TermType getTerm()const{
+  //   return iTerm;
+  // }
+
+  // inline IndexType getIndex()const{
+  //   return keyiIndex;
+  // }
 
   inline LogEntrySizeType  getEntryDataSize()const{
     return iEntryDataSize;
@@ -106,8 +108,8 @@ public:
   inline uint32_t computeCheckSum()const{
 
       uint32_t iCheckSum = 0x0f0f0f0f;
-      iCheckSum ^= iTerm;
-      iCheckSum ^= iIndex;
+      iCheckSum ^= entryId.iTerm;
+      iCheckSum ^= entryId.iIndex;
 
       const uint32_t *pData = reinterpret_cast<const uint32_t*>(this + 1);
       uint32_t iDataLeft = iEntryDataSize;
@@ -147,8 +149,7 @@ public:
 
 protected:
 
-  TermType          iTerm;
-  IndexType         iIndex;
+  LogEntryId            entryId;
   LogEntrySizeType  iEntryDataSize;
   CheckSumType      iCheckSum;
   PrevOffsetType    iPrevOffset;
@@ -159,6 +160,8 @@ protected:
   friend std::ostream& operator<<(std::ostream& os, const LogEntry& entry);
 };
 
+
+std::ostream& operator<<(std::ostream& os, const LogEntryId& id);
 /*************************************************************************/
 
 }

@@ -100,8 +100,8 @@ void TCRaftEngine::case01(){
       std::cout<<std::endl;
   }
 
-  s.assetLogger(0,"[1,1][1,2,ABC][1,3,XYZ]*");
-  s.assetLogger(3,"[1,1][1,2,ABC][1,3,XYZ]");
+  s.assetLogger(0,"[1,1][1,2]{ABC}[1,3]{XYZ}*");
+  s.assetLogger(3,"[1,1][1,2]{ABC}[1,3]{XYZ}*");
 }
 /*************************************************************************/
 }

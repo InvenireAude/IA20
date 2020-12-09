@@ -56,11 +56,11 @@ void Logger::nextFileIfNeeded(LogEntrySizeType iNewEntryDataSize){
   append(new LogFileWriter(strFileName, iSequenceId));
 }
 /*************************************************************************/
-const LogEntry* Logger::appendEntry(TermType  iTerm, IndexType iIndex, LogEntrySizeType  iEntryDataSize, const void* pSrcData){
+const LogEntry* Logger::appendEntry(const LogEntryId& entryId, LogEntrySizeType  iEntryDataSize, const void* pSrcData){
 	IA20_TRACER;
 
   nextFileIfNeeded(iEntryDataSize);
-  return getActiveLogFile()->appendEntry(iTerm, iIndex, iEntryDataSize, pSrcData);
+  return getActiveLogFile()->appendEntry(entryId, iEntryDataSize, pSrcData);
 }
 /*************************************************************************/
 const LogFileWriter* Logger::getActiveLogFile()const{

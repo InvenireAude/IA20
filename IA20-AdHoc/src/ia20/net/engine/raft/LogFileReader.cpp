@@ -70,7 +70,8 @@ void LogFileReader::dump(std::ostream& os)const{
   while(_distance(pEntries, pCurrent) < iEntriesDataSize &&
         pCurrent->isValid()){
 
-    os<<"["<<pCurrent->getTerm()<<","<<pCurrent->getIndex()<<"]";
+    const LogEntryId& entryId(pCurrent->getEntryId());
+    os<<"["<<entryId.iTerm<<","<<entryId.iIndex<<"]";
 
     os<<"\t C:"<<pCurrent->isCommited();
     os<<"\t S:"<<pCurrent->getEntryDataSize();

@@ -45,10 +45,9 @@ public:
 
   class Logger {
     public:
-    virtual const LogEntry* appendEntry(TermType  iTerm,
-                                IndexType iIndex,
-                                LogEntrySizeType  iEntryDataSize = 0,
-                                const void* pSrcData = 0) = 0;
+    virtual const LogEntry* appendEntry(const LogEntryId& entryId,
+                                        LogEntrySizeType  iEntryDataSize = 0,
+                                        const void* pSrcData = 0) = 0;
 
     virtual void commit(const LogEntry* pLogEntry) = 0;
   };
@@ -105,12 +104,10 @@ protected:
   struct ServerData {
     struct sockaddr_in ipAddress;
 
-    ServerData():iNextIndex(0),iNextMatch(0),pMatchEntry(NULL){
+    ServerData():pMatchEntry(NULL){
       ::bzero(&ipAddress, sizeof(ipAddress));
     }
 
-    IndexType iNextIndex;
-    IndexType iNextMatch;
     const LogEntry* pMatchEntry;
   };
 

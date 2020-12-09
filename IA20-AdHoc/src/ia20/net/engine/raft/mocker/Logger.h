@@ -35,10 +35,9 @@ public:
 
 	virtual ~Logger() throw();
 
-  virtual const LogEntry* appendEntry(TermType  iTerm,
-                                IndexType iIndex,
-                                LogEntrySizeType  iEntryDataSize = 0,
-                                const void* pSrcData = 0);
+  virtual const LogEntry* appendEntry(const LogEntryId& entryId,
+                                      LogEntrySizeType  iEntryDataSize = 0,
+                                      const void* pSrcData = 0);
 
   virtual void commit(const LogEntry* pLogEntry);
 

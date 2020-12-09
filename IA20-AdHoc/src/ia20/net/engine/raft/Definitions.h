@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <string.h>
 #include <netinet/in.h>
+#include <iostream>
 
 namespace IA20 {
 namespace Net {
@@ -27,6 +28,24 @@ namespace Raft {
   typedef uint32_t LogEntrySizeType;
   typedef uint32_t CheckSumType;
   typedef uint32_t PrevOffsetType;
+
+  struct LogEntryId {
+
+    TermType  iTerm;
+    IndexType iIndex;
+
+    inline LogEntryId(TermType  iTerm = 0, IndexType iIndex = 0):
+        iTerm(iTerm),iIndex(iIndex){};
+
+    inline bool operator==(const LogEntryId& other){
+      return iTerm == other.iTerm && iIndex == other.iIndex;
+    }
+
+    inline bool operator!=(const LogEntryId& other){
+      return !(iTerm == other.iTerm && iIndex == other.iIndex);
+    }
+
+  };
 
   static const int CMaxServers = 1024;
   static const int CSeverNull  = 9999;

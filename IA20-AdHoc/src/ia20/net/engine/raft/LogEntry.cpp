@@ -15,13 +15,17 @@ namespace Raft {
 
 /*************************************************************************/
 std::ostream& operator<<(std::ostream& os, const LogEntry& entry){
-  os<<" ["<<entry.iTerm;
-  os<<","<<entry.iIndex;
-  os<<"], sz: "<<entry.iEntryDataSize;
+  os<<" "<<entry.entryId;
+  os<<", sz: "<<entry.iEntryDataSize;
   os<<", at: "<<(void*)&entry;
 
   return os;
 }
+/*************************************************************************/
+  std::ostream& operator<<(std::ostream& os, const LogEntryId& id){
+    os<<"["<<id.iTerm<<","<<id.iIndex<<"]";
+    return os;
+  }
 /*************************************************************************/
 }
 }

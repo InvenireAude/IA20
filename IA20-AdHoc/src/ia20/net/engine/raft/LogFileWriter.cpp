@@ -57,7 +57,7 @@ LogFileWriter::~LogFileWriter() throw(){
   ptrSHM->syncAll(true);
 }
 /*************************************************************************/
-const LogEntry* LogFileWriter::appendEntry(TermType  iTerm, IndexType iIndex, LogEntrySizeType  iEntryDataSize, const void* pSrcData){
+const LogEntry* LogFileWriter::appendEntry(const LogEntryId& entryId, LogEntrySizeType  iEntryDataSize, const void* pSrcData){
   IA20_TRACER;
 
   //TODO configurable asset as this is a double check ...
@@ -67,7 +67,7 @@ const LogEntry* LogFileWriter::appendEntry(TermType  iTerm, IndexType iIndex, Lo
   if(LogEntry::ComputeSpace(iEntryDataSize) > iSpaceLeft)
     IA20_THROW(InternalException("LogEntry::ComputeSpace(iEntryDataSize) > iSpaceLeft"));
 
-  LogEntry* pEntry = new (pNextEntry) LogEntry(iTerm, iIndex, pLastEntry, iEntryDataSize, pSrcData);
+  LogEntry* pEntry = new (pNextEntry) LogEntry(entryId, pLastEntry, iEntryDataSize, pSrcData);
   pNextEntry = pEntry->next();
 
   iSpaceLeft -= (reinterpret_cast<uint8_t*>(pNextEntry) - reinterpret_cast<uint8_t*>(pEntry));

@@ -41,8 +41,7 @@ public:
 
   void commit(const LogEntry* pLogEntry);
 
-  const LogEntry* appendEntry(TermType  iTerm,
-                              IndexType iIndex,
+  const LogEntry* appendEntry(const LogEntryId& entryId,
                               LogEntrySizeType  iEntryDataSize,
                               const void* pSrcData);
 

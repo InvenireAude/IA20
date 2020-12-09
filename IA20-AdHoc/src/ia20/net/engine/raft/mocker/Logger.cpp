@@ -38,8 +38,7 @@ Logger::~Logger() throw(){
     free(pMemory);
 }
 /*************************************************************************/
-const LogEntry* Logger::appendEntry(TermType  iTerm,
-                                    IndexType iIndex,
+const LogEntry* Logger::appendEntry(const LogEntryId& entryId,
                                     LogEntrySizeType  iEntryDataSize ,
                                     const void* pSrcData){
 
@@ -49,7 +48,7 @@ const LogEntry* Logger::appendEntry(TermType  iTerm,
   if(LogEntry::ComputeSpace(iEntryDataSize) > iSpaceLeft)
     IA20_THROW(InternalException("LogEntry::ComputeSpace(iEntryDataSize) > iSpaceLeft"));
 
-  LogEntry* pEntry = new (pNextEntry) LogEntry(iTerm, iIndex, pLastEntry, iEntryDataSize, pSrcData);
+  LogEntry* pEntry = new (pNextEntry) LogEntry(entryId, pLastEntry, iEntryDataSize, pSrcData);
   pNextEntry = pEntry->next();
 
   iSpaceLeft -= (reinterpret_cast<uint8_t*>(pNextEntry) - reinterpret_cast<uint8_t*>(pEntry));
@@ -67,7 +66,8 @@ void Logger::commit(const LogEntry* pLogEntry){
   if(pLastCommit  && pLogEntry < pLastCommit)
     IA20_THROW(InternalException("Mocker::Logger::commit :: pLogEntry < pLastCommit"));
 
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Mocker :: commit: ["<<pLogEntry->getTerm()<<","<<pLogEntry->getIndex()<<"]");
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Mocker :: commit: "<<pLogEntry->getEntryId());
+
   pLastCommit = pLogEntry;
 }
 /*************************************************************************/
@@ -77,12 +77,10 @@ void Logger::simpleDump(std::ostream& os){
   const LogEntry* pCursor = reinterpret_cast<const LogEntry*>(pMemory);
 
   while(pCursor < pNextEntry){
-    os<<"["<<pCursor->getTerm();
-    os<<","<<pCursor->getIndex();
+    os<<pCursor->getEntryId();
     if(pCursor->getEntryDataSize()){
-      os<<","<<String((const char*)pCursor->getData(),pCursor->getEntryDataSize());
+      os<<"{"<<String((const char*)pCursor->getData(),pCursor->getEntryDataSize())<<"}";
     }
-    os<<"]";
     if(pCursor == pLastCommit)
     os<<"*";
 
