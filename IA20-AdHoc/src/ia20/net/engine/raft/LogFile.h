@@ -25,31 +25,44 @@ class LogEntry;
 /** The LogFile class.
  *
  */
-class LogFile {
+class LogFile  {
 public:
 
-	virtual ~LogFile() throw();
+  inline size_t getSequenceId()const{
+    return iSequenceId;
+  }
 
-	LogFile(const String& strName, size_t iSize);
-
-  inline size_t getSpaceLeft()const{
-    return iSpaceLeft;
-  };
-
-  void commit(const LogEntry* pLogEntry);
-
-  const LogEntry* appendEntry(TermType  iTerm,
-                              IndexType iIndex,
-                              LogEntrySizeType  iEntryDataSize,
-                              const void* pSrcData);
+  static String CreateFileName(const String& strPath, ServerIdType iMyServerId, size_t iFileIdx);
 
 protected:
 
-  String  strName;
-  size_t  iSize;
-  size_t  iSpaceLeft;
-  void*   pMemory;
-  void*   pNext;
+  static const size_t CNotAllocatedSequenceId = 0xffffffffffffffff;
+
+  LogFile(size_t iSequenceId = CNotAllocatedSequenceId);
+
+  size_t  iSequenceId;
+
+  static const int CTagLength = 4;
+  static const char *CTag;
+
+  struct MetaData {
+    char      sTag[CTagLength];
+    uint8_t   bUsed;
+    uint8_t   _pad[3];
+    size_t    iSequenceId;
+    size_t    iFileSize;
+    Timestamp tsStarted;
+  };
+
+  static inline void* GetDataStart(void* pMemory){
+    return reinterpret_cast<MetaData*>(pMemory) + 1;
+  };
+
+  static inline const void* GetDataStart(const void* pMemory){
+    return reinterpret_cast<const MetaData*>(pMemory) + 1;
+  };
+
+  std::unique_ptr<SharedMemoryFile> ptrSHM;
 };
 
 /*************************************************************************/

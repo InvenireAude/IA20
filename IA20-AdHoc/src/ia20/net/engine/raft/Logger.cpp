@@ -8,7 +8,9 @@
 #include "Logger.h"
 
 #include "LogEntry.h"
-#include "LogFile.h"
+
+#include "LogFileWriter.h"
+#include "LogFileAllocator.h"
 
 namespace IA20 {
 namespace Net {
@@ -18,8 +20,7 @@ namespace Raft {
 /*************************************************************************/
 Logger::Logger(const Configuration& configuration, ServerIdType iMyServerId):
   configuration(configuration),
-  iMyServerId(iMyServerId),
-  iFileIdx(0){
+  iMyServerId(iMyServerId){
 	IA20_TRACER;
 }
 
@@ -28,42 +29,57 @@ Logger::~Logger() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-static inline String _createFileName(const String& strPath, ServerIdType iMyServerId, size_t iFileIdx){
-  StringStream ss;
-  ss<<strPath<<"/LOG";
-  ss<<TypeTools::IntToString(iMyServerId)<<"/";
-  ss<<TypeTools::LongToString(iFileIdx)<<".log";
-  return ss.str();
+void Logger::AllocateFile(const String& strFileName, size_t iSequenceId, size_t iSize){
+  IA20_TRACER;
+
+  std::unique_ptr<LogFileAllocator> ptrLogFileAllocator(
+    new LogFileAllocator(strFileName, iSequenceId, iSize)
+  );
+
 }
 /*************************************************************************/
-void Logger::allocateFileIfNeeded(LogEntrySizeType iNewEntryDataSize){
+void Logger::nextFileIfNeeded(LogEntrySizeType iNewEntryDataSize){
 
 	IA20_TRACER;
 
-  if(ptrActiveFile && LogEntry::ComputeSpace(iNewEntryDataSize) )
+  if(!empty() &&
+     (*begin())->getSpaceLeft() >= LogEntry::ComputeSpace(iNewEntryDataSize) )
     return;
 
-  std::unique_ptr<LogFile> ptrNewLogFile(new LogFile(_createFileName(configuration.strPath, iMyServerId, iFileIdx + 1), configuration.iLogFileSize));
+  size_t iSequenceId = empty() ? 0 : getActiveLogFile()->getSequenceId();
+  iSequenceId++;
 
-  //TODO keep old files until can be rolled and realeased.
+  String strFileName(LogFile::CreateFileName(configuration.strPath, iMyServerId, iSequenceId));
 
-  ptrActiveFile = (std::move(ptrNewLogFile));
+  AllocateFile(strFileName, iSequenceId, configuration.iLogFileSize);
 
-  iFileIdx++;
+  append(new LogFileWriter(strFileName, iSequenceId));
 }
 /*************************************************************************/
 const LogEntry* Logger::appendEntry(TermType  iTerm, IndexType iIndex, LogEntrySizeType  iEntryDataSize, const void* pSrcData){
 	IA20_TRACER;
-  allocateFileIfNeeded(iEntryDataSize);
 
-  return ptrActiveFile->appendEntry(iTerm, iIndex, iEntryDataSize, pSrcData);
+  nextFileIfNeeded(iEntryDataSize);
+
+  return getActiveLogFile()->appendEntry(iTerm, iIndex, iEntryDataSize, pSrcData);
+}
+/*************************************************************************/
+const LogFileWriter* Logger::getActiveLogFile()const{
+  return const_cast<Logger*>(this)->getActiveLogFile();
+}
+/*************************************************************************/
+LogFileWriter* Logger::getActiveLogFile(){
+    IA20_TRACER;
+    if(empty())
+      IA20_THROW(InternalException("No active LogFile allocated."));
+
+    return getNext()->getValue();
 }
 /*************************************************************************/
 void Logger::commit(const LogEntry* pLogEntry){
 	IA20_TRACER;
-  allocateFileIfNeeded(0);
+  const_cast<LogEntry*>(pLogEntry)->commit(); // Yes, LogEntry user can't but we can ;)
 
-  return ptrActiveFile->commit(pLogEntry);
 }
 /*************************************************************************/
 }

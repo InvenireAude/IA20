@@ -39,7 +39,7 @@
 #include <stdlib.h>
 
 namespace IA20 {
-
+const size_t SharedMemoryFile::CPageSize = getpagesize();
 /*************************************************************************/
 SharedMemoryFile::Descriptor::Descriptor():
 	iDomain(DM_SHARED_MEMORY),
@@ -296,4 +296,30 @@ const SharedMemoryFile::Descriptor& SharedMemoryFile::getDescriptor() const{
 	return aDescriptor;
 }
 /*************************************************************************/
+void SharedMemoryFile::Sync(const void* pAddress, size_t iDataLength, bool bAsync){
+	IA20_TRACER;
+
+  int iFlags = bAsync ? MS_ASYNC : MS_SYNC;
+  iFlags |= MS_INVALIDATE;
+
+	IA20_LOG(LogLevel::INSTANCE.isSystem()," MSync[1]: p: "<<pAddress<<", sz: "<<iDataLength);
+
+  const uint8_t* pAddressPtr = reinterpret_cast<const uint8_t*>(pAddress);
+  const uint8_t* pAlignedPtr = reinterpret_cast<const uint8_t*>((uint64_t)pAddressPtr & ~(CPageSize - 1));
+
+  iDataLength += pAddressPtr - pAlignedPtr;
+
+ 	IA20_LOG(LogLevel::INSTANCE.isSystem()," MSync[2]: p: "<<(void*)pAlignedPtr<<", sz: "<<iDataLength);
+
+  if(msync(const_cast<uint8_t*>(pAlignedPtr), iDataLength, iFlags) == -1)
+    IA20_THROW(SystemException("SharedMemoryFile::Sync, sync() failed."));
+
+}
+/*************************************************************************/
+void SharedMemoryFile::syncAll(bool bAsync){
+	IA20_TRACER;
+  Sync(pAddress, getSize(), bAsync);
+}
+/*************************************************************************/
+
 }/* namespace IA20 */

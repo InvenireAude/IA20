@@ -18,14 +18,15 @@ namespace Net {
 namespace Engine {
 namespace Raft {
 
-class LogFile;
+class LogFileWriter;
 class LogEntry;
 
 /*************************************************************************/
 /** The Logger class.
  *
  */
-class Logger {
+class Logger :
+  DoubleLinkedListOwner<LogFileWriter> {
 public:
 
 	virtual ~Logger() throw();
@@ -59,16 +60,17 @@ public:
 
 	Logger(const Configuration& configuration, ServerIdType iMyServerId);
 
+  static void AllocateFile(const String& strFileName, size_t iSequenceId, size_t iSize);
+
 protected:
 
   Configuration configuration;
   ServerIdType  iMyServerId;
 
-  std::unique_ptr<LogFile> ptrActiveFile;
+  const LogFileWriter* getActiveLogFile()const;
+  LogFileWriter* getActiveLogFile();
 
-  size_t iFileIdx;
-
-  void allocateFileIfNeeded(LogEntrySizeType iNewEntryDataSize);
+  void nextFileIfNeeded(LogEntrySizeType iNewEntryDataSize);
 };
 
 /*****************************************************************************/

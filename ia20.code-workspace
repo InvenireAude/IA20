@@ -32,7 +32,10 @@
       "utility": "cpp",
       "unordered_map": "cpp",
       "*.inc": "cpp",
-      "*.def": "cpp"
+      "*.def": "cpp",
+      "string_view": "cpp",
+      "ranges": "cpp",
+      "initializer_list": "cpp"
     }
   }
 }

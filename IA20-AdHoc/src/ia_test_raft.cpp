@@ -28,7 +28,7 @@ class DataWorker : public Raft::Unix::Worker{
       SYS::Signal::ThreadRegistration tr;
       Raft::PacketFactory::SetInstance(new  Raft::Unix::PacketFactory());
 
-      int i;
+      int i=0;
 
       while(!SYS::Signal::GetInstance()->isStopping()){
 

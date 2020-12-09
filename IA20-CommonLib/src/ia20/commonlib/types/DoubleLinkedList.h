@@ -45,17 +45,22 @@ public:
  }
 
   void append(C *pNext){
+
     pNext->pNext = this->pNext;
+    pNext->pPrev = this;
+
     this->pNext->pPrev = pNext;
     this->pNext = pNext;
-    pNext->pPrev = this;
   }
 
   void prepend(C *pPrev){
+
     pPrev->pPrev = this->pPrev;
+    pPrev->pNext = this;
+
     this->pPrev->pNext = pPrev;
     this->pPrev = pPrev;
-    pPrev->pNext = this;
+
   }
 
   void detach(){
@@ -173,6 +178,10 @@ class DoubleLinkedListOwner : public DoubleLinkedList<C> {
 
       return IA20::DoubleLinkedList<C>::begin(pNext);
     }
+
+  bool empty() const{
+    return DoubleLinkedList<C>::getNext()->getValue() == NULL;
+  }
 
  };
 

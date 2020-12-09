@@ -96,9 +96,14 @@ public:
 
 	const Descriptor& getDescriptor() const;
 
-protected:
-
 	SharedMemoryFile(const Descriptor& aDescriptor);
+
+  static void Sync(const void* pAddress, size_t iDataLength, bool bAsync = true);
+  void syncAll(bool bAsync = true);
+
+  static const size_t CPageSize;
+
+protected:
 
 	bool bAlreadyExisted;
 	void *pAddress;
