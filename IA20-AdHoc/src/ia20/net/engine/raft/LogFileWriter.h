@@ -61,6 +61,8 @@ protected:
   void*   pMemory;
   void*   pNextEntry;
 
+  const LogEntry *pLastEntry;
+
   std::unique_ptr<SharedMemoryFile> ptrSHM;
 };
 

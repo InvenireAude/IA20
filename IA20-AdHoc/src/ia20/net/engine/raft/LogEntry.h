@@ -26,8 +26,9 @@ namespace Raft {
 class LogEntry {
 public:
 
-	inline LogEntry(TermType  iTerm,
-                  IndexType iIndex,
+	inline LogEntry(TermType          iTerm,
+                  IndexType         iIndex,
+                  const LogEntry   *pPrevLogEntry,
                   LogEntrySizeType  iEntryDataSize,
                   const void* pSrcData):
     iTerm(iTerm),
@@ -43,11 +44,28 @@ public:
 
       iCheckSum = computeCheckSum();
       IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: LogEntry, at: "<<*this);
+
+
+      if(pPrevLogEntry){
+        iPrevOffset = reinterpret_cast<uint8_t*>(this) - reinterpret_cast<const uint8_t*>(pPrevLogEntry);
+      }else{
+        iPrevOffset = 0;
+      }
     };
 
 
   inline const void *getData()const{
     return reinterpret_cast<const uint8_t*>(this + 1);
+  }
+
+  inline const LogEntry *getPrevOrNull()const{
+
+     if(!iPrevOffset)
+        return NULL;
+
+     const uint8_t* pAddress = reinterpret_cast<const uint8_t*>(this);
+     pAddress -= iPrevOffset;
+     return reinterpret_cast<const LogEntry*>(pAddress);
   }
 
   inline LogEntry *next(){
@@ -78,6 +96,12 @@ public:
   inline LogEntrySizeType  getEntryDataSize()const{
     return iEntryDataSize;
   }
+
+  //This is only for diagnostic, use getPrevOrNull() instead.
+  inline PrevOffsetType getPrevOffset()const{
+    return iPrevOffset;
+  }
+
 
   inline uint32_t computeCheckSum()const{
 
@@ -126,7 +150,8 @@ protected:
   TermType          iTerm;
   IndexType         iIndex;
   LogEntrySizeType  iEntryDataSize;
-  uint32_t          iCheckSum;
+  CheckSumType      iCheckSum;
+  PrevOffsetType    iPrevOffset;
   uint8_t           bCommited;
   uint8_t           _pad[3];
   // TODO _pading uint32_t - align ?

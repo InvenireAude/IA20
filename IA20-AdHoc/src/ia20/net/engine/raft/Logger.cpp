@@ -60,7 +60,6 @@ const LogEntry* Logger::appendEntry(TermType  iTerm, IndexType iIndex, LogEntryS
 	IA20_TRACER;
 
   nextFileIfNeeded(iEntryDataSize);
-
   return getActiveLogFile()->appendEntry(iTerm, iIndex, iEntryDataSize, pSrcData);
 }
 /*************************************************************************/

@@ -15,7 +15,7 @@ namespace Engine {
 namespace Raft {
 
 /*************************************************************************/
-LogFileAllocator::LogFileAllocator(const String& strFileName, size_t iSequneceId, size_t iSize):
+LogFileAllocator::LogFileAllocator(const String& strFileName, size_t iSequenceId, size_t iSize):
   strFileName(strFileName),
   LogFile(iSequenceId){
 	IA20_TRACER;
@@ -46,7 +46,7 @@ LogFileAllocator::LogFileAllocator(const String& strFileName, size_t iSequneceId
   pMetaData->tsStarted.readSystemTimestamp();
   pMetaData->bUsed = false;
   pMetaData->iSequenceId = iSequenceId;
-  ptrSHM->syncAll();
+  ptrSHM->syncAll(true);
 }
 /*************************************************************************/
 LogFileAllocator::~LogFileAllocator() throw(){

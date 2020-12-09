@@ -15,9 +15,10 @@ namespace Engine {
 namespace Raft {
 
 /*************************************************************************/
-LogFileWriter::LogFileWriter(const String& strFileName, size_t iSequneceId):
+LogFileWriter::LogFileWriter(const String& strFileName, size_t iSequenceId):
   strFileName(strFileName),
   iSequenceId(iSequenceId),
+  pLastEntry(NULL),
   DoubleLinkedList<LogFileWriter>(this){
 	IA20_TRACER;
 
@@ -66,13 +67,14 @@ const LogEntry* LogFileWriter::appendEntry(TermType  iTerm, IndexType iIndex, Lo
   if(LogEntry::ComputeSpace(iEntryDataSize) > iSpaceLeft)
     IA20_THROW(InternalException("LogEntry::ComputeSpace(iEntryDataSize) > iSpaceLeft"));
 
-  LogEntry* pEntry = new (pNextEntry) LogEntry(iTerm, iIndex, iEntryDataSize, pSrcData);
+  LogEntry* pEntry = new (pNextEntry) LogEntry(iTerm, iIndex, pLastEntry, iEntryDataSize, pSrcData);
   pNextEntry = pEntry->next();
 
   iSpaceLeft -= (reinterpret_cast<uint8_t*>(pNextEntry) - reinterpret_cast<uint8_t*>(pEntry));
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: appendEntry: iSpaceLeft: "<<iSpaceLeft);
 
+  pLastEntry = pEntry;
   return pEntry;
 }
 /*************************************************************************/

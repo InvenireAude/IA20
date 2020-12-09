@@ -22,9 +22,11 @@ namespace Raft {
 
   typedef uint32_t IndexType;
   typedef uint32_t TermType;
-  typedef uint16_t  ServerIdType;
+  typedef uint16_t ServerIdType;
   typedef uint32_t LogIndexType;
   typedef uint32_t LogEntrySizeType;
+  typedef uint32_t CheckSumType;
+  typedef uint32_t PrevOffsetType;
 
   static const int CMaxServers = 1024;
   static const int CSeverNull  = 9999;

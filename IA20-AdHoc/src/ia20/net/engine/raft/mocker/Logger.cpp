@@ -20,6 +20,7 @@ namespace Mocker {
 Logger::Logger(size_t iMemorySize):
     iMemorySize(iMemorySize),
     pLastCommit(NULL),
+    pLastEntry(NULL),
     pMemory(malloc(iMemorySize)){
   IA20_TRACER;
 
@@ -48,13 +49,14 @@ const LogEntry* Logger::appendEntry(TermType  iTerm,
   if(LogEntry::ComputeSpace(iEntryDataSize) > iSpaceLeft)
     IA20_THROW(InternalException("LogEntry::ComputeSpace(iEntryDataSize) > iSpaceLeft"));
 
-  LogEntry* pEntry = new (pNextEntry) LogEntry(iTerm, iIndex, iEntryDataSize, pSrcData);
+  LogEntry* pEntry = new (pNextEntry) LogEntry(iTerm, iIndex, pLastEntry, iEntryDataSize, pSrcData);
   pNextEntry = pEntry->next();
 
   iSpaceLeft -= (reinterpret_cast<uint8_t*>(pNextEntry) - reinterpret_cast<uint8_t*>(pEntry));
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Mocker :: appendEntry: iSpaceLeft: "<<iSpaceLeft);
 
+  pLastEntry = pEntry;
   return pEntry;
 
 }

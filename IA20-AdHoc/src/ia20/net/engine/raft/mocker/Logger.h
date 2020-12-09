@@ -63,6 +63,7 @@ protected:
   void *pMemory;
   void *pNextEntry;
   const LogEntry *pLastCommit;
+  const LogEntry *pLastEntry;
 
 };
 /*************************************************************************/

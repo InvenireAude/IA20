@@ -35,8 +35,10 @@ LogFileReader::LogFileReader(const String& strFileName):
 
   pMetaData = reinterpret_cast<MetaData*>(pMemory);
 
-  if(memcmp(pMetaData->sTag, CTag, CTagLength) != 0)
+  if(memcmp(pMetaData->sTag, CTag, CTagLength) != 0){
+    IA20_LOG(true,MiscTools::BinarytoHex(pMetaData, sizeof(MetaData)));
     IA20_THROW(BadUsageException("The file is not a preallocated LogFile, name: ")<<strFileName);
+  }
 
   iSequenceId = pMetaData->iSequenceId;
 }
@@ -69,9 +71,13 @@ void LogFileReader::dump(std::ostream& os)const{
         pCurrent->isValid()){
 
     os<<"["<<pCurrent->getTerm()<<","<<pCurrent->getIndex()<<"]";
+
     os<<"\t C:"<<pCurrent->isCommited();
     os<<"\t S:"<<pCurrent->getEntryDataSize();
+    os<<"\t O:"<<pCurrent->getPrevOffset();
+
     uint32_t iCheckSum = pCurrent->getCheckSum();
+
     os<<"\t CS:"<<MiscTools::BinarytoHex(&iCheckSum, sizeof(uint32_t));
     if(pCurrent->getEntryDataSize()){
       //os<<", D: "<<MiscTools::BinarytoHex(pCurrent->getData(), pCurrent->getEntryDataSize());
