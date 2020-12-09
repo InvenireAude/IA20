@@ -63,7 +63,7 @@ public:
   void onMessage(const FB::Header* pHeader, const FB::AppendLogRequest* pAction);
   void onMessage(const FB::Header* pHeader, const FB::AppendLogResponse* pAction);
 
-  void onPacket(Packet& packet);
+  void onPacket(const Packet& packet);
   void onTimer();
 
   void onData(void *pEntryData, LogEntrySizeType iEntrySize);

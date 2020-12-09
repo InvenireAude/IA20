@@ -1,4 +1,4 @@
-#Wed 09 Dec 2020 11:36:22 AM CET
+#Wed 09 Dec 2020 01:20:31 PM CET
 FILES+=ia20/net/conn/Address
 FILES+=ia20/net/conn/mcast/Base
 FILES+=ia20/net/conn/mcast/EndPoint
@@ -11,6 +11,8 @@ FILES+=ia20/net/engine/raft/LogFileAllocator
 FILES+=ia20/net/engine/raft/LogFileReader
 FILES+=ia20/net/engine/raft/LogFileWriter
 FILES+=ia20/net/engine/raft/Logger
+FILES+=ia20/net/engine/raft/mocker/Connection
+FILES+=ia20/net/engine/raft/mocker/Logger
 FILES+=ia20/net/engine/raft/Packet
 FILES+=ia20/net/engine/raft/PacketFactory
 FILES+=ia20/net/engine/raft/RaftEngine
@@ -19,5 +21,7 @@ FILES+=ia20/net/engine/raft/unix/ConnectionWorker
 FILES+=ia20/net/engine/raft/unix/PacketFactory
 FILES+=ia20/net/engine/raft/unix/TimerWorker
 FILES+=ia20/net/engine/raft/unix/Worker
+FILES+=ia20/tc/TCRaftEngine
 MAINFILES+=ia_raft_dumplog
+MAINFILES+=ia_tc_raft
 MAINFILES+=ia_test_raft

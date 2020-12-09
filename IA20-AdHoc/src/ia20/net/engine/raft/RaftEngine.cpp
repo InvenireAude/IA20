@@ -166,7 +166,7 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRespons
 
 }
 /*************************************************************************/
-void RaftEngine::onPacket(Packet& packet){
+void RaftEngine::onPacket(const Packet& packet){
   IA20_TRACER;
 
   const uint8_t* pDataStart = packet.getDataStart();
