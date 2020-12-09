@@ -121,6 +121,10 @@ static inline LogEntryId _FBToLogKey(const FB::LogEntryId& entryId){
   return LogEntryId(entryId.term(), entryId.index());
 }
 /*************************************************************************/
+static inline LogEntryId _LogEntryToKey(const LogEntry* pLogEntry){
+  return pLogEntry ? pLogEntry->getEntryId() : LogEntryId() ;
+}
+/*************************************************************************/
 void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest* pAction){
   IA20_TRACER;
 
@@ -141,7 +145,7 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest
 
   bool bResult = false;
 
-  LogEntryId keyMatch( data.pLastLogEntry ? data.pLastLogEntry->getEntryId() : LogEntryId() );
+  LogEntryId keyMatch(_LogEntryToKey(data.pLastLogEntry));
   LogEntryId keyMessageMatch(_FBToLogKey(*pAction->matchLogEntry()));
 
   if(keyMatch == keyMessageMatch){
@@ -159,7 +163,7 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest
 
   FB::Header header(pHeader->srcServerId(), data.iMyServerId);
 
-  auto response = FB::CreateAppendLogResponse(builder, pAction->dataLogEntry(), bResult);
+  auto response = FB::CreateAppendLogResponse(builder, pAction->matchLogEntry(), pAction->dataLogEntry(), bResult);
   builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogResponse, response.Union()));
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
@@ -178,6 +182,8 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRespons
 
    // TODO check term ? or entryID ?
    LogIndexType  iIndexId = pAction->dataLogEntry()->index();
+
+  if(pAction->success()){
 
    for(int iEntryIdx = 0; iEntryIdx < 1; iEntryIdx++){
 
@@ -200,6 +206,54 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRespons
 
     iIndexId++;
    };
+
+  }
+
+  LogEntryId matchEntryId(_FBToLogKey(*pAction->matchLogEntry()));
+  LogEntryId serverEntryId(_LogEntryToKey(data.servers[pHeader->srcServerId()].pMatchEntry));
+
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Handling error : "<<pAction->success());
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Handling error : "<<matchEntryId);
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Handling error : "<<serverEntryId);
+
+  if(matchEntryId == serverEntryId){
+
+    if(pAction->success()){
+      //TODO repeat until id matches ?
+      //TODO get first there may be more new items.
+      data.servers[pHeader->srcServerId()].pMatchEntry = data.servers[pHeader->srcServerId()].pMatchEntry ?
+              data.servers[pHeader->srcServerId()].pMatchEntry->next() : data.pLastLogEntry;
+
+      return;
+    }
+  }
+
+      IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Handling error 1 ");
+      //if(data.servers[pHeader->srcServerId()].pMatchEntry)
+      //    data.servers[pHeader->srcServerId()].pMatchEntry = data.servers[pHeader->srcServerId()].pMatchEntry->getPrevOrNull();
+
+      IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Handling error 1 ");
+
+      flatbuffers::FlatBufferBuilder builder;
+      FB::Header header(pHeader->srcServerId(), data.iMyServerId);
+
+      FB::LogEntryId matchLogEntry(_LogKeyToFB(data.servers[pHeader->srcServerId()].pMatchEntry));
+      const LogEntry *pDataEntry = data.servers[pHeader->srcServerId()].pMatchEntry->next();
+      FB::LogEntryId dataLogEntry(_LogKeyToFB(pDataEntry));
+
+      auto entryData = builder.CreateVector<uint8_t>(reinterpret_cast<const uint8_t*>(pDataEntry->getData()), pDataEntry->getEntryDataSize());
+
+      auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, data.v.iCommitIndex,  entryData);
+      builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogRequest, request.Union()));
+
+      IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
+
+      Packet packet(builder);
+      pSender->send(packet);
+
+
+
+
 
 }
 /*************************************************************************/
