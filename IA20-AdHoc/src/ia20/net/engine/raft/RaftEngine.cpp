@@ -126,16 +126,30 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest
     pSrcData = pActionData->data();
   };
 
-  pLogger->appendEntry(pAction->dataLogEntry()->term(),
-                       pAction->dataLogEntry()->index(),
-                       iEntryDataSize,
-                       pSrcData);
+  bool bResult = false;
+
+  TermType  iLastLogEntryTerm  = data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0;
+  IndexType iLastLogEntryIndex = data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0;
+
+  if(pAction->matchLogEntry()->term() == iLastLogEntryTerm &&
+     pAction->matchLogEntry()->index() == iLastLogEntryIndex){
+
+    data.pLastLogEntry = pLogger->appendEntry(pAction->dataLogEntry()->term(),
+                            pAction->dataLogEntry()->index(),
+                            iEntryDataSize,
+                            pSrcData);
+
+      bResult = true;
+
+    }else{
+
+    }
 
   flatbuffers::FlatBufferBuilder builder;
 
   FB::Header header(pHeader->srcServerId(), data.iMyServerId);
 
-  auto response = FB::CreateAppendLogResponse(builder, pAction->dataLogEntry(), true);
+  auto response = FB::CreateAppendLogResponse(builder, pAction->dataLogEntry(), bResult);
   builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogResponse, response.Union()));
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
@@ -280,17 +294,11 @@ void RaftEngine::convertToLeader(){
 
   data.v.iLastApplied = 0;
 
+  for(int i=0; i<data.iNumServers; i++){
+    data.servers[i].pMatchEntry = data.pLastLogEntry;
+  };
+
   lstPendingEntries.clear();
-
-  data.pLastLogEntry = pLogger->appendEntry(data.p.iCurrentTerm,
-                         ++data.v.iLastApplied,
-                         0,
-                         0);
-
-  lstPendingEntries.push_back({
-        pEntry : data.pLastLogEntry,
-       iNumConfirmations : 1});
-
 
   flatbuffers::FlatBufferBuilder builder;
   FB::Header header(0, data.iMyServerId);
@@ -299,6 +307,16 @@ void RaftEngine::convertToLeader(){
 
   FB::LogEntryId matchLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
                                data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
+
+  data.pLastLogEntry = pLogger->appendEntry(data.p.iCurrentTerm,
+                         ++data.v.iLastApplied,
+                         0,
+                         0);
+
+  lstPendingEntries.push_back({
+        pEntry : data.pLastLogEntry,
+        iNumConfirmations : 1});
+
   FB::LogEntryId dataLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
                                data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
 
@@ -359,7 +377,13 @@ void RaftEngine::onData(void *pEntryData, LogEntrySizeType iEntrySize){
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: New entry, term: "<<data.p.iCurrentTerm<<", sz: "<<iEntrySize);
 
- data.pLastLogEntry = pLogger->appendEntry(data.p.iCurrentTerm,
+  flatbuffers::FlatBufferBuilder builder;
+  FB::Header header(0, data.iMyServerId);
+
+  FB::LogEntryId matchLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
+                               data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
+
+  data.pLastLogEntry = pLogger->appendEntry(data.p.iCurrentTerm,
                          ++data.v.iLastApplied,
                          iEntrySize,
                          pEntryData);
@@ -368,14 +392,7 @@ void RaftEngine::onData(void *pEntryData, LogEntrySizeType iEntrySize){
         pEntry : data.pLastLogEntry,
        iNumConfirmations : 1});
 
-  flatbuffers::FlatBufferBuilder builder;
 
-  FB::Header header(0, data.iMyServerId);
-
-  //TODO use values form Logger instance
-
-  FB::LogEntryId matchLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
-                               data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
   FB::LogEntryId dataLogEntry(data.pLastLogEntry ? data.pLastLogEntry->getTerm() : 0,
                                data.pLastLogEntry ? data.pLastLogEntry->getIndex() : 0);
 

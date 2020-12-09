@@ -105,12 +105,13 @@ protected:
   struct ServerData {
     struct sockaddr_in ipAddress;
 
-    ServerData():iNextIndex(0),iNextMatch(0){
+    ServerData():iNextIndex(0),iNextMatch(0),pMatchEntry(NULL){
       ::bzero(&ipAddress, sizeof(ipAddress));
     }
 
     IndexType iNextIndex;
     IndexType iNextMatch;
+    const LogEntry* pMatchEntry;
   };
 
 /*****************************************************************************/

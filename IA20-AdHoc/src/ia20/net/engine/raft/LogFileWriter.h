@@ -52,6 +52,10 @@ public:
 
   static String CreateFileName(const String& strPath, ServerIdType iMyServerId, size_t iFileIdx);
 
+  inline const LogEntry* getLastLogEntryOrNull()const{
+    return pLastEntry;
+  }
+
 protected:
 
   String  strFileName;

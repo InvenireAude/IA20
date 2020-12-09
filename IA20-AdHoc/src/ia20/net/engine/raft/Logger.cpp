@@ -81,6 +81,15 @@ void Logger::commit(const LogEntry* pLogEntry){
   getActiveLogFile()->commit(pLogEntry); // TODO this may not be from this file :)))
 }
 /*************************************************************************/
+const LogEntry* Logger::getLastLogEntryOrNull()const{
+  IA20_TRACER;
+
+  if(empty())
+    return NULL;
+
+  return getActiveLogFile()->getLastLogEntryOrNull();
+}
+/*************************************************************************/
 }
 }
 }

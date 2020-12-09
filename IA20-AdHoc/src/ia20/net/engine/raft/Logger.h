@@ -65,6 +65,7 @@ public:
 
   static void AllocateFile(const String& strFileName, size_t iSequenceId, size_t iSize);
 
+  const LogEntry* getLastLogEntryOrNull()const;
 protected:
 
   Configuration configuration;
