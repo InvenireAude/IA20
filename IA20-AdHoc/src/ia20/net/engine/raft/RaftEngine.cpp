@@ -22,9 +22,9 @@ namespace Engine {
 namespace Raft {
 
 /*************************************************************************/
-RaftEngine::RaftEngine(ServerIdType iMyServerId, ServerIdType iNumServers, const Logger::Configuration& cfgLogger, Sender* pSender):
+RaftEngine::RaftEngine(ServerIdType iMyServerId, ServerIdType iNumServers, Logger* pLogger, Sender* pSender):
   pSender(pSender),
-  ptrLogger(new Logger(cfgLogger, iMyServerId)){
+  pLogger(pLogger){
 	IA20_TRACER;
 
   IA20_CHECK_IF_NULL(pSender);
@@ -119,7 +119,7 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest
 
   tsElapsed.start();
 
-  ptrLogger->appendEntry(data.p.iCurrentTerm,
+  pLogger->appendEntry(data.p.iCurrentTerm,
                          data.v.iLastApplied++,
                          0,
                          0);
@@ -156,7 +156,7 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRespons
         entry.iNumConfirmations++;
 
         if(entry.iNumConfirmations * 2 > data.iNumServers){
-          ptrLogger->commit(entry.pEntry);
+          pLogger->commit(entry.pEntry);
           it = lstPendingEntries.erase(it);
         }
     }
@@ -288,7 +288,7 @@ void RaftEngine::convertToLeader(){
   lstPendingEntries.clear();
 
   lstPendingEntries.push_back({
-        pEntry : ptrLogger->appendEntry(data.p.iCurrentTerm,
+        pEntry : pLogger->appendEntry(data.p.iCurrentTerm,
                          data.v.iLastApplied,
                          0,
                          0),
@@ -345,7 +345,7 @@ void RaftEngine::onData(void *pEntryData, LogEntrySizeType iEntrySize){
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: New entry, term: "<<data.p.iCurrentTerm<<", sz: "<<iEntrySize);
 
   lstPendingEntries.push_back({
-        pEntry : ptrLogger->appendEntry(data.p.iCurrentTerm,
+        pEntry : pLogger->appendEntry(data.p.iCurrentTerm,
                          ++data.v.iLastApplied,
                          iEntrySize,
                          pEntryData),

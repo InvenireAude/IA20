@@ -13,6 +13,8 @@
 #include <ia20/commonlib/commonlib.h>
 #include "Definitions.h"
 
+#include "RaftEngine.h"
+
 namespace IA20 {
 namespace Net {
 namespace Engine {
@@ -26,6 +28,7 @@ class LogEntry;
  *
  */
 class Logger :
+  public RaftEngine::Logger,
   DoubleLinkedListOwner<LogFileWriter> {
 public:
 
@@ -51,12 +54,12 @@ public:
 
   };
 
-  const LogEntry* appendEntry(TermType  iTerm,
+  virtual const LogEntry* appendEntry(TermType  iTerm,
                         IndexType iIndex,
-                        LogEntrySizeType  iEntryDataSize,
-                        const void* pSrcData);
+                        LogEntrySizeType  iEntryDataSize = 0,
+                        const void* pSrcData = 0);
 
-  void commit(const LogEntry* pLogEntry);
+  virtual void commit(const LogEntry* pLogEntry);
 
 	Logger(const Configuration& configuration, ServerIdType iMyServerId);
 

@@ -7,6 +7,7 @@
 #include <ia20/net/engine/raft/unix/TimerWorker.h>
 #include <ia20/net/engine/raft/unix/PacketFactory.h>
 #include <ia20/net/engine/raft/RaftEngine.h>
+#include <ia20/net/engine/raft/Logger.h>
 #include <unistd.h>
 
 //#include "raft.h"
@@ -59,7 +60,10 @@ int main(int argc, char* argv[]){
   Raft::ServerIdType iNumServers = argc >= 3 ? atoi(argv[2]) : 3;
 
   std::unique_ptr<Raft::Unix::Connection> ptrConnection(new Raft::Unix::Connection("127.0.0.1", "224.0.0.1", 5000));
-  std::unique_ptr<Raft::RaftEngine>   ptrEngine(new Raft::RaftEngine(iServerId, iNumServers, cfgLogger, ptrConnection.get()));
+
+  std::unique_ptr<Raft::Logger>       ptrLogger(new Raft::Logger(cfgLogger,iServerId));
+  std::unique_ptr<Raft::RaftEngine>   ptrEngine(new Raft::RaftEngine(iServerId, iNumServers, ptrLogger.get(), ptrConnection.get()));
+
   std::unique_ptr<Raft::Unix::ConnectionWorker> ptrConnectionWorker(new Raft::Unix::ConnectionWorker(ptrConnection.get(), ptrEngine.get()));
   std::unique_ptr<Raft::Unix::TimerWorker> ptrTimerWorker(new Raft::Unix::TimerWorker(ptrEngine.get()));
   std::unique_ptr<DataWorker> ptrDataWorker(new DataWorker(ptrEngine.get(), iServerId));

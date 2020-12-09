@@ -17,7 +17,6 @@
 
 #include "Definitions.h"
 #include "Packet.h"
-#include "Logger.h"
 
 #include "fb/rpc_generated.h"
 
@@ -27,6 +26,8 @@ namespace IA20 {
 namespace Net {
 namespace Engine {
 namespace Raft {
+
+class LogEntry;
 
 /*************************************************************************/
 /** The RaftEngine class.
@@ -42,7 +43,17 @@ public:
     virtual void send(const Packet& packet) = 0;
   };
 
-	RaftEngine(ServerIdType iMyServerId, ServerIdType iNumServers, const Logger::Configuration& cfgLogger, Sender* pSender);
+  class Logger {
+    public:
+    virtual const LogEntry* appendEntry(TermType  iTerm,
+                                IndexType iIndex,
+                                LogEntrySizeType  iEntryDataSize = 0,
+                                const void* pSrcData = 0) = 0;
+
+    virtual void commit(const LogEntry* pLogEntry) = 0;
+  };
+
+	RaftEngine(ServerIdType iMyServerId, ServerIdType iNumServers, Logger *pLogger, Sender* pSender);
 
   void onStart();
   void onMessage();
@@ -62,6 +73,7 @@ public:
 protected:
 
   Sender* pSender;
+  Logger* pLogger;
 
   enum State {
     ST_NONE       = 0,
@@ -130,9 +142,6 @@ protected:
   static const int CAppendEntriesTimeoutNS = 10000000;
 
   TimeSample tsElapsed;
-
-  std::unique_ptr<Logger> ptrLogger;
-
 
   void convertToLeader();
   void convertToFollower();
