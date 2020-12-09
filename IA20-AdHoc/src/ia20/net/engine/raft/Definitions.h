@@ -34,6 +34,9 @@ namespace Raft {
     TermType  iTerm;
     IndexType iIndex;
 
+    inline LogEntryId(const LogEntryId& other):
+        iTerm(other.iTerm),iIndex(other.iIndex){};
+
     inline LogEntryId(TermType  iTerm = 0, IndexType iIndex = 0):
         iTerm(iTerm),iIndex(iIndex){};
 

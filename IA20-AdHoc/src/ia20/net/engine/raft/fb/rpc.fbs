@@ -33,6 +33,7 @@ table AppendLogRequest {
 }
 
 table AppendLogResponse {
+  matchLogEntry     : LogEntryId;
   dataLogEntry      : LogEntryId;
   success           : bool;
 }
