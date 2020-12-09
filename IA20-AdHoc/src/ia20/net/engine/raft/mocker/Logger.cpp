@@ -65,6 +65,7 @@ void Logger::commit(const LogEntry* pLogEntry){
   if(pLastCommit  && pLogEntry < pLastCommit)
     IA20_THROW(InternalException("Mocker::Logger::commit :: pLogEntry < pLastCommit"));
 
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Mocker :: commit: ["<<pLogEntry->getTerm()<<","<<pLogEntry->getIndex()<<"]");
   pLastCommit = pLogEntry;
 }
 /*************************************************************************/

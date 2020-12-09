@@ -77,14 +77,21 @@ void TCRaftEngine::case01(){
 	IA20::TimeSample ts(true);
 
   Setup s(5);
-
-  for(int i = 0; i < s.tabEngines.size(); i++){
+  //s.tabEngines.size()
+  for(int i = 0; i < 1; i++){
       RaftEngine *pEngine = s.tabEngines[i].get();
       pEngine->startElection();
   }
 
   RaftEngine *pLeaderEngine = s.tabEngines[0].get();
+
+  s.ptrConnection->disable(s.tabEngines[3].get());
+
   pLeaderEngine->onData((void*)"ABC",3);
+
+  s.ptrConnection->enable(s.tabEngines[3].get());
+
+  pLeaderEngine->onData((void*)"XYZ",3);
 
   for(int i = 0; i < s.tabLoggers.size(); i++){
       Mocker::Logger *pLogger = s.tabLoggers[i].get();
@@ -93,8 +100,8 @@ void TCRaftEngine::case01(){
       std::cout<<std::endl;
   }
 
-  s.assetLogger(0,"[1,1][1,2,ABC]");
-  s.assetLogger(1,"[1,1][1,2,ABC]");
+  s.assetLogger(0,"[1,1][1,2,ABC][1,3,XYZ]*");
+  s.assetLogger(3,"[1,1][1,2,ABC][1,3,XYZ]");
 }
 /*************************************************************************/
 }

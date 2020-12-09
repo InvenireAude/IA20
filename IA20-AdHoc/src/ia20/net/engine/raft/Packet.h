@@ -39,11 +39,26 @@ public:
     }
 
  inline Packet(const flatbuffers::FlatBufferBuilder& builder):
-    pDataStart(builder.GetBufferPointer()),
+    pDataStart(NULL),
     pCtx(NULL){
         PacketFactory::GetInstance()->allocatePacket(*this);
         pack(builder);
         IA20_LOG(LogLevel::INSTANCE.isDetailedInfo(), "Raft :: Packet("<<pDataStart<<", "<<pCtx<<")");
+    }
+
+
+    inline Packet(const Packet& other):
+          pDataStart(NULL),
+          pCtx(NULL){
+              this->operator=(other);
+    }
+
+  Packet& operator=(const Packet& other){
+        PacketFactory::GetInstance()->allocatePacket(*this);
+        setLength(other.getLength());
+        memcpy(pDataStart, other.pDataStart, getLength());
+        IA20_LOG(LogLevel::INSTANCE.isDetailedInfo(), "Raft :: Packet_copy("<<pDataStart<<", "<<pCtx<<")");
+        return *this;
     }
 
  inline ~Packet(){

@@ -41,13 +41,22 @@ public:
 	Connection();
 
   void add(RaftEngine* pEngine);
+  void disable(RaftEngine* pEngine);
+  void enable(RaftEngine* pEngine);
 
 protected:
 
   typedef std::list<RaftEngine*> RaftEnginesList;
-
   RaftEnginesList lstRaftEngines;
 
+  typedef std::set<RaftEngine*> RaftEnginesSet;
+  RaftEnginesSet setBlackList;
+
+  typedef std::list<Packet> PacketsList;
+  PacketsList lstPackets;
+
+
+  bool bInProgress;
 };
 /*************************************************************************/
 }

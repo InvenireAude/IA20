@@ -79,7 +79,7 @@ LogFileWriter* Logger::getActiveLogFile(){
 void Logger::commit(const LogEntry* pLogEntry){
 	IA20_TRACER;
   const_cast<LogEntry*>(pLogEntry)->commit(); // Yes, LogEntry user can't but we can ;)
-
+  getActiveLogFile()->commit(pLogEntry); // TODO this may not be from this file :)))
 }
 /*************************************************************************/
 }

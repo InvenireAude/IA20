@@ -126,14 +126,14 @@ protected:
 
 /*****************************************************************************/
   struct Data {
-    State          iState;
-    LogEntry      *pLastLogEntry;
-    ServerIdType   iMyServerId;
-    PersistentData p;
-    VolatileData   v;
-    ServerIdType   iNumServers;
-    ServerData     servers[CMaxServers];
-    bool           votes[CMaxServers];
+    State           iState;
+    const LogEntry *pLastLogEntry;
+    ServerIdType    iMyServerId;
+    PersistentData  p;
+    VolatileData    v;
+    ServerIdType    iNumServers;
+    ServerData      servers[CMaxServers];
+    bool            votes[CMaxServers];
   };
 
   Data data;
