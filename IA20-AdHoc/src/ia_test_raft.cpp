@@ -7,7 +7,9 @@
 #include <ia20/net/engine/raft/unix/TimerWorker.h>
 #include <ia20/net/engine/raft/unix/PacketFactory.h>
 #include <ia20/net/engine/raft/RaftEngine.h>
-#include <ia20/net/engine/raft/Logger.h>
+#include <ia20/net/engine/raft/LogFileWriter.h>
+#include <ia20/net/engine/raft/LogFileAllocator.h>
+
 #include <unistd.h>
 
 //#include "raft.h"
@@ -53,16 +55,15 @@ int main(int argc, char* argv[]){
 
   SYS::Signal::GetInstance();
 
-
-  Raft::Logger::Configuration cfgLogger("/tmp/raft/",100000);
-
   Raft::ServerIdType iServerId   = argc >= 2 ? atoi(argv[1]) : 1;
   Raft::ServerIdType iNumServers = argc >= 3 ? atoi(argv[2]) : 3;
 
+  String strLogFile(Raft::LogFile::CreateFileName("/tmp/raft/",iServerId));
+
   std::unique_ptr<Raft::Unix::Connection> ptrConnection(new Raft::Unix::Connection("127.0.0.1", "224.0.0.1", 5000));
 
-  std::unique_ptr<Raft::Logger>       ptrLogger(new Raft::Logger(cfgLogger,iServerId));
-  std::unique_ptr<Raft::RaftEngine>   ptrEngine(new Raft::RaftEngine(iServerId, iNumServers, ptrLogger.get(), ptrConnection.get()));
+  std::unique_ptr<Raft::LogFileWriter>ptrLogFileWriter(new Raft::LogFileWriter(strLogFile, 1000000));
+  std::unique_ptr<Raft::RaftEngine>   ptrEngine(new Raft::RaftEngine(iServerId, iNumServers, ptrLogFileWriter.get(), ptrConnection.get()));
 
   std::unique_ptr<Raft::Unix::ConnectionWorker> ptrConnectionWorker(new Raft::Unix::ConnectionWorker(ptrConnection.get(), ptrEngine.get()));
   std::unique_ptr<Raft::Unix::TimerWorker> ptrTimerWorker(new Raft::Unix::TimerWorker(ptrEngine.get()));

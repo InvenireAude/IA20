@@ -14,26 +14,24 @@
 
 #include "Definitions.h"
 #include "LogFile.h"
+#include "LogEntry.h"
 
 namespace IA20 {
 namespace Net {
 namespace Engine {
 namespace Raft {
 
-class LogEntry;
-
 /*************************************************************************/
 /** The LogFileWriter class.
  *
  */
 class LogFileWriter :
-  public LogFile,
-  public DoubleLinkedList<LogFileWriter> {
+  public LogFile {
 public:
 
 	virtual ~LogFileWriter() throw();
 
-	LogFileWriter(const String& strFileName, size_t iSequenceId);
+	LogFileWriter(const String& strFileName, size_t iMemorySize = 0);
 
   inline size_t getSpaceLeft()const{
     return iSpaceLeft;
@@ -42,31 +40,18 @@ public:
   void commit(const LogEntry* pLogEntry);
 
   const LogEntry* appendEntry(const LogEntryId& entryId,
-                              LogEntrySizeType  iEntryDataSize,
-                              const void* pSrcData);
+                              LogEntrySizeType  iEntryDataSize = 0,
+                              const void* pSrcData = 0);
 
-  inline size_t getSequenceId()const{
-    return iSequenceId;
-  }
-
-  static String CreateFileName(const String& strPath, ServerIdType iMyServerId, size_t iFileIdx);
-
-  inline const LogEntry* getLastLogEntryOrNull()const{
-    return pLastEntry;
-  }
 
 protected:
 
-  String  strFileName;
   size_t  iSpaceLeft;
 
-  size_t  iSequenceId;
-  void*   pMemory;
   void*   pNextEntry;
 
-  const LogEntry *pLastEntry;
+  const LogEntry *pLastCommit;
 
-  std::unique_ptr<SharedMemoryFile> ptrSHM;
 };
 
 /*************************************************************************/

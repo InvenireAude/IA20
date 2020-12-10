@@ -32,12 +32,10 @@ public:
 
 	virtual ~LogFileAllocator() throw();
 
-	LogFileAllocator(const String& strFileName, size_t iSequenceId, size_t iSize);
+	LogFileAllocator(const String& strFileName, size_t iSize);
 
 protected:
 
-  String  strFileName;
-  std::unique_ptr<SharedMemoryFile> ptrSHM;
 };
 
 /*************************************************************************/

@@ -16,7 +16,7 @@ namespace Raft {
 
 /*************************************************************************/
 LogFileReader::LogFileReader(const String& strFileName):
-  strFileName(strFileName){
+  LogFile(strFileName){
 	IA20_TRACER;
 
   SharedMemoryFile::Descriptor descriptor;
@@ -40,7 +40,6 @@ LogFileReader::LogFileReader(const String& strFileName):
     IA20_THROW(BadUsageException("The file is not a preallocated LogFile, name: ")<<strFileName);
   }
 
-  iSequenceId = pMetaData->iSequenceId;
 }
 /*************************************************************************/
 LogFileReader::~LogFileReader() throw(){
@@ -55,7 +54,6 @@ void LogFileReader::dump(std::ostream& os)const{
   IA20_TRACER;
 
   os<<" Log file:  "<<strFileName<<std::endl;
-  os<<" Sequence:  "<<iSequenceId<<std::endl;
   os<<" Used:      "<<(pMetaData->bUsed ? "yes" : "no")<<std::endl;
   os<<" Timestamp: "<<pMetaData->tsStarted.toString()<<std::endl;
   os<<std::endl;

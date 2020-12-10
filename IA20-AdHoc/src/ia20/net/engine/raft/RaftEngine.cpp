@@ -9,11 +9,11 @@
 
 #include <ia20/fb/Helpers.h>
 
-#include "Logger.h"
-#include "Packet.h"
 
+#include "Packet.h"
 #include "PacketFactory.h"
 #include "LogEntry.h"
+#include "LogFileWriter.h"
 
 
 namespace IA20 {
@@ -22,9 +22,9 @@ namespace Engine {
 namespace Raft {
 
 /*************************************************************************/
-RaftEngine::RaftEngine(ServerIdType iMyServerId, ServerIdType iNumServers, Logger* pLogger, Sender* pSender):
+RaftEngine::RaftEngine(ServerIdType iMyServerId, ServerIdType iNumServers, LogFileWriter *pLogFileWriter, Sender* pSender):
   pSender(pSender),
-  pLogger(pLogger){
+  pLogFileWriter(pLogFileWriter){
 	IA20_TRACER;
 
   IA20_CHECK_IF_NULL(pSender);
@@ -151,7 +151,7 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest
   if(keyMatch == keyMessageMatch){
 
     LogEntryId entryId(_FBToLogKey(*pAction->dataLogEntry()));
-    data.pLastLogEntry = pLogger->appendEntry(entryId, iEntryDataSize, pSrcData);
+    data.pLastLogEntry = pLogFileWriter->appendEntry(entryId, iEntryDataSize, pSrcData);
 
     bResult = true;
 
@@ -199,7 +199,7 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRespons
         entry.iNumConfirmations++;
         IA20_LOG(LogLevel::INSTANCE.isInfo(), "iNumConfirmations: "<<entry.iNumConfirmations);
         if(entry.iNumConfirmations * 2 > data.iNumServers){
-          pLogger->commit(entry.pEntry);
+          pLogFileWriter->commit(entry.pEntry);
           it = lstPendingEntries.erase(it);
         }
     }
@@ -372,7 +372,7 @@ void RaftEngine::convertToLeader(){
   FB::LogEntryId matchEntryId(_LogKeyToFB(data.pLastLogEntry));
 
   LogEntryId entryId(data.p.iCurrentTerm,++data.v.iLastApplied);
-  data.pLastLogEntry = pLogger->appendEntry(entryId);
+  data.pLastLogEntry = pLogFileWriter->appendEntry(entryId);
 
 
   lstPendingEntries.push_back({
@@ -440,7 +440,7 @@ void RaftEngine::onData(void *pEntryData, LogEntrySizeType iEntrySize){
   FB::LogEntryId matchLogEntry(_LogKeyToFB(data.pLastLogEntry));
 
   LogEntryId entryId(data.p.iCurrentTerm,++data.v.iLastApplied);
-  data.pLastLogEntry = pLogger->appendEntry(entryId, iEntrySize, pEntryData);
+  data.pLastLogEntry = pLogFileWriter->appendEntry(entryId, iEntrySize, pEntryData);
 
   lstPendingEntries.push_back({
         pEntry : data.pLastLogEntry,

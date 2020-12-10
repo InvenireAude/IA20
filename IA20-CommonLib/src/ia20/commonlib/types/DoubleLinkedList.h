@@ -83,69 +83,8 @@ inline const DoubleLinkedList<C> *getPrev()const {return pPrev;};
 inline const C *getValue()const {return pValue;};
 
 
-
-operator C&(){ return *pValue;}
-operator const C&()const { return *pValue;}
-
-class iterator {
-   public:
-    iterator(const iterator& other):
-      pCurrent(other.pCurrent){}
-
-    bool operator==(const iterator& other){
-      return pCurrent == other.pCurrent;
-    }
-
-    bool operator!=(const iterator& other){
-      return pCurrent != other.pCurrent;
-    }
-
-    iterator& operator=(const iterator& other){
-      pCurrent = other.pCurrent;
-      return *this;
-    };
-
-  iterator& operator++(){
-
-    pCurrent = pCurrent->pNext;
-
-    if(!pCurrent->pValue)
-      pCurrent = NULL;
-
-    return *this;
-  }
-
-  C* operator*() const{
-      IA20_CHECK_IF_NULL(pCurrent);
-      return pCurrent->pValue;
-    }
-
-  protected:
-
-   iterator(DoubleLinkedList<C> *pCurrent):
-    pCurrent(pCurrent){}
-
-    DoubleLinkedList<C> *pCurrent;
-
-    friend class  DoubleLinkedList<C>;
-  };
-
-  iterator begin(){
-    return iterator(this->pValue ? this : NULL);
-  }
-
-  iterator end(){
-    return iterator(NULL);
-  }
-
-
- protected:
-
-  iterator begin(DoubleLinkedList<C> *pCurrent){
-    if(!pCurrent->pValue)
-      pCurrent = NULL;
-    return iterator(pCurrent);
-  }
+  operator C&(){ return *pValue;}
+  operator const C&()const { return *pValue;}
 
  private:
 
@@ -162,13 +101,86 @@ class DoubleLinkedListOwner : public DoubleLinkedList<C> {
   public:
     DoubleLinkedListOwner():DoubleLinkedList<C>(NULL){};
 
-    typedef typename IA20::DoubleLinkedList<C>::iterator iterator;
+    template<class IT>
+    class iterator_base {
 
-    iterator begin(){
-      return IA20::DoubleLinkedList<C>::begin(DoubleLinkedList<C>::getNext());
-    };
+      public:
+        iterator_base(const iterator_base& other):
+          pCurrent(other.pCurrent){}
 
-    iterator remove(iterator& it){
+        bool operator==(const iterator_base& other){
+          return pCurrent == other.pCurrent;
+        }
+
+        bool operator!=(const iterator_base& other){
+          return pCurrent != other.pCurrent;
+        }
+
+        iterator_base& operator=(const iterator_base& other){
+          pCurrent = other.pCurrent;
+          return *this;
+        };
+
+      iterator_base& operator++(){
+
+        pCurrent = pCurrent->pNext;
+
+        if(!pCurrent->pValue)
+          pCurrent = NULL;
+
+        return *this;
+      }
+
+      IT operator*() const{
+          IA20_CHECK_IF_NULL(pCurrent);
+          return pCurrent->pValue;
+        }
+
+      iterator_base(DoubleLinkedList<C> *pCurrent):
+          pCurrent(pCurrent){}
+
+      protected:
+
+        DoubleLinkedList<C> *pCurrent;
+
+        friend class  DoubleLinkedList<C>;
+      };
+
+      typedef iterator_base<C*> iterator;
+      typedef iterator_base<const C*> const_iterator;
+
+      iterator begin(){
+        return iterator(this->getNext());
+      }
+
+      iterator end(){
+        return iterator(this);
+      }
+
+      const_iterator begin()const{
+        return const_iterator(this->getPrev());
+      }
+
+      const_iterator end()const{
+        return const_iterator(this);
+      }
+
+
+ protected:
+
+    iterator begin(DoubleLinkedList<C> *pCurrent){
+      if(!pCurrent->pValue)
+        pCurrent = NULL;
+      return iterator(pCurrent);
+    }
+
+    const_iterator begin(DoubleLinkedList<C> *pCurrent)const{
+      if(!pCurrent->pValue)
+        pCurrent = NULL;
+      return iterator(pCurrent);
+    }
+
+    typename DoubleLinkedList<C>::iterator remove(typename DoubleLinkedList<C>::iterator& it){
       if(it == DoubleLinkedList<C>::end())
         return it;
 

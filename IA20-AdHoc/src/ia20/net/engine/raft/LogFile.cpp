@@ -17,16 +17,17 @@ namespace Raft {
 const char* LogFile::CTag = "iaLo";
 
 /*************************************************************************/
-LogFile::LogFile(size_t iSequneceId):
-  iSequenceId(iSequenceId){
+LogFile::LogFile(const String& strFileName):
+  pFirstEntry(NULL),
+  pLastEntry(NULL),
+  strFileName(strFileName){
 	IA20_TRACER;
 }
 /*************************************************************************/
-String LogFile::CreateFileName(const String& strPath, ServerIdType iMyServerId, size_t iFileIdx){
+String LogFile::CreateFileName(const String& strPath, ServerIdType iMyServerId){
   StringStream ss;
   ss<<strPath<<"/LOG-";
-  ss<<TypeTools::IntToString(iMyServerId)<<"-";
-  ss<<TypeTools::LongToString(iFileIdx)<<".log";
+  ss<<TypeTools::IntToString(iMyServerId)<<".log";
   return ss.str();
 }
 /*************************************************************************/

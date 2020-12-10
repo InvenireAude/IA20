@@ -28,6 +28,7 @@ namespace Engine {
 namespace Raft {
 
 class LogEntry;
+class LogFileWriter;
 
 /*************************************************************************/
 /** The RaftEngine class.
@@ -43,16 +44,8 @@ public:
     virtual void send(const Packet& packet) = 0;
   };
 
-  class Logger {
-    public:
-    virtual const LogEntry* appendEntry(const LogEntryId& entryId,
-                                        LogEntrySizeType  iEntryDataSize = 0,
-                                        const void* pSrcData = 0) = 0;
 
-    virtual void commit(const LogEntry* pLogEntry) = 0;
-  };
-
-	RaftEngine(ServerIdType iMyServerId, ServerIdType iNumServers, Logger *pLogger, Sender* pSender);
+	RaftEngine(ServerIdType iMyServerId, ServerIdType iNumServers, LogFileWriter *pLogFileWriter, Sender* pSender);
 
   void onStart();
   void onMessage();
@@ -71,8 +64,8 @@ public:
 
 protected:
 
-  Sender* pSender;
-  Logger* pLogger;
+  Sender        *pSender;
+  LogFileWriter *pLogFileWriter;
 
   enum State {
     ST_NONE       = 0,

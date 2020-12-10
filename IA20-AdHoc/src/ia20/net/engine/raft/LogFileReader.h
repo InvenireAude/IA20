@@ -38,11 +38,7 @@ public:
 
 protected:
 
-  String  strFileName;
-  void*   pMemory;
-  size_t  iSize;
-  MetaData *pMetaData;
-  std::unique_ptr<SharedMemoryFile> ptrSHM;
+
 };
 
 /*************************************************************************/

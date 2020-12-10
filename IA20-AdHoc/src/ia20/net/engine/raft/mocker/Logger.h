@@ -15,7 +15,7 @@
 #include <ia20/net/conn/mcast/Sender.h>
 #include <ia20/net/conn/mcast/Receiver.h>
 
-#include "../RaftEngine.h"
+#include "../LogFileWriter.h"
 
 #include <list>
 
@@ -30,39 +30,16 @@ namespace Mocker {
  *
  */
 class Logger :
-  public RaftEngine::Logger {
+  public LogFileWriter {
 public:
 
 	virtual ~Logger() throw();
 
-  virtual const LogEntry* appendEntry(const LogEntryId& entryId,
-                                      LogEntrySizeType  iEntryDataSize = 0,
-                                      const void* pSrcData = 0);
-
-  virtual void commit(const LogEntry* pLogEntry);
-
-  const LogEntry* getLastCommit()const{
-    return pLastCommit;
-  }
-
-	Logger(size_t iMemorySize = 1000000);
-
-  void add(RaftEngine* pEngine);
+ 	Logger(size_t iMemorySize = 1000000);
 
   void simpleDump(std::ostream& os);
 
 protected:
-
-  typedef std::list<RaftEngine*> RaftEnginesList;
-  RaftEnginesList lstRaftEngines;
-
-  size_t iMemorySize;
-  size_t iSpaceLeft;
-
-  void *pMemory;
-  void *pNextEntry;
-  const LogEntry *pLastCommit;
-  const LogEntry *pLastEntry;
 
 };
 /*************************************************************************/

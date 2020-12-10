@@ -35,7 +35,14 @@
       "*.def": "cpp",
       "string_view": "cpp",
       "ranges": "cpp",
-      "initializer_list": "cpp"
+      "initializer_list": "cpp",
+      "deque": "cpp",
+      "list": "cpp",
+      "string": "cpp",
+      "vector": "cpp",
+      "memory": "cpp",
+      "new": "cpp",
+      "istream": "cpp"
     }
   }
 }

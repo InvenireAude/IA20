@@ -13,13 +13,12 @@
 #include <ia20/commonlib/commonlib.h>
 
 #include "Definitions.h"
+#include "LogEntry.h"
 
 namespace IA20 {
 namespace Net {
 namespace Engine {
 namespace Raft {
-
-class LogEntry;
 
 /*************************************************************************/
 /** The LogFile class.
@@ -28,19 +27,28 @@ class LogEntry;
 class LogFile  {
 public:
 
-  inline size_t getSequenceId()const{
-    return iSequenceId;
+  static String CreateFileName(const String& strPath, ServerIdType iMyServerId);
+
+
+  inline const LogEntry* getNextOrNull(const LogEntry* pLogEntry){
+    return pLogEntry->next();
   }
 
-  static String CreateFileName(const String& strPath, ServerIdType iMyServerId, size_t iFileIdx);
+  inline LogEntry* getNextOrNull(LogEntry* pLogEntry){
+    return pLogEntry->next();
+  }
+
+  inline const LogEntry* getPrevOrNull(const LogEntry* pLogEntry){
+    return pLogEntry->getPrevOrNull();
+  }
+
+  inline const LogEntry* getLastLogEntryOrNull()const{
+    return pLastEntry;
+  }
 
 protected:
 
-  static const size_t CNotAllocatedSequenceId = 0xffffffffffffffff;
-
-  LogFile(size_t iSequenceId = CNotAllocatedSequenceId);
-
-  size_t  iSequenceId;
+  LogFile(const String& strFileName);
 
   static const int CTagLength = 4;
   static const char *CTag;
@@ -49,7 +57,6 @@ protected:
     char      sTag[CTagLength];
     uint8_t   bUsed;
     uint8_t   _pad[3];
-    size_t    iSequenceId;
     size_t    iFileSize;
     Timestamp tsStarted;
   };
@@ -61,6 +68,15 @@ protected:
   static inline const void* GetDataStart(const void* pMemory){
     return reinterpret_cast<const MetaData*>(pMemory) + 1;
   };
+
+  String  strFileName;
+  void*   pMemory;
+
+  LogEntry *pFirstEntry;
+  LogEntry *pLastEntry;
+
+  size_t    iSize;
+  MetaData *pMetaData;
 
   std::unique_ptr<SharedMemoryFile> ptrSHM;
 };
