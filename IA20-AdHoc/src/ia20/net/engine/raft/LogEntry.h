@@ -58,6 +58,9 @@ public:
 
   inline const LogEntry *getPrevOrNull()const{
 
+    IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: LogEntry, getPrev: "<<(void*)this);
+    IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: LogEntry, getPrev: "<<iPrevOffset);
+
      if(!iPrevOffset)
         return NULL;
 

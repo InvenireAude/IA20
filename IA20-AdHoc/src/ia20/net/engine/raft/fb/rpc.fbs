@@ -36,6 +36,7 @@ table AppendLogResponse {
   matchLogEntry     : LogEntryId;
   dataLogEntry      : LogEntryId;
   success           : bool;
+  resend            : bool;
 }
 
 union Action {

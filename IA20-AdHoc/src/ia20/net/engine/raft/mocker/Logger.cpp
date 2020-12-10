@@ -25,7 +25,7 @@ Logger::Logger(size_t iMemorySize):
 /*************************************************************************/
 Logger::~Logger() throw(){
 	IA20_TRACER;
-  unlink(strFileName.c_str());
+  //unlink(strFileName.c_str());
 }
 /*************************************************************************/
 void Logger::simpleDump(std::ostream& os){

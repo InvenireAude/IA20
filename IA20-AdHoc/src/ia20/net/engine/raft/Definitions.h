@@ -48,6 +48,22 @@ namespace Raft {
       return !(iTerm == other.iTerm && iIndex == other.iIndex);
     }
 
+    inline bool operator<(const LogEntryId& other){
+      return iTerm < other.iTerm || (iTerm == other.iTerm && iIndex < other.iIndex);
+    }
+
+    inline bool operator<=(const LogEntryId& other){
+      return iTerm < other.iTerm || (iTerm == other.iTerm && iIndex <= other.iIndex);
+    }
+
+    inline bool operator>(const LogEntryId& other){
+      return iTerm > other.iTerm || (iTerm == other.iTerm && iIndex > other.iIndex);
+    }
+
+   inline bool operator>=(const LogEntryId& other){
+      return iTerm > other.iTerm || (iTerm == other.iTerm && iIndex >= other.iIndex);
+    }
+
   };
 
   static const int CMaxServers = 1024;

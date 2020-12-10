@@ -1,0 +1,1231 @@
+Starting
+                   src/ia20/commonlib/testcase/TestSuite.cpp(  48):               addTestUnit: Adding: TCRaftEngine, no cases=1
+                   src/ia20/commonlib/testcase/TestSuite.cpp(  67):                       run: Testing : 
+                   src/ia20/commonlib/testcase/TestSuite.cpp(  74):                       run: TEST Started: TCRaftEngine:case01
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 148):                accessFile: Opening file: [/tmp/.ia20.raft.tmp.1953897]:0
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 175):                accessFile: Opening file: /tmp/.ia20.raft.tmp.1953897,fd = 3
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 185):                accessFile: Attached file: 0 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 236):                   mapFile: Truncate to: 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 241):                   mapFile: Attaching at: 0, 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 255):                   mapFile: /tmp/.ia20.raft.tmp.1953897 attached at: 0x7fa92a163000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa92a163000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa92a163000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 262):         ~SharedMemoryFile: Cleanup of SharedMemoryFile: [/tmp/.ia20.raft.tmp.1953897]
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 148):                accessFile: Opening file: [/tmp/.ia20.raft.tmp.1953897]:2
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 175):                accessFile: Opening file: /tmp/.ia20.raft.tmp.1953897,fd = 3
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 185):                accessFile: Attached file: 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 241):                   mapFile: Attaching at: 0, 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 255):                   mapFile: /tmp/.ia20.raft.tmp.1953897 attached at: 0x7fa92a163000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa92a163000, sz: 32
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa92a163000, sz: 32
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999968
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [0,0], sz: 0, at: 0x7fa92a163020
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999944
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  36):                RaftEngine: Raft[1]:: setup, servers: 1 / 5
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 148):                accessFile: Opening file: [/tmp/.ia20.raft.tmp.1953897]:0
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 175):                accessFile: Opening file: /tmp/.ia20.raft.tmp.1953897,fd = 4
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 185):                accessFile: Attached file: 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 241):                   mapFile: Attaching at: 0, 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 255):                   mapFile: /tmp/.ia20.raft.tmp.1953897 attached at: 0x7fa92a06e000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa92a06e000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa92a06e000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 262):         ~SharedMemoryFile: Cleanup of SharedMemoryFile: [/tmp/.ia20.raft.tmp.1953897]
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 148):                accessFile: Opening file: [/tmp/.ia20.raft.tmp.1953897]:2
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 175):                accessFile: Opening file: /tmp/.ia20.raft.tmp.1953897,fd = 4
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 185):                accessFile: Attached file: 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 241):                   mapFile: Attaching at: 0, 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 255):                   mapFile: /tmp/.ia20.raft.tmp.1953897 attached at: 0x7fa92a06e000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa92a06e000, sz: 32
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa92a06e000, sz: 32
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999968
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [0,0], sz: 0, at: 0x7fa92a06e020
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999944
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  36):                RaftEngine: Raft[2]:: setup, servers: 2 / 5
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 148):                accessFile: Opening file: [/tmp/.ia20.raft.tmp.1953897]:0
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 175):                accessFile: Opening file: /tmp/.ia20.raft.tmp.1953897,fd = 5
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 185):                accessFile: Attached file: 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 241):                   mapFile: Attaching at: 0, 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 255):                   mapFile: /tmp/.ia20.raft.tmp.1953897 attached at: 0x7fa929f79000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa929f79000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa929f79000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 262):         ~SharedMemoryFile: Cleanup of SharedMemoryFile: [/tmp/.ia20.raft.tmp.1953897]
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 148):                accessFile: Opening file: [/tmp/.ia20.raft.tmp.1953897]:2
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 175):                accessFile: Opening file: /tmp/.ia20.raft.tmp.1953897,fd = 5
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 185):                accessFile: Attached file: 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 241):                   mapFile: Attaching at: 0, 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 255):                   mapFile: /tmp/.ia20.raft.tmp.1953897 attached at: 0x7fa929f79000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa929f79000, sz: 32
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa929f79000, sz: 32
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999968
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [0,0], sz: 0, at: 0x7fa929f79020
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999944
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  36):                RaftEngine: Raft[3]:: setup, servers: 3 / 5
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 148):                accessFile: Opening file: [/tmp/.ia20.raft.tmp.1953897]:0
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 175):                accessFile: Opening file: /tmp/.ia20.raft.tmp.1953897,fd = 6
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 185):                accessFile: Attached file: 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 241):                   mapFile: Attaching at: 0, 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 255):                   mapFile: /tmp/.ia20.raft.tmp.1953897 attached at: 0x7fa929e84000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa929e84000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa929e84000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 262):         ~SharedMemoryFile: Cleanup of SharedMemoryFile: [/tmp/.ia20.raft.tmp.1953897]
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 148):                accessFile: Opening file: [/tmp/.ia20.raft.tmp.1953897]:2
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 175):                accessFile: Opening file: /tmp/.ia20.raft.tmp.1953897,fd = 6
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 185):                accessFile: Attached file: 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 241):                   mapFile: Attaching at: 0, 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 255):                   mapFile: /tmp/.ia20.raft.tmp.1953897 attached at: 0x7fa929e84000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa929e84000, sz: 32
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa929e84000, sz: 32
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999968
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [0,0], sz: 0, at: 0x7fa929e84020
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999944
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  36):                RaftEngine: Raft[4]:: setup, servers: 4 / 5
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 148):                accessFile: Opening file: [/tmp/.ia20.raft.tmp.1953897]:0
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 175):                accessFile: Opening file: /tmp/.ia20.raft.tmp.1953897,fd = 7
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 185):                accessFile: Attached file: 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 241):                   mapFile: Attaching at: 0, 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 255):                   mapFile: /tmp/.ia20.raft.tmp.1953897 attached at: 0x7fa929d8f000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa929d8f000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa929d8f000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 262):         ~SharedMemoryFile: Cleanup of SharedMemoryFile: [/tmp/.ia20.raft.tmp.1953897]
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 148):                accessFile: Opening file: [/tmp/.ia20.raft.tmp.1953897]:2
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 175):                accessFile: Opening file: /tmp/.ia20.raft.tmp.1953897,fd = 7
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 185):                accessFile: Attached file: 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 241):                   mapFile: Attaching at: 0, 1000000 bytes.
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 255):                   mapFile: /tmp/.ia20.raft.tmp.1953897 attached at: 0x7fa929d8f000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa929d8f000, sz: 32
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa929d8f000, sz: 32
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999968
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [0,0], sz: 0, at: 0x7fa929d8f020
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999944
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  36):                RaftEngine: Raft[5]:: setup, servers: 5 / 5
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:  "action_type": "VoteRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:   "lastLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 352):             startElection: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[2]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[2]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "VoteRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "lastLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  65):                 onMessage: Raft[2]:: Vote[2]: votedFor: 9999, iLastLogTerm: 0, iCurrentTerm: 0, iLastLogIndexId: 0, iLastApplied: 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "srcServerId": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "action_type": "VoteResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "granted": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[3]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[3]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "VoteRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "lastLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  65):                 onMessage: Raft[3]:: Vote[2]: votedFor: 9999, iLastLogTerm: 0, iCurrentTerm: 0, iLastLogIndexId: 0, iLastApplied: 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "srcServerId": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "action_type": "VoteResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "granted": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[4]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[4]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "VoteRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "lastLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  65):                 onMessage: Raft[4]:: Vote[2]: votedFor: 9999, iLastLogTerm: 0, iCurrentTerm: 0, iLastLogIndexId: 0, iLastApplied: 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "srcServerId": 4
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "action_type": "VoteResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "granted": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[5]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[5]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "VoteRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "lastLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  65):                 onMessage: Raft[5]:: Vote[2]: votedFor: 9999, iLastLogTerm: 0, iCurrentTerm: 0, iLastLogIndexId: 0, iLastApplied: 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "srcServerId": 5
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "action_type": "VoteResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:   "granted": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp(  88):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "VoteResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "granted": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "VoteResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "granted": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 365):           convertToLeader: Raft[1]:: I am a new leader, term: 1
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999944
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,1], sz: 0, at: 0x7fa92a163038
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999920
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 392):           convertToLeader: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 4
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "VoteResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "granted": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 5
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "VoteResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "candidate": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "granted": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[2]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[2]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999944
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,1], sz: 0, at: 0x7fa92a06e038
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999920
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[3]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[3]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999944
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,1], sz: 0, at: 0x7fa929f79038
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999920
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[4]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[4]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999944
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,1], sz: 0, at: 0x7fa929e84038
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999920
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 4
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[5]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[5]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999944
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,1], sz: 0, at: 0x7fa929d8f038
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999920
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 5
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 195):                 onMessage: Match for commit:1,1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 199):                 onMessage: iNumConfirmations: 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [0,0]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [0,0], ptr: 0x7fa92a163020
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 195):                 onMessage: Match for commit:1,1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 199):                 onMessage: iNumConfirmations: 3
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  94):                    commit: Raft :: commit:  [1,1], sz: 0, at: 0x7fa92a163038
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa92a163038, sz: 24
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa92a163000, sz: 80
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [0,0]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [0,0], ptr: 0x7fa92a163020
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 4
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [0,0]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [0,0], ptr: 0x7fa92a163020
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 5
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [0,0]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [0,0], ptr: 0x7fa92a163020
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 440):                    onData: Raft[1]:: New entry, term: 1, sz: 3
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999920
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,2], sz: 3, at: 0x7fa92a163050
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999888
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    65,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    66,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    67
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[2]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[2]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    65,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    66,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    67
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999920
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,2], sz: 3, at: 0x7fa92a06e050
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999888
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[3]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[3]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    65,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    66,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    67
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999920
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,2], sz: 3, at: 0x7fa929f79050
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999888
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[5]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[5]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    65,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    66,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    67
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999920
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,2], sz: 3, at: 0x7fa929d8f050
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999888
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 5
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 195):                 onMessage: Match for commit:1,2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 199):                 onMessage: iNumConfirmations: 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [1,1]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [1,1], ptr: 0x7fa92a163038
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 195):                 onMessage: Match for commit:1,2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 199):                 onMessage: iNumConfirmations: 3
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  94):                    commit: Raft :: commit:  [1,2], sz: 3, at: 0x7fa92a163050
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa92a163050, sz: 27
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa92a163000, sz: 107
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [1,1]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [1,1], ptr: 0x7fa92a163038
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 5
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [1,1]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [1,1], ptr: 0x7fa92a163038
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 440):                    onData: Raft[1]:: New entry, term: 1, sz: 3
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999888
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,3], sz: 3, at: 0x7fa92a163070
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999856
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    88,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    89,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:    90
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 462):                    onData: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[2]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[2]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    88,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    89,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    90
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999888
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,3], sz: 3, at: 0x7fa92a06e070
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999856
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[3]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[3]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    88,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    89,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    90
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999888
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,3], sz: 3, at: 0x7fa929f79070
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999856
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[4]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[4]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    88,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    89,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    90
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 4
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[5]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[5]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    88,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    89,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    90
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  70):               appendEntry: Raft :: appendEntry: 1 ? 999888
+                         src/ia20/net/engine/raft/LogEntry.h(  44):                  LogEntry: Raft :: LogEntry, at:  [1,3], sz: 3, at: 0x7fa929d8f070
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  80):               appendEntry: Raft :: appendEntry: iSpaceLeft: 999856
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 5
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 195):                 onMessage: Match for commit:1,3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 199):                 onMessage: iNumConfirmations: 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [1,2]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [1,2], ptr: 0x7fa92a163050
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 195):                 onMessage: Match for commit:1,3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 199):                 onMessage: iNumConfirmations: 3
+                  src/ia20/net/engine/raft/LogFileWriter.cpp(  94):                    commit: Raft :: commit:  [1,3], sz: 3, at: 0x7fa92a163070
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa92a163070, sz: 27
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa92a163000, sz: 139
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [1,2]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [1,2], ptr: 0x7fa92a163050
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 4
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [1,2]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [1,1], ptr: 0x7fa92a163038
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 234):                 onMessage: Raft :: Handling error 1 
+                         src/ia20/net/engine/raft/LogEntry.h(  61):             getPrevOrNull: Raft :: LogEntry, getPrev: 0x7fa92a163038
+                         src/ia20/net/engine/raft/LogEntry.h(  62):             getPrevOrNull: Raft :: LogEntry, getPrev: 24
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 240):                 onMessage: Raft :: Handling error 2: [0,0]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:   "dstServerId": 4,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:    
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 256):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 5
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 2
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 3
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "success": true
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [1,2]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [1,2], ptr: 0x7fa92a163050
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[4]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[4]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 4,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogRequest",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "leader": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "data": [
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   ]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "srcServerId": 4
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 169):                 onMessage: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 282):                  onPacket: Raft[1]:: ********************************
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: Raft[1]:: *** onPacket : {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "header": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dstServerId": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "srcServerId": 4
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action_type": "AppendLogResponse",
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  "action": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "matchLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 0,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   },
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   "dataLogEntry": {
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "term": 1,
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:    "index": 1
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:   }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket:  }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 283):                  onPacket: }
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 215):                 onMessage: Raft :: Handling error : 0
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 216):                 onMessage: Raft :: Handling error : [0,0]
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 217):                 onMessage: Raft :: Handling error : [0,0], ptr: 0x7fa92a163020
+                     src/ia20/net/engine/raft/RaftEngine.cpp( 234):                 onMessage: Raft :: Handling error 1 
+                         src/ia20/net/engine/raft/LogEntry.h(  61):             getPrevOrNull: Raft :: LogEntry, getPrev: 0x7fa92a163020
+                         src/ia20/net/engine/raft/LogEntry.h(  62):             getPrevOrNull: Raft :: LogEntry, getPrev: 0
+Logger[0]=[0,0][1,1][1,2]{ABC}[1,3]{XYZ}*
+Logger[1]=[0,0][1,1][1,2]{ABC}[1,3]{XYZ}
+Logger[2]=[0,0][1,1][1,2]{ABC}[1,3]{XYZ}
+Logger[3]=[0,0][1,1]
+Logger[4]=[0,0][1,1][1,2]{ABC}[1,3]{XYZ}
+                                src/ia20/tc/TCRaftEngine.cpp(  47):               assetLogger: Got:      [0,0][1,1][1,2]{ABC}[1,3]{XYZ}*
+                                src/ia20/tc/TCRaftEngine.cpp(  48):               assetLogger: Expected: [1,1][1,2]{ABC}[1,3]{XYZ}*
+                                src/ia20/tc/TCRaftEngine.cpp(  49):               assetLogger: Exception !!!
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa92a163000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa92a163000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 262):         ~SharedMemoryFile: Cleanup of SharedMemoryFile: [/tmp/.ia20.raft.tmp.1953897]
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa92a06e000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa92a06e000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 262):         ~SharedMemoryFile: Cleanup of SharedMemoryFile: [/tmp/.ia20.raft.tmp.1953897]
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa929f79000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa929f79000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 262):         ~SharedMemoryFile: Cleanup of SharedMemoryFile: [/tmp/.ia20.raft.tmp.1953897]
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa929e84000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa929e84000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 262):         ~SharedMemoryFile: Cleanup of SharedMemoryFile: [/tmp/.ia20.raft.tmp.1953897]
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 305):                      Sync:  MSync[1]: p: 0x7fa929d8f000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 312):                      Sync:  MSync[2]: p: 0x7fa929d8f000, sz: 1000000
+     src/ia20/commonlib/memory/sharable/SharedMemoryFile.cpp( 262):         ~SharedMemoryFile: Cleanup of SharedMemoryFile: [/tmp/.ia20.raft.tmp.1953897]
+ IA20E-0001 Config error: Logger output does not mutch.
+ Obtained:<<10stack frames, (DO NOT PANIC !!!, this is IA20 stacktrace printed with glibc backtrace features :] )
+ /home/albert/build/ia20/lib/libIA20CommonLib.so(_ZN4IA2010PrintTraceERSo+0x22) [0x7fa9379cde42]
+ /home/albert/build/ia20/lib/libIA20CommonLib.so(_ZN4IA209Exception16appendStackTraceEv+0x172) [0x7fa9379c64e2]
+ /home/albert/build/ia20/lib/libIA20CommonLib.so(_ZN4IA209ExceptionC1Ev+0x80) [0x7fa9379c68e0]
+ /home/albert/build/ia20/lib/libIA20CommonLib.so(_ZN4IA2017BadUsageExceptionC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcENS_16AllocatorFactoryIcXadL_ZNS_13MemoryManager12GetAllocatorEvEEEEEE+0x12) [0x7fa9379c3112]
+ ia_tc_raft() [0x40ae64]
+ ia_tc_raft() [0x42b82d]
+ /home/albert/build/ia20/lib/libIA20CommonLib.so(_ZN4IA209TestSuite3runERKNSt7__cxx1112basic_stringIcSt11char_traitsIcENS_16AllocatorFactoryIcXadL_ZNS_13MemoryManager12GetAllocatorEvEEEEEE+0x345) [0x7fa9379de1c5]
+ ia_tc_raft() [0x40b5cb]
+ /lib64/libc.so.6(__libc_start_main+0xf2) [0x7fa9372d8042]
+ ia_tc_raft() [0x40b73e]
+ 
+                   src/ia20/commonlib/testcase/TestSuite.cpp( 105):                       run: TEST Ended: case01
+TestCase:                                     TCRaftEngine :                         case01 | 2 : 0 :      0 :  Exception 'BadUsageException' :Logger output does not mutch.
+Obtained:<<10stack frames, (DO NOT PANIC !!!, this is IA20 stacktrace printed with glibc backtrace features :] )
+/home/albert/build/ia20/lib/libIA20CommonLib.so(_ZN4IA2010PrintTraceERSo+0x22) [0x7fa9379cde42]
+/home/albert/build/ia20/lib/libIA20CommonLib.so(_ZN4IA209Exception16appendStackTraceEv+0x172) [0x7fa9379c64e2]
+/home/albert/build/ia20/lib/libIA20CommonLib.so(_ZN4IA209ExceptionC1Ev+0x80) [0x7fa9379c68e0]
+/home/albert/build/ia20/lib/libIA20CommonLib.so(_ZN4IA2017BadUsageExceptionC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcENS_16AllocatorFactoryIcXadL_ZNS_13MemoryManager12GetAllocatorEvEEEEEE+0x12) [0x7fa9379c3112]
+ia_tc_raft() [0x40ae64]
+ia_tc_raft() [0x42b82d]
+/home/albert/build/ia20/lib/libIA20CommonLib.so(_ZN4IA209TestSuite3runERKNSt7__cxx1112basic_stringIcSt11char_traitsIcENS_16AllocatorFactoryIcXadL_ZNS_13MemoryManager12GetAllocatorEvEEEEEE+0x345) [0x7fa9379de1c5]
+ia_tc_raft() [0x40b5cb]
+/lib64/libc.so.6(__libc_start_main+0xf2) [0x7fa9372d8042]
+ia_tc_raft() [0x40b73e]
+
+ 

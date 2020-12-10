@@ -134,6 +134,8 @@ protected:
 
   TimeSample tsElapsed;
 
+  void resendDirect(ServerIdType iServerId);
+
   void convertToLeader();
   void convertToFollower();
   void sendHeartbeat();

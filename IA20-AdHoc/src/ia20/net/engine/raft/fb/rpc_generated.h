@@ -401,7 +401,8 @@ struct AppendLogResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_MATCHLOGENTRY = 4,
     VT_DATALOGENTRY = 6,
-    VT_SUCCESS = 8
+    VT_SUCCESS = 8,
+    VT_RESEND = 10
   };
   const IA20::Net::Engine::Raft::FB::LogEntryId *matchLogEntry() const {
     return GetStruct<const IA20::Net::Engine::Raft::FB::LogEntryId *>(VT_MATCHLOGENTRY);
@@ -412,11 +413,15 @@ struct AppendLogResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
   }
+  bool resend() const {
+    return GetField<uint8_t>(VT_RESEND, 0) != 0;
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<IA20::Net::Engine::Raft::FB::LogEntryId>(verifier, VT_MATCHLOGENTRY) &&
            VerifyField<IA20::Net::Engine::Raft::FB::LogEntryId>(verifier, VT_DATALOGENTRY) &&
            VerifyField<uint8_t>(verifier, VT_SUCCESS) &&
+           VerifyField<uint8_t>(verifier, VT_RESEND) &&
            verifier.EndTable();
   }
 };
@@ -434,6 +439,9 @@ struct AppendLogResponseBuilder {
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(AppendLogResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
+  void add_resend(bool resend) {
+    fbb_.AddElement<uint8_t>(AppendLogResponse::VT_RESEND, static_cast<uint8_t>(resend), 0);
+  }
   explicit AppendLogResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -450,10 +458,12 @@ inline flatbuffers::Offset<AppendLogResponse> CreateAppendLogResponse(
     flatbuffers::FlatBufferBuilder &_fbb,
     const IA20::Net::Engine::Raft::FB::LogEntryId *matchLogEntry = 0,
     const IA20::Net::Engine::Raft::FB::LogEntryId *dataLogEntry = 0,
-    bool success = false) {
+    bool success = false,
+    bool resend = false) {
   AppendLogResponseBuilder builder_(_fbb);
   builder_.add_dataLogEntry(dataLogEntry);
   builder_.add_matchLogEntry(matchLogEntry);
+  builder_.add_resend(resend);
   builder_.add_success(success);
   return builder_.Finish();
 }
@@ -714,6 +724,7 @@ inline const flatbuffers::TypeTable *AppendLogResponseTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
     { flatbuffers::ET_SEQUENCE, 0, 0 },
     { flatbuffers::ET_SEQUENCE, 0, 0 },
+    { flatbuffers::ET_BOOL, 0, -1 },
     { flatbuffers::ET_BOOL, 0, -1 }
   };
   static const flatbuffers::TypeFunction type_refs[] = {
@@ -722,10 +733,11 @@ inline const flatbuffers::TypeTable *AppendLogResponseTypeTable() {
   static const char * const names[] = {
     "matchLogEntry",
     "dataLogEntry",
-    "success"
+    "success",
+    "resend"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, names
+    flatbuffers::ST_TABLE, 4, type_codes, type_refs, nullptr, names
   };
   return &tt;
 }
