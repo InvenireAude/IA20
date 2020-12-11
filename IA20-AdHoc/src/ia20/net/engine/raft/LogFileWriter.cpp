@@ -114,7 +114,7 @@ const LogEntry* LogFileWriter::commit(const LogEntry* pLogEntry){
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: commit: "<<*pLogEntry);
   //TODO commit previous
-  pLastEntry->commit();
+  const_cast<LogEntry*>(pLogEntry)->commit();
   pLastCommit = pLogEntry;
 
   SharedMemoryFile::Sync(pLogEntry, sizeof(LogEntry) + pLogEntry->getEntryDataSize());

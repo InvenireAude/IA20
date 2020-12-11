@@ -134,7 +134,7 @@ protected:
 
   void convertToLeader();
   void convertToFollower();
-  void sendLogEntryImpl(const LogEntry* pMatchEntry, const LogEntry* pDataEntry, ServerIdType iServerId = CSeverBroadcast)const;
+  void sendLogEntryImpl(const LogEntry* pMatchEntry, const LogEntry* pDataEntry = NULL, ServerIdType iServerId = CSeverBroadcast)const;
 
 /*****************************************************************************/
 };

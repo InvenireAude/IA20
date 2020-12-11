@@ -464,7 +464,7 @@ void RaftEngine::sendHeartbeat(){
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: Heartbeat, term: "<<pLogFileWriter->getPersistentData());
 
-  sendLogEntryImpl(data.pLastLogEntry, data.pLastLogEntry);
+  sendLogEntryImpl(data.pLastLogEntry);
 
   tsElapsed.start();
 }
@@ -508,11 +508,10 @@ void RaftEngine::sendLogEntryImpl(const LogEntry* pMatchEntry, const LogEntry* p
   FB::Header header(iServerId, data.iMyServerId);
 
   FB::LogEntryId matchLogEntry(_LogKeyToFB(pMatchEntry));
-  FB::LogEntryId dataLogEntry(_LogKeyToFB(pDataEntry));
+  FB::LogEntryId dataLogEntry(_LogKeyToFB(pDataEntry ? pDataEntry : pMatchEntry));
   FB::LogEntryId commitLogEntry(_LogKeyToFB(data.pLastCommitLogEntry));
 
-  // pMatchEntry != pDataEntry means heartbeat, hm ...
-  auto entryData = pDataEntry->getEntryDataSize() && pMatchEntry != pDataEntry ?
+  auto entryData = pDataEntry && pDataEntry->getEntryDataSize() ?
         builder.CreateVector<uint8_t>(reinterpret_cast<const uint8_t*>(pDataEntry->getData()), pDataEntry->getEntryDataSize()) : 0;
 
   auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, &commitLogEntry,  entryData);
