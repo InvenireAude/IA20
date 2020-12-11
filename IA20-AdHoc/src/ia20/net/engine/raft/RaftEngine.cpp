@@ -58,21 +58,26 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::VoteRequest* pAc
 
   bool bVoteGranted = false;
 
-  if(pAction->term() < data.p.iCurrentTerm){
+  LogFile::PersistentData* pPersistentData = pLogFileWriter->getPersistentData();
+
+  if(pAction->term() < pPersistentData->iCurrentTerm){
       IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: Vote[1]");
       bVoteGranted = false;
   }else{
-      IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: Vote[2]: votedFor: "<<(int)data.p.iVotedFor
-                <<", iLastLogTerm: "<<pAction->lastLogEntry()->term()<<", iCurrentTerm: "<<data.p.iCurrentTerm
+      IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: Vote[2]: votedFor: "<<(int)pPersistentData->iVotedFor
+                <<", iLastLogTerm: "<<pAction->lastLogEntry()->term()<<", iCurrentTerm: "<<pPersistentData->iCurrentTerm
                 <<", iLastLogIndexId: "<<pAction->lastLogEntry()->index()<<", iLastApplied: "<<data.v.iLastApplied);
 
-      if( (data.p.iVotedFor == CSeverNull ||
-           data.p.iVotedFor == pAction->candidate()) && true
+      if( (pPersistentData->iVotedFor == CSeverNull ||
+           pPersistentData->iVotedFor == pAction->candidate()) && true
            //( //message.request()->iLastLogTerm > data.p.iCurrentTerm ||
            // (// message.request()->iLastLogTerm == data.p.iCurrentTerm  <--- log lookup
              //message.request()->iLastLogIndexId >= data.v.iLastApplied))
              ){
                bVoteGranted = true; // par5.2-3
+               pPersistentData->iCurrentTerm = pAction->term();
+               pPersistentData->iVotedFor    = pAction->candidate();
+               pLogFileWriter->syncPersistentData();
              }else{
                bVoteGranted = false;
              }
@@ -98,7 +103,7 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::VoteResponse* pA
   if(data.iState != ST_Candidate)
     return;
 
-  if(pAction->granted() && pAction->term() == data.p.iCurrentTerm){
+  if(pAction->granted() && pAction->term() == pLogFileWriter->getPersistentData()->iCurrentTerm){
 
     data.v.iVoteCount++;
 
@@ -156,6 +161,7 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest
       return;
 
     data.pLastLogEntry = pLogFileWriter->appendEntry(entryId, iEntryDataSize, pSrcData);
+    pLogFileWriter->getPersistentData()->iCurrentTerm = entryId.iTerm;
     bResult = true;
 
   }else if(keyMatch > keyMessageMatch){
@@ -355,7 +361,9 @@ void RaftEngine::startElection(){
 
   data.iState = ST_Candidate;
 
-  data.p.iCurrentTerm++;
+  pLogFileWriter->getPersistentData()->iCurrentTerm++;
+  pLogFileWriter->getPersistentData()->iVotedFor = data.iMyServerId;
+  pLogFileWriter->syncPersistentData();
   data.v.iVoteCount = 1;
 
   flatbuffers::FlatBufferBuilder builder;
@@ -364,7 +372,7 @@ void RaftEngine::startElection(){
 
   FB::LogEntryId lastEntryId(_LogKeyToFB(data.pLastLogEntry));
 
-  auto request = FB::CreateVoteRequest(builder, data.p.iCurrentTerm, data.iMyServerId, &lastEntryId);
+  auto request = FB::CreateVoteRequest(builder, pLogFileWriter->getPersistentData()->iCurrentTerm, data.iMyServerId, &lastEntryId);
   builder.Finish(FB::CreateMessage(builder, &header, FB::Action_VoteRequest, request.Union()));
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
@@ -380,7 +388,7 @@ void RaftEngine::convertToLeader(){
 
   data.iState = ST_Leader;
 
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: I am a new leader, term: "<<data.p.iCurrentTerm);
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: I am a new leader, term: "<<pLogFileWriter->getPersistentData()->iCurrentTerm);
 
   data.v.iLastApplied = 0;
 
@@ -395,7 +403,7 @@ void RaftEngine::convertToLeader(){
 
   FB::LogEntryId matchEntryId(_LogKeyToFB(data.pLastLogEntry));
 
-  LogEntryId entryId(data.p.iCurrentTerm,++data.v.iLastApplied);
+  LogEntryId entryId(pLogFileWriter->getPersistentData()->iCurrentTerm,++data.v.iLastApplied);
   data.pLastLogEntry = pLogFileWriter->appendEntry(entryId);
 
   lstPendingEntries.push_back({
@@ -418,7 +426,7 @@ void RaftEngine::convertToLeader(){
 void RaftEngine::sendHeartbeat(){
   IA20_TRACER;
 
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: Heartbeat, term: "<<data.p.iCurrentTerm);
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: Heartbeat, term: "<<pLogFileWriter->getPersistentData());
 
   flatbuffers::FlatBufferBuilder builder;
 
@@ -455,14 +463,14 @@ void RaftEngine::onData(void *pEntryData, LogEntrySizeType iEntrySize){
     return;
   }
 
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: New entry, term: "<<data.p.iCurrentTerm<<", sz: "<<iEntrySize);
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: New entry, term: "<<pLogFileWriter->getPersistentData()->iCurrentTerm<<", sz: "<<iEntrySize);
 
   flatbuffers::FlatBufferBuilder builder;
   FB::Header header(0, data.iMyServerId);
 
   FB::LogEntryId matchLogEntry(_LogKeyToFB(data.pLastLogEntry));
 
-  LogEntryId entryId(data.p.iCurrentTerm,++data.v.iLastApplied);
+  LogEntryId entryId(pLogFileWriter->getPersistentData()->iCurrentTerm,++data.v.iLastApplied);
   data.pLastLogEntry = pLogFileWriter->appendEntry(entryId, iEntrySize, pEntryData);
 
   lstPendingEntries.push_back({

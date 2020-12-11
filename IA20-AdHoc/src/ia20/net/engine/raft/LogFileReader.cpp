@@ -53,9 +53,12 @@ static inline size_t _distance(const LogEntry* pEntries, const LogEntry* pCurren
 void LogFileReader::dump(std::ostream& os)const{
   IA20_TRACER;
 
-  os<<" Log file:  "<<strFileName<<std::endl;
-  os<<" Used:      "<<(pMetaData->bUsed ? "yes" : "no")<<std::endl;
-  os<<" Timestamp: "<<pMetaData->tsStarted.toString()<<std::endl;
+  os<<" Log file:    "<<strFileName<<std::endl;
+  os<<" Used:        "<<(pMetaData->bUsed ? "yes" : "no")<<std::endl;
+  os<<" CurrentTerm: "<<pMetaData->data.iCurrentTerm<<std::endl;
+  os<<" VotedFor:    "<<pMetaData->data.iVotedFor<<std::endl;
+  os<<" Used:        "<<(pMetaData->bUsed ? "yes" : "no")<<std::endl;
+  os<<" Timestamp:   "<<pMetaData->tsStarted.toString()<<std::endl;
   os<<std::endl;
 
   uint32_t iEntryIdx = 0;

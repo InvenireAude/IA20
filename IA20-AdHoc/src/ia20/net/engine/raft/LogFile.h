@@ -46,6 +46,22 @@ public:
     return pLastEntry;
   }
 
+  struct PersistentData {
+
+    PersistentData():iCurrentTerm(0),iVotedFor(CSeverNull){};
+
+    TermType     iCurrentTerm;
+    ServerIdType iVotedFor;
+  };
+
+  inline PersistentData* getPersistentData()const{
+    return &pMetaData->data;
+  }
+
+  inline void syncPersistentData(){
+    SharedMemoryFile::Sync(pMetaData, sizeof(MetaData));
+  };
+
 protected:
 
   LogFile(const String& strFileName);
@@ -58,7 +74,8 @@ protected:
     uint8_t   bUsed;
     uint8_t   _pad[3];
     size_t    iFileSize;
-    Timestamp tsStarted;
+    Timestamp      tsStarted;
+    PersistentData data;
   };
 
   static inline void* GetDataStart(void* pMemory){

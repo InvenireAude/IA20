@@ -76,13 +76,6 @@ protected:
 
 
 /*****************************************************************************/
-  struct PersistentData {
-
-    PersistentData():iCurrentTerm(0),iVotedFor(CSeverNull){};
-
-    TermType     iCurrentTerm;
-    ServerIdType iVotedFor;
-  };
 
   struct VolatileData {
 
@@ -120,7 +113,6 @@ protected:
     State           iState;
     const LogEntry *pLastLogEntry;
     ServerIdType    iMyServerId;
-    PersistentData  p;
     VolatileData    v;
     ServerIdType    iNumServers;
     ServerData      servers[CMaxServers];

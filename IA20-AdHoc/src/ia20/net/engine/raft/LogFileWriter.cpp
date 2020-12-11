@@ -42,7 +42,7 @@ LogFileWriter::LogFileWriter(const String& strFileName, size_t iMemorySize):
   if(!pMemory)
     IA20_THROW(SystemException("Cannot allocate LogFileWriter memory."));
 
-  MetaData *pMetaData = reinterpret_cast<MetaData*>(pMemory);
+  pMetaData = reinterpret_cast<MetaData*>(pMemory);
 
   if(memcmp(pMetaData->sTag, CTag, CTagLength) != 0 ||
     pMetaData->iFileSize != iSpaceLeft)
