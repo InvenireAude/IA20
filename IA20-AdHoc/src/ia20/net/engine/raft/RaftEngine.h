@@ -130,11 +130,11 @@ protected:
 
   TimeSample tsElapsed;
 
-  void resendDirect(ServerIdType iServerId);
+  void resendDirect(ServerIdType iServerId)const;
 
   void convertToLeader();
   void convertToFollower();
-
+  void sendLogEntryImpl(const LogEntry* pMatchEntry, const LogEntry* pDataEntry, ServerIdType iServerId = CSeverBroadcast)const;
 
 /*****************************************************************************/
 };

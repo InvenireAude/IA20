@@ -68,6 +68,8 @@ namespace Raft {
 
   static const int CMaxServers = 1024;
   static const int CSeverNull  = 9999;
+  static const int CSeverFirst      = 1;
+  static const int CSeverBroadcast  = 0;
 
 }
 }
