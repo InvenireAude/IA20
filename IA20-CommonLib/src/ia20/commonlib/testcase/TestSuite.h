@@ -26,8 +26,8 @@
 #include <ia20/commonlib/exception/ItemNotFoundException.h>
 #include <ia20/commonlib/exception/BadUsageException.h>
 
-
 #include "TestUnit.h"
+
 #include <list>
 
 namespace IA20 {
@@ -42,14 +42,18 @@ public:
 	TestSuite();
 	virtual ~TestSuite() throw();
 
-	void addTestUnit(TestUnit *pTestUnit);
+	void addTestUnit(TestUnitInterface *pTestUnit);
 
 	void run(const String& strCaseName="");
 	void printResults(std::ostream& os);
 
-protected:
+  void setVerbose(bool bVerbose = true);
 
-	friend class TestUnit;
+  inline bool isVerbose()const{
+    return bVerbose;
+  }
+
+protected:
 
 	enum Result{
 		RESULT_NOT_EXECUTED,
@@ -58,7 +62,7 @@ protected:
 	};
 
 	struct TestCase{
-		TestUnit *pTestUnit;
+		TestUnitInterface *pTestUnit;
 		String strName;
 		String strInfo;
 		Result iResult;
@@ -69,10 +73,11 @@ protected:
 	typedef std::list<TestCase> TestCasesList;
 	TestCasesList               lstTestCases;
 
-	typedef HashMapStringToPointer<TestUnit> TestUnitsMap;
+	typedef std::map<String, TestUnitInterface* > TestUnitsMap;
 
 	TestUnitsMap                             hmTestUnits;
 
+  bool bVerbose;
 };
 
 /*************************************************************************/

@@ -18,40 +18,86 @@
 #ifndef _IA20_TestUnit_H_
 #define _IA20_TestUnit_H_
 
+#include <ia20/commonlib/logger/logger.h>
 #include <ia20/commonlib/types.h>
+#include <ia20/commonlib/exception/ItemNotFoundException.h>
 
 #include <map>
 
-#include "TestRunner.h"
-
 namespace IA20 {
+
 class TestSuite;
+/*************************************************************************************/
 
-/*************************************************************************/
-/** The TestUnit class.
- *
- */
+class TestUnitInterface{
+	public:
+	virtual ~TestUnitInterface(){};
 
-class TestUnit {
+
+	virtual void run(const String& strCaseName) const =0;
+	virtual const StringList& getCases() const = 0;
+
+  TestUnitInterface(const String& strName):strName(strName){};
+
+  inline const String& getName()const{
+    return strName;
+  }
+
+  protected:
+    String     strName;
+};
+
+/*************************************************************************************/
+
+template<class TT>
+class TestUnit : public TestUnitInterface {
 public:
 
-	TestUnit();
-	virtual ~TestUnit() throw();
+	virtual ~TestUnit() throw() {};
 
-	const String&     getName() const;
-	const StringList& getCases() const;
+	virtual const StringList& getCases() const  { return lstCases; };
 
-	virtual void run(const String& strCaseName) const;
+	virtual void run(const String& strCaseName) const {
 
-protected:
+		if(hmCases.count(strCaseName) == 0)
+			IA20_THROW(ItemNotFoundException(strCaseName+" : case not found."));
 
-	void init(const String& strName, const TestRunnerInterface *pTestRunner, TestSuite* pTestSuite);
+		(pTestUnitImpl->*hmCases.find(strCaseName)->second)();
 
-	private:
+	}
+
+	typedef void (TT::*CaseMethodType)();
+
+  inline const TestSuite* getTestSuite()const{
+    return  pTestSuite;
+  }
+
+  TestUnit(TT *pTestUnitImpl, const String& strName,const TestSuite* pTestSuite)throw():
+    TestUnitInterface(strName),
+    pTestSuite(pTestSuite),
+    pTestUnitImpl(pTestUnitImpl){};
+
+	void addCase(const String& strCaseName, CaseMethodType pMethod){
+
+      if(hmCases.count(strCaseName) == 0)
+				lstCases.push_back(strCaseName);
+
+      hmCases[strCaseName]=pMethod;
+
+      IA20_LOG(LogLevel::INSTANCE.isInfo(), "TC:"<<strCaseName<<", sz: "<<hmCases.size());
+	}
+
+private:
+
+	typedef    ::std::map<String, CaseMethodType> CasesMap;
 
 	String     strName;
+	CasesMap   hmCases;
+	StringList lstCases;
 
-	const TestRunnerInterface *pTestRunner;
+  TT *pTestUnitImpl;
+
+  const TestSuite* pTestSuite;
 };
 
 /*************************************************************************/

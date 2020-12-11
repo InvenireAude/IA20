@@ -158,6 +158,8 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest
     data.pLastLogEntry = pLogFileWriter->appendEntry(entryId, iEntryDataSize, pSrcData);
     bResult = true;
 
+  }else if(keyMatch > keyMessageMatch){
+    return;
   }
 
   flatbuffers::FlatBufferBuilder builder;
@@ -216,6 +218,8 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRespons
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Handling error : "<<pAction->success());
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Handling error : "<<matchEntryId);
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Handling error : "<<data.pLastLogEntry->getEntryId());
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Handling error : "<<(void*)data.pLastLogEntry);
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Handling error : "<<serverMatchEntryId<<", ptr: "<<(void*)pServerMatchEntry);
 
   if(pAction->success()){

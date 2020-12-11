@@ -51,9 +51,14 @@ void TCRaftEngine::Setup::assetLogger(int iLogger, const String& strResult){
 
 }
 /*************************************************************************/
-TCRaftEngine::TCRaftEngine(TestSuite* pTestSuite):theTestRunner(this){
+TCRaftEngine::TCRaftEngine(TestSuite* pTestSuite):
+  TestUnit<TCRaftEngine>(this, "RaftEngine", pTestSuite){
 	IA20_TRACER;
-	init(pTestSuite);
+
+	addCase("simpleFailure", &::IA20::TC::TCRaftEngine::caseSimpleFailure);
+	addCase("newElection", &::IA20::TC::TCRaftEngine::caseNewElection);
+
+  pTestSuite->addTestUnit(this);
 
   PacketFactory::SetInstance(new  Unix::PacketFactory());
 }
@@ -62,16 +67,7 @@ TCRaftEngine::~TCRaftEngine() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-void TCRaftEngine::init(TestSuite* pTestSuite){
-	IA20_TRACER;
-
-	theTestRunner.addCase("case01",&::IA20::TC::TCRaftEngine::case01);
-
-	TestUnit::init("TCRaftEngine",&theTestRunner,pTestSuite);
-}
-
-/*************************************************************************/
-void TCRaftEngine::case01(){
+void TCRaftEngine::caseSimpleFailure(){
 	IA20_TRACER;
 
 	IA20::TimeSample ts(true);
@@ -93,12 +89,48 @@ void TCRaftEngine::case01(){
 
   pLeaderEngine->onData((void*)"XYZ",3);
 
-  for(int i = 0; i < s.tabLoggers.size(); i++){
+
+  if(getTestSuite()->isVerbose())
+    for(int i = 0; i < s.tabLoggers.size(); i++){
       Mocker::Logger *pLogger = s.tabLoggers[i].get();
       std::cout<<"Logger["<<i<<"]=";
       pLogger->simpleDump(std::cout);
       std::cout<<std::endl;
+    }
+
+  s.assetLogger(0,"[0,0][1,1][1,2]{ABC}[1,3]{XYZ}*");
+  s.assetLogger(3,"[0,0][1,1][1,2]{ABC}[1,3]{XYZ}");
+}
+/*************************************************************************/
+void TCRaftEngine::caseNewElection(){
+	IA20_TRACER;
+
+	IA20::TimeSample ts(true);
+
+  Setup s(5);
+  //s.tabEngines.size()
+  for(int i = 0; i < 1; i++){
+      RaftEngine *pEngine = s.tabEngines[i].get();
+      pEngine->startElection();
   }
+
+  RaftEngine *pLeaderEngine = s.tabEngines[0].get();
+
+  s.ptrConnection->disable(s.tabEngines[3].get());
+
+  pLeaderEngine->onData((void*)"ABC",3);
+
+  s.ptrConnection->enable(s.tabEngines[3].get());
+
+  pLeaderEngine->onData((void*)"XYZ",3);
+
+  if(getTestSuite()->isVerbose())
+    for(int i = 0; i < s.tabLoggers.size(); i++){
+      Mocker::Logger *pLogger = s.tabLoggers[i].get();
+      std::cout<<"Logger["<<i<<"]=";
+      pLogger->simpleDump(std::cout);
+      std::cout<<std::endl;
+    }
 
   s.assetLogger(0,"[0,0][1,1][1,2]{ABC}[1,3]{XYZ}*");
   s.assetLogger(3,"[0,0][1,1][1,2]{ABC}[1,3]{XYZ}");

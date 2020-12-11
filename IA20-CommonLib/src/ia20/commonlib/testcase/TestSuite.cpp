@@ -25,6 +25,7 @@ namespace IA20 {
 
 /*************************************************************************/
 TestSuite::TestSuite():
+  bVerbose(false),
   hmTestUnits(){
 	IA20_TRACER;
 }
@@ -33,15 +34,15 @@ TestSuite::~TestSuite() throw () {
 	IA20_TRACER;
 }
 /*************************************************************************/
-void TestSuite::addTestUnit(TestUnit *pTestUnit) {
+void TestSuite::addTestUnit(TestUnitInterface *pTestUnit) {
 	IA20_TRACER;
 	IA20_CHECK_IF_VALID(pTestUnit);
 
-	if(hmTestUnits.count(pTestUnit->getName())!=0){
-		IA20_THROW(BadUsageException(String("TestUnit alread exists: ")+=pTestUnit->getName()));
+	if(hmTestUnits.count(pTestUnit->getName()) != 0){
+		IA20_THROW(BadUsageException("TestUnit alread exists: ")<<pTestUnit->getName());
 	}
 
-	hmTestUnits[pTestUnit->getName()]=pTestUnit;
+	hmTestUnits[pTestUnit->getName()] = pTestUnit;
 
 	const StringList& lstCases = pTestUnit->getCases();
 
@@ -59,6 +60,11 @@ void TestSuite::addTestUnit(TestUnit *pTestUnit) {
 		lstTestCases.push_back(aNewTestCase);
 	}
 
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "TS:"<<pTestUnit->getName()<<", sz: "<<hmTestUnits.size());
+}
+/*************************************************************************/
+void TestSuite::setVerbose(bool bVerbose) {
+  this->bVerbose = bVerbose;
 }
 /*************************************************************************/
 void TestSuite::run(const String& strCaseName) {

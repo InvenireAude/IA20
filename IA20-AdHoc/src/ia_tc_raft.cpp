@@ -34,7 +34,9 @@ int main(int argc, char* argv[]) {
 
 		std::unique_ptr<TestSuite> ptrSuite(new TestSuite());
 
-    std::unique_ptr<TC::TCRaftEngine> ptrTCRaftEngine(new TC::TCRaftEngine(ptrSuite.get()));
+    ptrSuite->setVerbose();
+
+    TC::TCRaftEngine tcRaftEngine(ptrSuite.get());
 
 		ptrSuite->run(argc == 1 ? "" : argv[1]);
 		ptrSuite->printResults(std::cout);

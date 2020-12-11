@@ -30,15 +30,17 @@ namespace IA20{
 namespace TC{
 
 
-class TCRaftEngine: public TestUnit{
+class TCRaftEngine:
+  public TestUnit<TCRaftEngine>{
 
 public:
+
 	TCRaftEngine(TestSuite* pTestSuite);
 	virtual ~TCRaftEngine()  throw ();
 
-	virtual void init(TestSuite* pTestSuite);
 
-	void case01();
+	void caseSimpleFailure();
+  void caseNewElection();
 
 protected:
 
@@ -61,7 +63,6 @@ protected:
 
   };
 
-	::IA20::TestRunner<TCRaftEngine> theTestRunner;
 };
 
 
