@@ -40,27 +40,27 @@ namespace Raft {
     inline LogEntryId(TermType  iTerm = 0, IndexType iIndex = 0):
         iTerm(iTerm),iIndex(iIndex){};
 
-    inline bool operator==(const LogEntryId& other){
+    inline bool operator==(const LogEntryId& other)const{
       return iTerm == other.iTerm && iIndex == other.iIndex;
     }
 
-    inline bool operator!=(const LogEntryId& other){
+    inline bool operator!=(const LogEntryId& other)const{
       return !(iTerm == other.iTerm && iIndex == other.iIndex);
     }
 
-    inline bool operator<(const LogEntryId& other){
+    inline bool operator<(const LogEntryId& other)const{
       return iTerm < other.iTerm || (iTerm == other.iTerm && iIndex < other.iIndex);
     }
 
-    inline bool operator<=(const LogEntryId& other){
+    inline bool operator<=(const LogEntryId& other)const{
       return iTerm < other.iTerm || (iTerm == other.iTerm && iIndex <= other.iIndex);
     }
 
-    inline bool operator>(const LogEntryId& other){
+    inline bool operator>(const LogEntryId& other)const{
       return iTerm > other.iTerm || (iTerm == other.iTerm && iIndex > other.iIndex);
     }
 
-   inline bool operator>=(const LogEntryId& other){
+   inline bool operator>=(const LogEntryId& other)const{
       return iTerm > other.iTerm || (iTerm == other.iTerm && iIndex >= other.iIndex);
     }
 

@@ -30,6 +30,8 @@ RaftEngine::RaftEngine(ServerIdType iMyServerId, ServerIdType iNumServers, LogFi
   IA20_CHECK_IF_NULL(pSender);
 
   data.pLastLogEntry = pLogFileWriter->appendEntry(LogEntryId()); // initialize with [0,0]
+  data.pLastCommitLogEntry = pLogFileWriter->commit(data.pLastLogEntry);
+
   data.iMyServerId = iMyServerId;
   data.iNumServers = iNumServers;
 
@@ -60,13 +62,15 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::VoteRequest* pAc
 
   LogFile::PersistentData* pPersistentData = pLogFileWriter->getPersistentData();
 
-  if(pAction->term() < pPersistentData->iCurrentTerm){
+  if(pAction->term() < pPersistentData->iCurrentTerm ||
+     data.iState == ST_Leader  // ????
+     ){
       IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: Vote[1]");
       bVoteGranted = false;
   }else{
       IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: Vote[2]: votedFor: "<<(int)pPersistentData->iVotedFor
                 <<", iLastLogTerm: "<<pAction->lastLogEntry()->term()<<", iCurrentTerm: "<<pPersistentData->iCurrentTerm
-                <<", iLastLogIndexId: "<<pAction->lastLogEntry()->index()<<", iLastApplied: "<<data.v.iLastApplied);
+                <<", iLastLogIndexId: "<<pAction->lastLogEntry()->index()<<", iLastApplied: "<<data.pLastLogEntry->getEntryId());
 
       if( (pPersistentData->iVotedFor == CSeverNull ||
            pPersistentData->iVotedFor == pAction->candidate()) && true
@@ -133,6 +137,21 @@ static inline LogEntryId _LogEntryToKey(const LogEntry* pLogEntry){
 void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest* pAction){
   IA20_TRACER;
 
+  if(data.iState == ST_Leader){
+
+    IA20_LOG(LogLevel::INSTANCE.isInfo(), "Check if there is a new leader in a later term: "<<
+          pAction->matchLogEntry()->term()<<" ? "<<pLogFileWriter->getPersistentData()->iCurrentTerm);
+
+    if(pAction->dataLogEntry()->term() > pLogFileWriter->getPersistentData()->iCurrentTerm){
+      pLogFileWriter->getPersistentData()->iCurrentTerm = pAction->matchLogEntry()->term();
+      pLogFileWriter->getPersistentData()->iVotedFor = CSeverNull;
+      pLogFileWriter->syncPersistentData();
+      data.iState = ST_Follower;
+      pLogFileWriter->rewind(data.pLastCommitLogEntry);
+      IA20_LOG(LogLevel::INSTANCE.isInfo(), "I am a follower, now.");
+    }
+  }
+
   if(data.iState != ST_Follower)
     return;
 
@@ -153,19 +172,59 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRequest
   LogEntryId keyMatch(_LogEntryToKey(data.pLastLogEntry));
   LogEntryId keyMessageMatch(_FBToLogKey(*pAction->matchLogEntry()));
 
+  LogEntryId entryId(_FBToLogKey(*pAction->dataLogEntry()));
+
   if(keyMatch == keyMessageMatch){
 
-    LogEntryId entryId(_FBToLogKey(*pAction->dataLogEntry()));
 
-    if(entryId == keyMessageMatch) // skip heartbeats in log .
+    if(entryId == keyMessageMatch){ // skip heartbeats in log .
+      data.pLastCommitLogEntry = pLogFileWriter->commit(_FBToLogKey(*pAction->leaderCommitEntry()));
       return;
+    }
 
     data.pLastLogEntry = pLogFileWriter->appendEntry(entryId, iEntryDataSize, pSrcData);
+    pLogFileWriter->getPersistentData()->iVotedFor    = CSeverNull;
     pLogFileWriter->getPersistentData()->iCurrentTerm = entryId.iTerm;
+
+    data.pLastCommitLogEntry = pLogFileWriter->commit(_FBToLogKey(*pAction->leaderCommitEntry()));
+
     bResult = true;
 
   }else if(keyMatch > keyMessageMatch){
-    return;
+
+    const LogEntry *pNewMatch = data.pLastLogEntry;
+
+    while(keyMatch > keyMessageMatch && pNewMatch && !pNewMatch->isCommited()){
+      pNewMatch = pNewMatch->getPrevOrNull();
+      keyMatch =_LogEntryToKey(pNewMatch);
+      IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft:: rewind back to: "<<keyMatch<<" ?? "<<keyMessageMatch);
+    }
+
+    if(pNewMatch){
+
+      const LogEntry *pNewMatchData = pNewMatch->getPrevOrNull();
+
+      if(pNewMatchData && pNewMatchData->getEntryId() == entryId)
+        return; // we have this entry already.
+
+      LogEntryId keyMatch(_LogEntryToKey(pNewMatch));
+
+      if(keyMatch == keyMessageMatch){
+
+        pLogFileWriter->rewind(pNewMatch);
+        data.pLastLogEntry = pLogFileWriter->appendEntry(entryId, iEntryDataSize, pSrcData);
+        //pLogFileWriter->getPersistentData()->iVotedFor    = CSeverNull;
+        //pLogFileWriter->getPersistentData()->iCurrentTerm = entryId.iTerm;
+        bResult = true;
+
+      }else{
+        return;
+      }
+
+      }else{
+        bResult = false;
+      }
+
   }
 
   flatbuffers::FlatBufferBuilder builder;
@@ -204,11 +263,11 @@ void RaftEngine::onMessage(const FB::Header* pHeader, const FB::AppendLogRespons
 
       IA20_LOG(LogLevel::INSTANCE.isInfo(), "Match for commit:"<<entryId.iTerm<<","<<entryId.iIndex);
 
-      if(entryId.iIndex <= iIndexId)
+      if(entryId.iIndex == iIndexId)
         entry.iNumConfirmations++;
         IA20_LOG(LogLevel::INSTANCE.isInfo(), "iNumConfirmations: "<<entry.iNumConfirmations);
         if(entry.iNumConfirmations * 2 > data.iNumServers){
-          pLogFileWriter->commit(entry.pEntry);
+          data.pLastCommitLogEntry = pLogFileWriter->commit(entry.pEntry);
           it = lstPendingEntries.erase(it);
         }
     }
@@ -274,10 +333,11 @@ void RaftEngine::resendDirect(ServerIdType iServerId){
   FB::LogEntryId matchLogEntry(_LogKeyToFB(pServerMatchEntry));
   const LogEntry *pDataEntry = pServerMatchEntry->next();
   FB::LogEntryId dataLogEntry(_LogKeyToFB(pDataEntry));
+   FB::LogEntryId commitLogEntry(_LogKeyToFB(data.pLastCommitLogEntry));
 
   auto entryData = builder.CreateVector<uint8_t>(reinterpret_cast<const uint8_t*>(pDataEntry->getData()), pDataEntry->getEntryDataSize());
 
-  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, data.v.iCommitIndex,  entryData);
+  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, &commitLogEntry,  entryData);
   builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogRequest, request.Union()));
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
@@ -304,7 +364,9 @@ void RaftEngine::onPacket(const Packet& packet){
     return; /* dark side of broadcasting */
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: ********************************");
-  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: *** onPacket : "<<
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Last log entry : "<<data.pLastLogEntry->getEntryId());
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: Current Term   : "<<pLogFileWriter->getPersistentData()->iCurrentTerm);
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: *** onPacket : "<<
       IA20::FB::Helpers::ToString(pDataStart, FB::MessageTypeTable()));
 
   switch(pMessage->action_type()){
@@ -390,8 +452,6 @@ void RaftEngine::convertToLeader(){
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft["<<data.iMyServerId<<"]:: I am a new leader, term: "<<pLogFileWriter->getPersistentData()->iCurrentTerm);
 
-  data.v.iLastApplied = 0;
-
   for(int i=1; i <= data.iNumServers; i++){
     data.servers[i].pMatchEntry = data.pLastLogEntry;
   };
@@ -403,7 +463,8 @@ void RaftEngine::convertToLeader(){
 
   FB::LogEntryId matchEntryId(_LogKeyToFB(data.pLastLogEntry));
 
-  LogEntryId entryId(pLogFileWriter->getPersistentData()->iCurrentTerm,++data.v.iLastApplied);
+  LogEntryId entryId(pLogFileWriter->getPersistentData()->iCurrentTerm, 1);
+
   data.pLastLogEntry = pLogFileWriter->appendEntry(entryId);
 
   lstPendingEntries.push_back({
@@ -411,8 +472,9 @@ void RaftEngine::convertToLeader(){
         iNumConfirmations : 1});
 
   FB::LogEntryId dataEntryId(_LogKeyToFB(data.pLastLogEntry));
+  FB::LogEntryId commitLogEntry(_LogKeyToFB(data.pLastCommitLogEntry));
 
-  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchEntryId, &dataEntryId, data.v.iCommitIndex, 0);
+  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchEntryId, &dataEntryId, &commitLogEntry, 0);
   builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogRequest, request.Union()));
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
@@ -434,8 +496,9 @@ void RaftEngine::sendHeartbeat(){
 
   FB::LogEntryId matchLogEntry(_LogKeyToFB(data.pLastLogEntry));
   FB::LogEntryId dataLogEntry(_LogKeyToFB(data.pLastLogEntry));
+  FB::LogEntryId commitLogEntry(_LogKeyToFB(data.pLastCommitLogEntry));
 
-  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, data.v.iCommitIndex, 0);
+  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, &commitLogEntry, 0);
   builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogRequest, request.Union()));
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));
@@ -470,7 +533,8 @@ void RaftEngine::onData(void *pEntryData, LogEntrySizeType iEntrySize){
 
   FB::LogEntryId matchLogEntry(_LogKeyToFB(data.pLastLogEntry));
 
-  LogEntryId entryId(pLogFileWriter->getPersistentData()->iCurrentTerm,++data.v.iLastApplied);
+  LogEntryId entryId(pLogFileWriter->getPersistentData()->iCurrentTerm,
+                     data.pLastLogEntry->getEntryId().iIndex + 1);
   data.pLastLogEntry = pLogFileWriter->appendEntry(entryId, iEntrySize, pEntryData);
 
   lstPendingEntries.push_back({
@@ -479,10 +543,11 @@ void RaftEngine::onData(void *pEntryData, LogEntrySizeType iEntrySize){
 
 
   FB::LogEntryId dataLogEntry(_LogKeyToFB(data.pLastLogEntry));
+  FB::LogEntryId commitLogEntry(_LogKeyToFB(data.pLastCommitLogEntry));
 
   auto entryData = builder.CreateVector<uint8_t>(reinterpret_cast<uint8_t*>(pEntryData), iEntrySize);
 
-  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, data.v.iCommitIndex,  entryData);
+  auto request = FB::CreateAppendLogRequest(builder, data.iMyServerId, &matchLogEntry, &dataLogEntry, &commitLogEntry,  entryData);
   builder.Finish(FB::CreateMessage(builder, &header, FB::Action_AppendLogRequest, request.Union()));
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(builder.GetBufferPointer(), FB::MessageTypeTable()));

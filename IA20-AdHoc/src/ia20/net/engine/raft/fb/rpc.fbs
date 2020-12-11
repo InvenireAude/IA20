@@ -28,7 +28,7 @@ table AppendLogRequest {
   leader            : uint16;
   matchLogEntry     : LogEntryId;
   dataLogEntry      : LogEntryId;
-  leaderCommitIndex : uint32;
+  leaderCommitEntry : LogEntryId;
   data              : [uint8];
 }
 

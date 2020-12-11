@@ -18,13 +18,14 @@ namespace Raft {
 namespace Mocker {
 
 /*************************************************************************/
-Logger::Logger(size_t iMemorySize):
-    LogFileWriter("/tmp/.ia20.raft.tmp."+TypeTools::IntToString(::getpid()), iMemorySize){
+Logger::Logger(ServerIdType iServerId, size_t iMemorySize):
+    LogFileWriter("/tmp/.ia20.raft.tmp."+TypeTools::IntToString(iServerId)+"."+TypeTools::IntToString(::getpid()), iMemorySize){
   IA20_TRACER;
 }
 /*************************************************************************/
 Logger::~Logger() throw(){
 	IA20_TRACER;
+  //simpleDump(std::cerr);
   //unlink(strFileName.c_str());
 }
 /*************************************************************************/

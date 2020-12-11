@@ -35,7 +35,7 @@ public:
 
 	virtual ~Logger() throw();
 
- 	Logger(size_t iMemorySize = 1000000);
+ 	Logger(ServerIdType iServerId, size_t iMemorySize = 1000000);
 
   void simpleDump(std::ostream& os);
 

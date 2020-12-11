@@ -61,6 +61,7 @@ public:
   void onData(void *pEntryData, LogEntrySizeType iEntrySize);
 
   void startElection();
+  void sendHeartbeat();
 
 protected:
 
@@ -79,10 +80,10 @@ protected:
 
   struct VolatileData {
 
-    VolatileData():iCommitIndex(0),iLastApplied(0){};
+    //VolatileData():iCommitIndex(0),iLastApplied(0){};
 
-    IndexType iCommitIndex;
-    IndexType iLastApplied;
+    //IndexType iCommitIndex;
+    //IndexType iLastApplied;
 
     ServerIdType iVoteCount;
   };
@@ -111,7 +112,10 @@ protected:
 /*****************************************************************************/
   struct Data {
     State           iState;
+
     const LogEntry *pLastLogEntry;
+    const LogEntry *pLastCommitLogEntry;
+
     ServerIdType    iMyServerId;
     VolatileData    v;
     ServerIdType    iNumServers;
@@ -130,7 +134,7 @@ protected:
 
   void convertToLeader();
   void convertToFollower();
-  void sendHeartbeat();
+
 
 /*****************************************************************************/
 };

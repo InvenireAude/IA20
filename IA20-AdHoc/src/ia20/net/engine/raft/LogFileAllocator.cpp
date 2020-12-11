@@ -43,6 +43,7 @@ LogFileAllocator::LogFileAllocator(const String& strFileName, size_t iSize):
   memcpy(pMetaData->sTag, CTag, CTagLength);
   pMetaData->iFileSize = iSpaceLeft;
   pMetaData->tsStarted.readSystemTimestamp();
+  pMetaData->data = PersistentData();
   pMetaData->bUsed = false;
   ptrSHM->syncAll(true);
 }

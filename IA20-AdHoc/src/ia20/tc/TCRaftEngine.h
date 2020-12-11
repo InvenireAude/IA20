@@ -41,6 +41,7 @@ public:
 
 	void caseSimpleFailure();
   void caseNewElection();
+  void caseNewElectionAndIsolatedLeader();
 
 protected:
 
@@ -58,9 +59,12 @@ protected:
     std::unique_ptr<Net::Engine::Raft::Mocker::Connection> ptrConnection;
 
     Setup(int iNumEngines);
+    ~Setup();
 
     void assetLogger(int iLogger, const String& strResult);
+    void assetAllLoggers(const String& strResult);
 
+    void dumpLogs(std::ostream& os)const;
   };
 
 };

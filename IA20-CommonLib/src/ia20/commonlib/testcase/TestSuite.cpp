@@ -79,7 +79,11 @@ void TestSuite::run(const String& strCaseName) {
 
 		IA20_LOG(IA20::LogLevel::INSTANCE.isInfo(), "TEST Started: "<<(*it).pTestUnit->getName()<<":"<<(*it).strName);
 
-
+    if(bVerbose){
+      std::cout<<"*******************************************************"<<std::endl;
+      std::cout<<"**  TEST CASE :"<<(*it).pTestUnit->getName()<<":"<<(*it).strName<<std::endl;
+      std::cout<<"*******************************************************"<<std::endl;
+    }
 
 		try {
 

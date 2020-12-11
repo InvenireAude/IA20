@@ -88,12 +88,48 @@ const LogEntry* LogFileWriter::appendEntry(const LogEntryId& entryId, LogEntrySi
   return pEntry;
 }
 /*************************************************************************/
-void LogFileWriter::commit(const LogEntry* pLogEntry){
+void LogFileWriter::rewind(const LogEntry* pEntry){
+	IA20_TRACER;
+  //TODO check if sane
+
+  if(pEntry < pLastCommit){
+
+    IA20_LOG(LogLevel::INSTANCE.isError(), "Raft :: cannot move beyond commited enteries: "<<
+            pEntry->getEntryId()<<" ?? "<<pLastCommit->getEntryId());
+
+    IA20_THROW(BadUsageException("Bad usage exception - cannot move beyond commited enteries."));
+  }
+
+  pLastEntry = const_cast<LogEntry*>(pEntry);
+
+  pNextEntry = pLastEntry->next();
+
+  iSpaceLeft = (reinterpret_cast<uint8_t*>(pLastEntry) - reinterpret_cast<uint8_t*>(pNextEntry));
+
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: appendEntry: iSpaceLeft: "<<iSpaceLeft);
+}
+/*************************************************************************/
+const LogEntry* LogFileWriter::commit(const LogEntry* pLogEntry){
 	IA20_TRACER;
 
   IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft :: commit: "<<*pLogEntry);
+  //TODO commit previous
+  pLastEntry->commit();
   pLastCommit = pLogEntry;
+
   SharedMemoryFile::Sync(pLogEntry, sizeof(LogEntry) + pLogEntry->getEntryDataSize());
+
+  return pLastCommit;
+}
+/*************************************************************************/
+const LogEntry* LogFileWriter::commit(const LogEntryId& entryId){
+	IA20_TRACER;
+
+  while(pLastCommit != pLastEntry && pLastCommit->getEntryId() < entryId){
+    commit(pLastCommit->next());
+  }
+
+  return pLastCommit;
 }
 /*************************************************************************/
 }

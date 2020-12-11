@@ -37,7 +37,10 @@ public:
     return iSpaceLeft;
   };
 
-  void commit(const LogEntry* pLogEntry);
+  const LogEntry* commit(const LogEntry* pLogEntry);
+  const LogEntry* commit(const LogEntryId& entryId);
+
+  void rewind(const LogEntry* pLogEntry);
 
   const LogEntry* appendEntry(const LogEntryId& entryId,
                               LogEntrySizeType  iEntryDataSize = 0,

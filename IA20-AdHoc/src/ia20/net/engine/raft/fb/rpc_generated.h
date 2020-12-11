@@ -299,7 +299,7 @@ struct AppendLogRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_LEADER = 4,
     VT_MATCHLOGENTRY = 6,
     VT_DATALOGENTRY = 8,
-    VT_LEADERCOMMITINDEX = 10,
+    VT_LEADERCOMMITENTRY = 10,
     VT_DATA = 12
   };
   uint16_t leader() const {
@@ -311,8 +311,8 @@ struct AppendLogRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const IA20::Net::Engine::Raft::FB::LogEntryId *dataLogEntry() const {
     return GetStruct<const IA20::Net::Engine::Raft::FB::LogEntryId *>(VT_DATALOGENTRY);
   }
-  uint32_t leaderCommitIndex() const {
-    return GetField<uint32_t>(VT_LEADERCOMMITINDEX, 0);
+  const IA20::Net::Engine::Raft::FB::LogEntryId *leaderCommitEntry() const {
+    return GetStruct<const IA20::Net::Engine::Raft::FB::LogEntryId *>(VT_LEADERCOMMITENTRY);
   }
   const flatbuffers::Vector<uint8_t> *data() const {
     return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_DATA);
@@ -322,7 +322,7 @@ struct AppendLogRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<uint16_t>(verifier, VT_LEADER) &&
            VerifyField<IA20::Net::Engine::Raft::FB::LogEntryId>(verifier, VT_MATCHLOGENTRY) &&
            VerifyField<IA20::Net::Engine::Raft::FB::LogEntryId>(verifier, VT_DATALOGENTRY) &&
-           VerifyField<uint32_t>(verifier, VT_LEADERCOMMITINDEX) &&
+           VerifyField<IA20::Net::Engine::Raft::FB::LogEntryId>(verifier, VT_LEADERCOMMITENTRY) &&
            VerifyOffset(verifier, VT_DATA) &&
            verifier.VerifyVector(data()) &&
            verifier.EndTable();
@@ -342,8 +342,8 @@ struct AppendLogRequestBuilder {
   void add_dataLogEntry(const IA20::Net::Engine::Raft::FB::LogEntryId *dataLogEntry) {
     fbb_.AddStruct(AppendLogRequest::VT_DATALOGENTRY, dataLogEntry);
   }
-  void add_leaderCommitIndex(uint32_t leaderCommitIndex) {
-    fbb_.AddElement<uint32_t>(AppendLogRequest::VT_LEADERCOMMITINDEX, leaderCommitIndex, 0);
+  void add_leaderCommitEntry(const IA20::Net::Engine::Raft::FB::LogEntryId *leaderCommitEntry) {
+    fbb_.AddStruct(AppendLogRequest::VT_LEADERCOMMITENTRY, leaderCommitEntry);
   }
   void add_data(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> data) {
     fbb_.AddOffset(AppendLogRequest::VT_DATA, data);
@@ -365,11 +365,11 @@ inline flatbuffers::Offset<AppendLogRequest> CreateAppendLogRequest(
     uint16_t leader = 0,
     const IA20::Net::Engine::Raft::FB::LogEntryId *matchLogEntry = 0,
     const IA20::Net::Engine::Raft::FB::LogEntryId *dataLogEntry = 0,
-    uint32_t leaderCommitIndex = 0,
+    const IA20::Net::Engine::Raft::FB::LogEntryId *leaderCommitEntry = 0,
     flatbuffers::Offset<flatbuffers::Vector<uint8_t>> data = 0) {
   AppendLogRequestBuilder builder_(_fbb);
   builder_.add_data(data);
-  builder_.add_leaderCommitIndex(leaderCommitIndex);
+  builder_.add_leaderCommitEntry(leaderCommitEntry);
   builder_.add_dataLogEntry(dataLogEntry);
   builder_.add_matchLogEntry(matchLogEntry);
   builder_.add_leader(leader);
@@ -381,7 +381,7 @@ inline flatbuffers::Offset<AppendLogRequest> CreateAppendLogRequestDirect(
     uint16_t leader = 0,
     const IA20::Net::Engine::Raft::FB::LogEntryId *matchLogEntry = 0,
     const IA20::Net::Engine::Raft::FB::LogEntryId *dataLogEntry = 0,
-    uint32_t leaderCommitIndex = 0,
+    const IA20::Net::Engine::Raft::FB::LogEntryId *leaderCommitEntry = 0,
     const std::vector<uint8_t> *data = nullptr) {
   auto data__ = data ? _fbb.CreateVector<uint8_t>(*data) : 0;
   return IA20::Net::Engine::Raft::FB::CreateAppendLogRequest(
@@ -389,7 +389,7 @@ inline flatbuffers::Offset<AppendLogRequest> CreateAppendLogRequestDirect(
       leader,
       matchLogEntry,
       dataLogEntry,
-      leaderCommitIndex,
+      leaderCommitEntry,
       data__);
 }
 
@@ -701,7 +701,7 @@ inline const flatbuffers::TypeTable *AppendLogRequestTypeTable() {
     { flatbuffers::ET_USHORT, 0, -1 },
     { flatbuffers::ET_SEQUENCE, 0, 0 },
     { flatbuffers::ET_SEQUENCE, 0, 0 },
-    { flatbuffers::ET_UINT, 0, -1 },
+    { flatbuffers::ET_SEQUENCE, 0, 0 },
     { flatbuffers::ET_UCHAR, 1, -1 }
   };
   static const flatbuffers::TypeFunction type_refs[] = {
@@ -711,7 +711,7 @@ inline const flatbuffers::TypeTable *AppendLogRequestTypeTable() {
     "leader",
     "matchLogEntry",
     "dataLogEntry",
-    "leaderCommitIndex",
+    "leaderCommitEntry",
     "data"
   };
   static const flatbuffers::TypeTable tt = {
