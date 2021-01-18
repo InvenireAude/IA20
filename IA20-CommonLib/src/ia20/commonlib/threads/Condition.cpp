@@ -89,11 +89,8 @@ bool Condition::wait(Mutex& mutex, unsigned int iTimeoutMS) {
 	struct timespec ts;
 	::clock_gettime(CLOCK_MONOTONIC, &ts);
 
-	//TODO (L) burak w liczeniu czasuale chyba juz ok
-	ts.tv_sec += (iTimeoutMS + ts.tv_nsec/1000000) / 1000;
-	//if( (ts.tv_nsec + (iTimeoutMS%1000) *1000000) > 1000000000)
-	//		ts.tv_sec += 1;
-
+	//TODO (L) burak w liczeniu czasu ...
+	ts.tv_sec += iTimeoutMS / 1000 + ts.tv_nsec/1000000000 ;
 	ts.tv_nsec = (ts.tv_nsec  + (iTimeoutMS%1000) *1000000) % 1000000000;
 
 	if( (iResult = pthread_cond_timedwait(&theCond, &mutex.theMutex, &ts) ) != 0){

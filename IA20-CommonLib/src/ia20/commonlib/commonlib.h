@@ -56,6 +56,7 @@
 #include "threads/Runnable.h"
 #include "threads/Mutex.h"
 #include "threads/Condition.h"
+#include "threads/Barrier.h"
 
 #include "time/Timestamp.h"
 #include "time/Time.h"

@@ -21,6 +21,8 @@
 #include <ia20/commonlib/testcase/TestUnit.h>
 
 #include "ia20/tc/TCRaftEngine.h"
+#include "ia20/tc/TCConnectionTCP.h"
+#include "ia20/tc/TCURing.h"
 
 using namespace IA20;
 
@@ -33,10 +35,11 @@ int main(int argc, char* argv[]) {
 	try {
 
 		std::unique_ptr<TestSuite> ptrSuite(new TestSuite());
-
     ptrSuite->setVerbose();
 
-    TC::TCRaftEngine tcRaftEngine(ptrSuite.get());
+    TC::TCRaftEngine    tcRaftEngine(ptrSuite.get());
+    TC::TCConnectionTCP tcConnectionTCP(ptrSuite.get());
+    TC::TCURing         tcUring(ptrSuite.get());
 
 		ptrSuite->run(argc == 1 ? "" : argv[1]);
 		ptrSuite->printResults(std::cout);

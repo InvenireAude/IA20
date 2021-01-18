@@ -34,7 +34,7 @@
 
 #define IA20_CHECK_IF_NULL(p)       \
 {                                                                       \
-        if(p == NULL){                                                  \
+        if(!p){                                                  \
         	IA20_THROW(IA20::InternalException("null pointer!"))          \
         }                                                               \
 }
@@ -42,7 +42,7 @@
 //TODO (M) Check entries if know pointer and test
 #define IA20_CHECK_IF_VALID(p)       \
 {                                                                       \
-        if(p == NULL){                                                  \
+        if(!p){                                                  \
         	IA20_THROW(IA20::InternalException("null pointer!"))          \
         }                                                               \
 }

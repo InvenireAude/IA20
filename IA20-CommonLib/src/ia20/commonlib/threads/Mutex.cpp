@@ -120,7 +120,7 @@ void Mutex::unlock() {
 	int iResult = -1;
 
 	if((iResult = pthread_mutex_unlock( &theMutex )) != 0){
-		IA20_LOG(LogLevel::INSTANCE.isSystem(), "Error on memory mutex lock, res="<<iResult<<".");
+		IA20_LOG(LogLevel::INSTANCE.isSystem(), "Error on memory mutex lock, res="<<iResult<<"."<<errno);
 	}
 #endif
 }

@@ -39,8 +39,15 @@ Thread::Thread(Runnable *pRunnable):
 /*************************************************************************/
 Thread::~Thread() {
 	IA20_TRACER;
-	if(bIsStarted)
+
+  IA20_LOG(LogLevel::INSTANCE.isSystem(), "bIsStarted: "<<bIsStarted);
+
+	if(bIsStarted){
 		stop();
+    join();
+  }
+
+  IA20_LOG(LogLevel::INSTANCE.isSystem(), "Thread is done!, id:"<<theThread);
 }
 /*************************************************************************/
 void *Thread::Starter(void *pArgs){

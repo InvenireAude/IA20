@@ -100,6 +100,8 @@ void LogFileWriter::rewind(const LogEntry* pEntry){
     IA20_THROW(BadUsageException("Bad usage exception - cannot move beyond commited enteries."));
   }
 
+  IA20_LOG(LogLevel::INSTANCE.isInfo(), "Raft:: rewind to : "<<pEntry->getEntryId());
+
   pLastEntry = const_cast<LogEntry*>(pEntry);
 
   pNextEntry = pLastEntry->next();

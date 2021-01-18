@@ -20,6 +20,9 @@
 
 #include "fb/rpc_generated.h"
 
+#include <ia20/fb/Helpers.h>
+
+
 #include <list>
 
 namespace IA20 {
@@ -132,9 +135,45 @@ protected:
 
   void resendDirect(ServerIdType iServerId)const;
 
+  void checkLeaderChange(TermType iNewDataTerm);
   void convertToLeader();
-  void convertToFollower();
+  void convertToFollower(TermType iCurrentTerm, bool bRewind);
+
   void sendLogEntryImpl(const LogEntry* pMatchEntry, const LogEntry* pDataEntry = NULL, ServerIdType iServerId = CSeverBroadcast)const;
+
+
+  template<class T, FB::Action action_type>
+  class FBMessageSender : public flatbuffers::FlatBufferBuilder {
+
+      FB::Header header;
+      const RaftEngine* pRaftEngine;
+
+
+      flatbuffers::Offset<T> action;
+
+    public:
+      FBMessageSender(const RaftEngine* pRaftEngine, ServerIdType iDstServerId = 0):
+            header(iDstServerId, pRaftEngine->data.iMyServerId),
+            pRaftEngine(pRaftEngine){}
+
+     template<class ...Args>
+     void setAction(flatbuffers::Offset<T> (*f)(flatbuffers::FlatBufferBuilder& fb, Args...), Args... args){
+        action = (*f)((flatbuffers::FlatBufferBuilder&)(*this), args...);
+      }
+
+      ~FBMessageSender(){
+
+          if(action.IsNull())
+            return;
+
+          Finish(FB::CreateMessage(*this, &header, action_type, action.Union()));
+          IA20_LOG(LogLevel::INSTANCE.isInfo(), IA20::FB::Helpers::ToString(GetBufferPointer(), FB::MessageTypeTable()));
+          Packet packet(*this);
+          pRaftEngine->pSender->send(packet);
+
+      }
+
+    };
 
 /*****************************************************************************/
 };

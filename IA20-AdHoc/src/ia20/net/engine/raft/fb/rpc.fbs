@@ -8,18 +8,18 @@ struct Header {
 }
 
 struct LogEntryId {
-  term    : uint16;
+  term    : uint32;
   index   : uint32;
 }
 
 table VoteRequest {
-    term       : uint16;
+    term       : uint32;
     candidate  : uint16;
     lastLogEntry : LogEntryId;
 }
 
 table VoteResponse {
-    term       : uint16;
+    term       : uint32;
     candidate  : uint16;
     granted    : bool;
 }

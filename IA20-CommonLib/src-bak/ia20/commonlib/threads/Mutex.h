@@ -18,7 +18,6 @@
 #ifndef _IA20_THREAD_Mutex_H_
 #define _IA20_THREAD_Mutex_H_
 
-#include "../config.h"
 #include <pthread.h>
 
 #include <ia20/commonlib/time/TimeSamplesRegister.h>

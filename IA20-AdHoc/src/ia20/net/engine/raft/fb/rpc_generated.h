@@ -134,8 +134,7 @@ FLATBUFFERS_STRUCT_END(Header, 4);
 
 FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) LogEntryId FLATBUFFERS_FINAL_CLASS {
  private:
-  uint16_t term_;
-  int16_t padding0__;
+  uint32_t term_;
   uint32_t index_;
 
  public:
@@ -145,13 +144,11 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) LogEntryId FLATBUFFERS_FINAL_CLASS {
   LogEntryId() {
     memset(static_cast<void *>(this), 0, sizeof(LogEntryId));
   }
-  LogEntryId(uint16_t _term, uint32_t _index)
+  LogEntryId(uint32_t _term, uint32_t _index)
       : term_(flatbuffers::EndianScalar(_term)),
-        padding0__(0),
         index_(flatbuffers::EndianScalar(_index)) {
-    (void)padding0__;
   }
-  uint16_t term() const {
+  uint32_t term() const {
     return flatbuffers::EndianScalar(term_);
   }
   uint32_t index() const {
@@ -170,8 +167,8 @@ struct VoteRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_CANDIDATE = 6,
     VT_LASTLOGENTRY = 8
   };
-  uint16_t term() const {
-    return GetField<uint16_t>(VT_TERM, 0);
+  uint32_t term() const {
+    return GetField<uint32_t>(VT_TERM, 0);
   }
   uint16_t candidate() const {
     return GetField<uint16_t>(VT_CANDIDATE, 0);
@@ -181,7 +178,7 @@ struct VoteRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint16_t>(verifier, VT_TERM) &&
+           VerifyField<uint32_t>(verifier, VT_TERM) &&
            VerifyField<uint16_t>(verifier, VT_CANDIDATE) &&
            VerifyField<IA20::Net::Engine::Raft::FB::LogEntryId>(verifier, VT_LASTLOGENTRY) &&
            verifier.EndTable();
@@ -192,8 +189,8 @@ struct VoteRequestBuilder {
   typedef VoteRequest Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_term(uint16_t term) {
-    fbb_.AddElement<uint16_t>(VoteRequest::VT_TERM, term, 0);
+  void add_term(uint32_t term) {
+    fbb_.AddElement<uint32_t>(VoteRequest::VT_TERM, term, 0);
   }
   void add_candidate(uint16_t candidate) {
     fbb_.AddElement<uint16_t>(VoteRequest::VT_CANDIDATE, candidate, 0);
@@ -215,13 +212,13 @@ struct VoteRequestBuilder {
 
 inline flatbuffers::Offset<VoteRequest> CreateVoteRequest(
     flatbuffers::FlatBufferBuilder &_fbb,
-    uint16_t term = 0,
+    uint32_t term = 0,
     uint16_t candidate = 0,
     const IA20::Net::Engine::Raft::FB::LogEntryId *lastLogEntry = 0) {
   VoteRequestBuilder builder_(_fbb);
   builder_.add_lastLogEntry(lastLogEntry);
-  builder_.add_candidate(candidate);
   builder_.add_term(term);
+  builder_.add_candidate(candidate);
   return builder_.Finish();
 }
 
@@ -235,8 +232,8 @@ struct VoteResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_CANDIDATE = 6,
     VT_GRANTED = 8
   };
-  uint16_t term() const {
-    return GetField<uint16_t>(VT_TERM, 0);
+  uint32_t term() const {
+    return GetField<uint32_t>(VT_TERM, 0);
   }
   uint16_t candidate() const {
     return GetField<uint16_t>(VT_CANDIDATE, 0);
@@ -246,7 +243,7 @@ struct VoteResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint16_t>(verifier, VT_TERM) &&
+           VerifyField<uint32_t>(verifier, VT_TERM) &&
            VerifyField<uint16_t>(verifier, VT_CANDIDATE) &&
            VerifyField<uint8_t>(verifier, VT_GRANTED) &&
            verifier.EndTable();
@@ -257,8 +254,8 @@ struct VoteResponseBuilder {
   typedef VoteResponse Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_term(uint16_t term) {
-    fbb_.AddElement<uint16_t>(VoteResponse::VT_TERM, term, 0);
+  void add_term(uint32_t term) {
+    fbb_.AddElement<uint32_t>(VoteResponse::VT_TERM, term, 0);
   }
   void add_candidate(uint16_t candidate) {
     fbb_.AddElement<uint16_t>(VoteResponse::VT_CANDIDATE, candidate, 0);
@@ -280,12 +277,12 @@ struct VoteResponseBuilder {
 
 inline flatbuffers::Offset<VoteResponse> CreateVoteResponse(
     flatbuffers::FlatBufferBuilder &_fbb,
-    uint16_t term = 0,
+    uint32_t term = 0,
     uint16_t candidate = 0,
     bool granted = false) {
   VoteResponseBuilder builder_(_fbb);
-  builder_.add_candidate(candidate);
   builder_.add_term(term);
+  builder_.add_candidate(candidate);
   builder_.add_granted(granted);
   return builder_.Finish();
 }
@@ -645,7 +642,7 @@ inline const flatbuffers::TypeTable *HeaderTypeTable() {
 
 inline const flatbuffers::TypeTable *LogEntryIdTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
-    { flatbuffers::ET_USHORT, 0, -1 },
+    { flatbuffers::ET_UINT, 0, -1 },
     { flatbuffers::ET_UINT, 0, -1 }
   };
   static const int64_t values[] = { 0, 4, 8 };
@@ -661,7 +658,7 @@ inline const flatbuffers::TypeTable *LogEntryIdTypeTable() {
 
 inline const flatbuffers::TypeTable *VoteRequestTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
-    { flatbuffers::ET_USHORT, 0, -1 },
+    { flatbuffers::ET_UINT, 0, -1 },
     { flatbuffers::ET_USHORT, 0, -1 },
     { flatbuffers::ET_SEQUENCE, 0, 0 }
   };
@@ -681,7 +678,7 @@ inline const flatbuffers::TypeTable *VoteRequestTypeTable() {
 
 inline const flatbuffers::TypeTable *VoteResponseTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
-    { flatbuffers::ET_USHORT, 0, -1 },
+    { flatbuffers::ET_UINT, 0, -1 },
     { flatbuffers::ET_USHORT, 0, -1 },
     { flatbuffers::ET_BOOL, 0, -1 }
   };

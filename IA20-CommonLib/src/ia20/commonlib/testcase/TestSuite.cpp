@@ -119,7 +119,8 @@ void TestSuite::run(const String& strCaseName) {
 void TestSuite::printResults(std::ostream& os) {
 	IA20_TRACER;
 
-	for (TestCasesList::iterator it = lstTestCases.begin(); it != lstTestCases.end(); it++) {
+	for (TestCasesList::iterator it = lstTestCases.begin(); it != lstTestCases.end(); it++)
+  if((*it).iResult != Result::RESULT_NOT_EXECUTED){
 
 		char sBuffer[2024];
 		snprintf(sBuffer, 2024, "TestCase: %48s : %30s | %d : %ld : %6ld : %s \n", (*it).pTestUnit->getName().c_str(),
