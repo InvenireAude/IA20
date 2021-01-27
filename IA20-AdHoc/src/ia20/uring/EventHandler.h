@@ -7,11 +7,16 @@
  */
 
 
-#ifndef _EventHandler_H_
-#define _EventHandler_H_
+#ifndef _IA20_URing_EventHandler_H_
+#define _IA20_URing_EventHandler_H_
 
 #include <ia20/commonlib/commonlib.h>
 #include <liburing.h>
+
+namespace IA20 {
+namespace URing {
+
+class RingHandler;
 
 /*************************************************************************/
 /** The EventHandler class.
@@ -26,8 +31,12 @@ public:
 
   protected:
 
-  EventHandler();
+    EventHandler(RingHandler* pRingHandler);
+
+  RingHandler* pRingHandler;
 };
 /*************************************************************************/
 
-#endif /* _EventHandler_H_ */
+}
+}
+#endif /* _IA20_URing_EventHandler_H_ */

@@ -56,6 +56,7 @@ FileHandle* Client::connect()const{
 	PeerAddrInfo aiLocal(peerLocal);
 	PeerAddrInfo aiRemote(peerRemote);
 
+
 	for(PeerAddrInfo::const_iterator itLocal=aiLocal.begin(); itLocal != aiLocal.end(); ++itLocal)
 		for(PeerAddrInfo::const_iterator itRemote=aiRemote.begin(); itRemote != aiRemote.end(); ++itRemote){
 
@@ -64,8 +65,20 @@ FileHandle* Client::connect()const{
 		if((iSocket = socket((*itLocal)->ai_family, (*itLocal)->ai_socktype, (*itLocal)->ai_protocol)) < 0)
 			IA20_THROW(SystemException("socket(): ")<<peerLocal);
 
-		IA20_LOG(LogLevel::INSTANCE.isInfo(),"Local: "<<peerLocal);
+		IA20_LOG(LogLevel::INSTANCE.isInfo(),"Local: "<<peerLocal<<", socket fd :"<<iSocket);
 
+		IA20_LOG(LogLevel::INSTANCE.isInfo(),"Client: "<<iSocket<<", addr="
+					<<inet_ntoa(((struct sockaddr_in*)((*itLocal)->ai_addr))->sin_addr)
+					<<", port="<<(ntohs(((struct sockaddr_in*)((*itLocal)->ai_addr))->sin_port))
+					<<", family="<<((struct sockaddr_in*)((*itLocal)->ai_addr))->sin_family);
+
+	  int reuse = 1;
+
+    if (setsockopt(iSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(reuse)) < 0)
+    	IA20_THROW(SystemException()<<" socket (SO_REUSEADDR), port: ");
+
+   // if (setsockopt(iSocket, SOL_SOCKET, SO_REUSEPORT, (char *)&reuse, sizeof(reuse)) < 0)
+   // 	IA20_THROW(SystemException()<<"socket (SO_REUSEPORT), port: ");
 
 		if(::bind(iSocket, (*itLocal)->ai_addr, (*itLocal)->ai_addrlen) == 0){
 
@@ -76,13 +89,17 @@ FileHandle* Client::connect()const{
 				if(bNoDelay)
 	 				setNoDelayImpl(iSocket, 1);
 
+			  IA20_LOG(LogLevel::INSTANCE.isInfo(),"Connected: "<<peerRemote<<", fd: "<<iSocket);
+
 				return pConnectionFactory->createFileHandle(iSocket, peerRemote);
 			}
 
 		}
+
+    IA20_LOG(LogLevel::INSTANCE.isInfo(),"Error in connect: "<<errno<<" "<<strerror(errno));
 	}
 
-	IA20_THROW(SystemException("Couldn't connect any any address from: ")<<peerLocal<<", to: "<<peerRemote);
+	IA20_THROW(SystemException("Couldn't connect any address from: ")<<peerLocal<<", to: "<<peerRemote);
 }
 /*************************************************************************/
 void Client::setLocalPeer(const Peer& peerLocal){

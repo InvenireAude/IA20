@@ -39,7 +39,9 @@ using namespace Net;
 using namespace Net::Conn;
 using namespace Net::Conn::TCP;
 
-static Barrier barrier(2,1000);
+static int CNumClients = 2;
+static Barrier barrierStart(2,1000);
+static Barrier barrierWork(2 + CNumClients, 1000);
 /*************************************************************************/
 TCURing::Env::Env(const String& strAddress,
           int iPort):
@@ -48,62 +50,115 @@ TCURing::Env::Env(const String& strAddress,
 
   ptrRingHandler.reset(new RingHandler);
 
+  bResult = true;
 };
-/*************************************************************************/
-class Reader : public ReadHandler {
-  public:
-    Reader(FileHandle* pFileHandle):
-      ReadHandler(pFileHandle){};
 
-  protected:
-    virtual void handleImpl(){
-      std::cout<<"Got data: ["<<iDataLen<<"]"<<std::endl;
-      barrier.synchronize();
-  }
-
-};
 /*************************************************************************/
-class Writer : public WriteHandler {
+class Server : public ReadHandler, public WriteHandler {
   public:
-    Writer(FileHandle* pFileHandle):
-      WriteHandler(pFileHandle){
-        //iovec.iov_base = (void*)CStrData.c_str();
-        iovec.iov_len  = CStrData.length();
-        iovec.iov_base = malloc(4096);
-        memcpy(iovec.iov_base, CStrData.c_str(), iovec.iov_len);
+    Server(RingHandler *pRingHandler, FileHandle* pFileHandle):
+      ReadHandler(pRingHandler, pFileHandle),
+      WriteHandler(pRingHandler, pFileHandle),
+      ptrFileHandle(pFileHandle){
+        WriteHandler::iovec.iov_len  = CStrData.length();
+        WriteHandler::iovec.iov_base = malloc(4096);
+        memcpy(WriteHandler::iovec.iov_base, CStrData.c_str(), WriteHandler::iovec.iov_len);
       };
 
   static const String CStrData;
 
   protected:
-    virtual void handleImpl(){
-      std::cout<<"Written: ["<<iDataLen<<"]"<<std::endl;
-      barrier.synchronize();
+
+  virtual void handleRead(off_t iDataLen){
+      std::cout<<"Got data: ["<<iDataLen<<"]"<<std::endl;
+      barrierWork.synchronize();
   }
 
+  virtual void handleWrite(off_t iDataLen){
+      std::cout<<"Written: ["<<iDataLen<<"]"<<std::endl;
+      barrierWork.synchronize();
+  }
+
+  std::unique_ptr<FileHandle> ptrFileHandle;
 };
-const String Writer::CStrData("TEST_TEST_TEST_TEST");
+
+const String Server::CStrData("TEST_TEST_TEST_TEST");
 /*************************************************************************/
 class Acceptor : public AsyncServer::Acceptor {
   public:
     Acceptor(AsyncServer* pAsyncServer, RingHandler *pRingHandler):
-      AsyncServer::Acceptor(pAsyncServer),
-      pRingHandler(pRingHandler){};
+      AsyncServer::Acceptor(pRingHandler, pAsyncServer){};
 
   protected:
     virtual void handleImpl(Net::Conn::TCP::FileHandle* pFileHandle){
-      ptrFileHandle.reset(pFileHandle);
-      ptrReader.reset(new Reader(pFileHandle));
-      ptrReader->prepare(pRingHandler);
-      ptrWriter.reset(new Writer(pFileHandle));
-      ptrWriter->prepare(pRingHandler);
+      prepare();
+
+      std::unique_ptr<Server> ptrServer(new Server(pRingHandler, pFileHandle));
+      ptrServer->WriteHandler::prepare();
+      ptrServer->ReadHandler::prepare();
+      lstServers.push_back(std::move(ptrServer));
   }
 
-  std::unique_ptr<Net::Conn::TCP::FileHandle> ptrFileHandle;
-  std::unique_ptr<Reader> ptrReader;
-  std::unique_ptr<Writer> ptrWriter;
-  RingHandler *pRingHandler;
+  std::list< std::unique_ptr<Server> > lstServers;
 };
+
+/*************************************************************************/
+class TestClient : public ReadHandler,
+                   public WriteHandler,
+                   public Thread, public Runnable{
+  public:
+    TestClient(FileHandle* pFileHandle):
+      ReadHandler(0, pFileHandle),
+      WriteHandler(0, pFileHandle),
+      ptrFileHandle(pFileHandle),
+      bResult(false),
+      Thread(this){
+
+        WriteHandler::iovec.iov_len  = CStrData.length();
+        WriteHandler::iovec.iov_base = malloc(4096);
+        memcpy(WriteHandler::iovec.iov_base, CStrData.c_str(), WriteHandler::iovec.iov_len);
+
+      }
+
+  bool bResult;
+
+  protected:
+
+    virtual void handleRead(off_t iDataLen){
+      std::cout<<"Client got data: ["<<iDataLen<<"]"<<std::endl;
+      String strData((char*)ReadHandler::iovec.iov_base, iDataLen);
+
+      bResult = strData.compare(Server::CStrData) == 0;
+      barrierWork.synchronize();
+  }
+
+  virtual void handleWrite(off_t iDataLen){
+      std::cout<<"Client written: ["<<iDataLen<<"]"<<std::endl;
+      barrierWork.synchronize();
+  }
+
+  static const String CStrData;
+
+  virtual void run(){
+
+    std::unique_ptr<URing::RingHandler>  ptrRingHandler(new RingHandler);
+
+    ReadHandler::pRingHandler = ptrRingHandler.get();
+    WriteHandler::pRingHandler = ptrRingHandler.get();
+
+    ReadHandler::prepare();
+    WriteHandler::prepare();
+    ptrRingHandler->handle();
+
+  }
+
+
+ std::unique_ptr<FileHandle> ptrFileHandle;
+};
+const String TestClient::CStrData("ClientData");
+/*************************************************************************/
+
+
 /*************************************************************************/
 void TCURing::Env::run(){
 
@@ -112,9 +167,9 @@ void TCURing::Env::run(){
   std::unique_ptr<AsyncServer> ptrAsyncServer(new AsyncServer(peer, DefaultConnectionFactory::GetInstance()));
   std::unique_ptr<AsyncServer::Acceptor> ptrAcceptor(new Acceptor(ptrAsyncServer.get(), ptrRingHandler.get()));
 
-  ptrAcceptor->prepare(ptrRingHandler.get());
+  ptrAcceptor->prepare();
 
-  barrier.synchronize();
+  barrierStart.synchronize();
 
   ptrRingHandler->handle();
 
@@ -124,7 +179,7 @@ TCURing::TCURing(TestSuite* pTestSuite):
   TestUnit<TCURing>(this, "URing", pTestSuite){
 	IA20_TRACER;
 
-  addCase("tcp/read/write", &::IA20::TC::TCURing::caseConnect);
+  addCase("tcp/read/write1", &::IA20::TC::TCURing::caseConnect);
 
   pTestSuite->addTestUnit(this);
 }
@@ -138,32 +193,41 @@ void TCURing::caseConnect(){
 	IA20::TimeSample ts(true);
 
   SYS::Signal::GetInstance();
-  Env e("localhost",55556);
+  Env e("0.0.0.0",55556);
 
   e.start();
+  barrierStart.synchronize();
 
-  barrier.synchronize();
+  Peer peerLocal("localhost", 55559);
+  Peer peer1("127.0.0.1", 55556);
+  Peer peer2("192.168.0.94", 55556);
 
-  std::unique_ptr<Client> ptrClient(new Client(e.peer, DefaultConnectionFactory::GetInstance()));
-  std::unique_ptr<FileHandle> ptrClientFile(ptrClient->connect());
-  size_t iWritten;
-  ptrClientFile->write("1234567890",10,iWritten);
+  IA20_LOG(true,"TEST1");
 
-  barrier.synchronize();
+  std::unique_ptr<Client> ptrClient1(new Client(peer1, peerLocal, DefaultConnectionFactory::GetInstance()));
+  std::unique_ptr<Client> ptrClient2(new Client(peer2, peerLocal, DefaultConnectionFactory::GetInstance()));
 
-  char sBuffer[256];
-  bzero(sBuffer, 256);
-  size_t iDataLen;
-  ptrClientFile->read(sBuffer,256,iDataLen);
+  TestClient c1(ptrClient1->connect());
+  TestClient c2(ptrClient2->connect());
 
-  barrier.synchronize();
+  c1.start();
+  c2.start();
 
+  barrierWork.synchronize();
+  barrierWork.synchronize();
+
+  c1.stop();
+  c2.stop();
   e.stop();
+
+  c1.join();
+  c2.join();
   e.join();
 
-  if(iDataLen != Writer::CStrData.length() ||
-    Writer::CStrData.compare(sBuffer) != 0 )
-      IA20_THROW(BadUsageException("Read failed: ")<<iDataLen<<"["<<sBuffer<<"]");
+  sleep(10);
+
+  if(!c1.bResult || !c2.bResult)
+     IA20_THROW(BadUsageException("Read failed! "));
 
 }
 /*************************************************************************/

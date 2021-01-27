@@ -15,7 +15,8 @@ namespace IO {
 namespace TCP {
 
 /*************************************************************************/
-AsyncServer::Acceptor::Acceptor(AsyncServer* pAsyncServer):
+AsyncServer::Acceptor::Acceptor(RingHandler* pRingHandler, AsyncServer* pAsyncServer):
+  EventHandler(pRingHandler),
   pAsyncServer(pAsyncServer){
 	IA20_TRACER;
 
@@ -31,7 +32,7 @@ void AsyncServer::Acceptor::handle(int iResult){
   handleImpl(pFileHandle);
 }
 /*************************************************************************/
-void AsyncServer::Acceptor::prepare(RingHandler* pRingHandler){
+void AsyncServer::Acceptor::prepare(){
   IA20_TRACER;
 
   pRingHandler->prepareAccept(this, pAsyncServer->iFileDescriptor, address, 0);

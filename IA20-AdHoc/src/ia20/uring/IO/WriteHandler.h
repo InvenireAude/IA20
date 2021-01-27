@@ -20,6 +20,8 @@
 #include<functional>
 #include<tuple>
 
+#include "FileHandler.h"
+
 namespace IA20 {
 namespace URing {
 
@@ -29,26 +31,23 @@ namespace IO {
 /** The WriteHandler class.
  *
  */
-class WriteHandler : public EventHandler{
+class WriteHandler : public EventHandler, public FileHandler{
 public:
 
 	virtual ~WriteHandler() throw();
 
-  void prepare(RingHandler* pRingHandler);
+  void prepare();
   virtual void handle(int iResult);
 
 
 protected:
 
-	WriteHandler(Net::Conn::TCP::FileHandle* pFileHandle);
+	WriteHandler(RingHandler* pRingHandler, Net::Conn::TCP::FileHandle* pFileHandle);
 
   struct iovec iovec;
   off_t        iOffset;
-  off_t        iDataLen;
 
-  virtual void handleImpl() = 0;
-
-  Net::Conn::TCP::FileHandle* pFileHandle;
+  virtual void handleWrite(off_t  iDataLen) = 0;
 };
 
 /*************************************************************************/

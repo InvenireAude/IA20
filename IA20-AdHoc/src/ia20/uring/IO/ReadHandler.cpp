@@ -14,9 +14,9 @@ namespace URing {
 namespace IO {
 
 /*************************************************************************/
-ReadHandler::ReadHandler(Net::Conn::TCP::FileHandle* pFileHandle):
-  pFileHandle(pFileHandle),
-  iDataLen(0),
+ReadHandler::ReadHandler(RingHandler* pRingHandler, Net::Conn::TCP::FileHandle* pFileHandle):
+  EventHandler(pRingHandler),
+  FileHandler(pFileHandle),
   iOffset(0){
 	IA20_TRACER;
 
@@ -29,7 +29,7 @@ ReadHandler::~ReadHandler() throw(){
   free(iovec.iov_base);
 }
 /*************************************************************************/
-void ReadHandler::prepare(RingHandler* pRingHandler){
+void ReadHandler::prepare(){
 	IA20_TRACER;
    pRingHandler->prepareRead(this, pFileHandle->iFileDescriptor, &iovec, 0);
 }
@@ -42,8 +42,7 @@ void ReadHandler::handle(int iResult){
   if(iResult < 0)
     IA20_THROW(URingException("Failure in ReadHandler", -iResult));
 
-  iDataLen = iResult;
-  handleImpl();
+  handleRead(iResult);
 }
 /*************************************************************************/
 }

@@ -54,16 +54,13 @@ protected:
 
 
     std::unique_ptr<URing::IO::TCP::AsyncServer::Acceptor> ptrAcceptor;
-    std::unique_ptr<URing::IO::ReadHandler> ptrReadHandler;
 
     Env(const String& strAddress, int iPort);
 
     virtual void run();
 
-    static const int CBufSize = 128;
 
-    uint8_t buffer[CBufSize];
-    size_t iBytes;
+    bool bResult;
   };
 
 

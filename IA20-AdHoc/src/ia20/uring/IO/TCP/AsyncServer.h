@@ -40,9 +40,9 @@ public:
     public:
 
 
-      Acceptor(AsyncServer* pAsyncServer);
+      Acceptor(RingHandler* pRingHandler, AsyncServer* pAsyncServer);
 
-      void prepare(RingHandler* pRingHandler);
+      void prepare();
       virtual void handle(int iResult);
 
     protected:

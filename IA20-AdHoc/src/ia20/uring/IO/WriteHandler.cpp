@@ -14,9 +14,9 @@ namespace URing {
 namespace IO {
 
 /*************************************************************************/
-WriteHandler::WriteHandler(Net::Conn::TCP::FileHandle* pFileHandle):
-  pFileHandle(pFileHandle),
-  iDataLen(0),
+WriteHandler::WriteHandler(RingHandler* pRingHandler, Net::Conn::TCP::FileHandle* pFileHandle):
+  EventHandler(pRingHandler),
+  FileHandler(pFileHandle),
   iOffset(0){
 	IA20_TRACER;
 
@@ -28,7 +28,7 @@ WriteHandler::~WriteHandler() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-void WriteHandler::prepare(RingHandler* pRingHandler){
+void WriteHandler::prepare(){
 	IA20_TRACER;
    pRingHandler->prepareWrite(this, pFileHandle->iFileDescriptor, &iovec, 0);
 }
@@ -41,8 +41,7 @@ void WriteHandler::handle(int iResult){
   if(iResult < 0)
     IA20_THROW(URingException("Failure in WriteHandler", -iResult));
 
-  iDataLen = iResult;
-  handleImpl();
+  handleWrite(iResult);
 }
 /*************************************************************************/
 }

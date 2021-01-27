@@ -1,5 +1,5 @@
 /*
- * File: ReadHandler.h
+ * File: FileHandler.h
  *
  * Copyright (C) 2020, Invenire Aude, Albert Krzymowski
  *
@@ -7,8 +7,8 @@
  */
 
 
-#ifndef _IA20_URing_IO_ReadHandler_H_
-#define _IA20_URing_IO_ReadHandler_H_
+#ifndef _IA20_URing_IO_FileHandler_H_
+#define _IA20_URing_IO_FileHandler_H_
 
 #include <ia20/commonlib/commonlib.h>
 
@@ -20,40 +20,29 @@
 #include<functional>
 #include<tuple>
 
-#include "FileHandler.h"
-
-
 namespace IA20 {
 namespace URing {
 
 namespace IO {
 
 /*************************************************************************/
-/** The ReadHandler class.
+/** The FileHandler class.
  *
  */
-class ReadHandler : public EventHandler, public FileHandler{
+class FileHandler{
 public:
-
-	virtual ~ReadHandler() throw();
-
-  void prepare();
-  virtual void handle(int iResult);
-
-	ReadHandler(RingHandler* pRingHandler, IA20::Net::Conn::TCP::FileHandle* pFileHandle);
 
 protected:
 
-  struct iovec iovec;
-  off_t        iOffset;
-
-  virtual void handleRead(off_t iDataLen)  = 0;
+	FileHandler(Net::Conn::TCP::FileHandle* pFileHandle);
+  Net::Conn::TCP::FileHandle* pFileHandle;
 
 };
+
 /*************************************************************************/
 }
 }
 }
 
-#endif /* _IA20_URing_IO_ReadHandler_H_ */
+#endif /* _IA20_URing_IO_FileHandler_H_ */
 
