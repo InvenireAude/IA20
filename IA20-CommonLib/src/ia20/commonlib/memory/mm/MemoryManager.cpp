@@ -286,7 +286,7 @@ void MemoryManager::printToStream(std::ostream& os, bool bNewOnly, bool bStatsOn
 
   if(sName == CMainName){
 
-    struct mallinfo info = mallinfo();
+    struct mallinfo2 info = mallinfo2();
     os<<"System glibc malloc() stats:"<<std::endl;
     os<<" arena:  "<<info.arena<<std::endl;
     os<<" ordblks:  "<<info.ordblks<<std::endl;
