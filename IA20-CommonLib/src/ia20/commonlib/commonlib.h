@@ -64,6 +64,7 @@
 #include "time/Date.h"
 
 #include "tools/Buffer.h"
+#include "tools/ProgramParameters.h"
 #include "tools/MiscTools.h"
 #include "tools/TypeTools.h"
 #include "tools/EnvTools.h"
@@ -78,10 +79,16 @@
 #include "types/BufferQueue.h"
 
 #include "sys/Signal.h"
+#include "sys/FileDescriptorBase.h"
 
 #include "callbacks/CallbacksRegister.h"
 #include "testcase/TestUnit.h"
 #include "testcase/TestSuite.h"
+
+#include "streams/InputFile.h"
+#include "streams/OutputFile.h"
+#include "streams/Directory.h"
+#include "streams/InputFileTail.h"
 
 #include "memory/InstanceFeature.h"
 
@@ -89,6 +96,14 @@
 #include "ui/MessageCatalog.h"
 
 #include "version/Version.h"
+
+#include "net/conn/udp/Sender.h"
+#include "net/conn/udp/Receiver.h"
+#include "net/conn/tcp/Server.h"
+#include "net/conn/tcp/DefaultConnectionFactory.h"
+#include "net/conn/tcp/Client.h"
+#include "net/conn/tcp/Peer.h"
+
 
 #ifndef NULL
 #define NULL ((void*)0)

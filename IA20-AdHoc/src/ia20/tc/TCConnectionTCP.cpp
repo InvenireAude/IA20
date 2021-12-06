@@ -19,7 +19,7 @@
 
 #include "TCConnectionTCP.h"
 
-#include <ia20/net/conn/tcp/DefaultConnectionFactory.h>
+#include <ia20/commonlib/net/conn/tcp/DefaultConnectionFactory.h>
 #include <unistd.h>
 #include <string.h>
 

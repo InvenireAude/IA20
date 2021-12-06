@@ -6,7 +6,7 @@
  */
 
 #include "Connection.h"
-#include <ia20/net/conn/Address.h>
+#include <ia20/commonlib/net/conn/Address.h>
 
 namespace IA20 {
 namespace Net {

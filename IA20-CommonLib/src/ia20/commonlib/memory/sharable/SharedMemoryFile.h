@@ -96,13 +96,13 @@ public:
 
 	const Descriptor& getDescriptor() const;
 
-	SharedMemoryFile(const Descriptor& aDescriptor);
-
   //TODO makeit a non-static and adress range change (if sane checking)
   static void Sync(const void* pAddress, size_t iDataLength, bool bAsync = true);
   void syncAll(bool bAsync = true);
 
   static const size_t CPageSize;
+
+	SharedMemoryFile(const Descriptor& aDescriptor);
 
 protected:
 

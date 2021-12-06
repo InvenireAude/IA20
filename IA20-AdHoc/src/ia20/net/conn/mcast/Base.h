@@ -21,7 +21,7 @@
 #define _IA20_Net_Conn_MCast_Base_H_
 
 #include <ia20/commonlib/types.h>
-#include "../Peer.h"
+#include <ia20/commonlib/net/conn/Peer.h>
 
 namespace IA20 {
 namespace Net {

@@ -6,7 +6,7 @@
  */
 
 #include "Logger.h"
-#include <ia20/net/conn/Address.h>
+#include <ia20/commonlib/net/conn/Address.h>
 
 #include "../LogEntry.h"
 #include <unistd.h>

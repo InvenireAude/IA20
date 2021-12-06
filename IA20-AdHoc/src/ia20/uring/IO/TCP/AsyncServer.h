@@ -12,10 +12,12 @@
 
 #include <ia20/commonlib/commonlib.h>
 
-#include <ia20/net/conn/tcp/ServerBase.h>
+#include <ia20/commonlib/net/conn/tcp/ServerBase.h>
+#include <ia20/commonlib/net/conn/Address.h>
+
 #include <ia20/uring/EventHandler.h>
-#include <ia20/net/conn/Address.h>
-#include <ia20/net/conn/tcp/FileHandle.h>
+
+#include <ia20/commonlib/net/conn/tcp/FileHandle.h>
 
 #include<functional>
 #include<tuple>

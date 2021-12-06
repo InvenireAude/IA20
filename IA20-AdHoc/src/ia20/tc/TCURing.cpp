@@ -19,10 +19,10 @@
 
 #include "TCURing.h"
 
-#include <ia20/net/conn/tcp/DefaultConnectionFactory.h>
-#include <ia20/net/conn/tcp/Client.h>
-#include <ia20/net/conn/tcp/Server.h>
-#include <ia20/net/conn/tcp/FileHandle.h>
+#include <ia20/commonlib/net/conn/tcp/DefaultConnectionFactory.h>
+#include <ia20/commonlib/net/conn/tcp/Client.h>
+#include <ia20/commonlib/net/conn/tcp/Server.h>
+#include <ia20/commonlib/net/conn/tcp/FileHandle.h>
 #include <ia20/uring/IO/ReadHandler.h>
 #include <ia20/uring/IO/WriteHandler.h>
 
@@ -34,7 +34,7 @@ namespace TC{
 
 using namespace URing;
 using namespace URing::IO;
-using namespace URing::IO::TCP;
+
 using namespace Net;
 using namespace Net::Conn;
 using namespace Net::Conn::TCP;
@@ -84,10 +84,10 @@ class Server : public ReadHandler, public WriteHandler {
 
 const String Server::CStrData("TEST_TEST_TEST_TEST");
 /*************************************************************************/
-class Acceptor : public AsyncServer::Acceptor {
+class Acceptor : public IO::TCP::AsyncServer::Acceptor {
   public:
-    Acceptor(AsyncServer* pAsyncServer, RingHandler *pRingHandler):
-      AsyncServer::Acceptor(pRingHandler, pAsyncServer){};
+    Acceptor(IO::TCP::AsyncServer* pAsyncServer, RingHandler *pRingHandler):
+      IO::TCP::AsyncServer::Acceptor(pRingHandler, pAsyncServer){};
 
   protected:
     virtual void handleImpl(Net::Conn::TCP::FileHandle* pFileHandle){
@@ -164,8 +164,8 @@ void TCURing::Env::run(){
 
   SYS::Signal::ThreadRegistration tr;
 
-  std::unique_ptr<AsyncServer> ptrAsyncServer(new AsyncServer(peer, DefaultConnectionFactory::GetInstance()));
-  std::unique_ptr<AsyncServer::Acceptor> ptrAcceptor(new Acceptor(ptrAsyncServer.get(), ptrRingHandler.get()));
+  std::unique_ptr<IO::TCP::AsyncServer> ptrAsyncServer(new IO::TCP::AsyncServer(peer, DefaultConnectionFactory::GetInstance()));
+  std::unique_ptr<IO::TCP::AsyncServer::Acceptor> ptrAcceptor(new Acceptor(ptrAsyncServer.get(), ptrRingHandler.get()));
 
   ptrAcceptor->prepare();
 
@@ -198,9 +198,9 @@ void TCURing::caseConnect(){
   e.start();
   barrierStart.synchronize();
 
-  Peer peerLocal("localhost", 55559);
-  Peer peer1("127.0.0.1", 55556);
-  Peer peer2("192.168.0.94", 55556);
+  Net::Conn::TCP::Peer peerLocal("localhost", 55559);
+  Net::Conn::TCP::Peer peer1("127.0.0.1", 55556);
+  Net::Conn::TCP::Peer peer2("192.168.0.94", 55556);
 
   IA20_LOG(true,"TEST1");
 

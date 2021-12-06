@@ -21,11 +21,6 @@
 #include <ia20/commonlib/commonlib.h>
 #include <ia20/commonlib/testcase/TestUnit.h>
 
-#include <ia20/net/conn/tcp/Server.h>
-#include <ia20/net/conn/tcp/Client.h>
-
-#include <ia20/net/conn/tcp/Peer.h>
-
 namespace IA20{
 namespace TC{
 

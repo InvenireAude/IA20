@@ -22,7 +22,7 @@
 
 #include <ia20/commonlib/types.h>
 #include "Base.h"
-#include "../Address.h"
+#include <ia20/commonlib/net/conn/Address.h>
 
 namespace IA20 {
 namespace Net {
