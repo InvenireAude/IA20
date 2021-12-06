@@ -45,7 +45,7 @@ inline const flatbuffers::TypeTable *AppendLogResponseTypeTable();
 
 inline const flatbuffers::TypeTable *MessageTypeTable();
 
-enum Action {
+enum Action : uint8_t {
   Action_NONE = 0,
   Action_VoteRequest = 1,
   Action_VoteResponse = 2,
@@ -116,8 +116,9 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(2) Header FLATBUFFERS_FINAL_CLASS {
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return HeaderTypeTable();
   }
-  Header() {
-    memset(static_cast<void *>(this), 0, sizeof(Header));
+  Header()
+      : dstServerId_(0),
+        srcServerId_(0) {
   }
   Header(uint16_t _dstServerId, uint16_t _srcServerId)
       : dstServerId_(flatbuffers::EndianScalar(_dstServerId)),
@@ -141,8 +142,9 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) LogEntryId FLATBUFFERS_FINAL_CLASS {
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return LogEntryIdTypeTable();
   }
-  LogEntryId() {
-    memset(static_cast<void *>(this), 0, sizeof(LogEntryId));
+  LogEntryId()
+      : term_(0),
+        index_(0) {
   }
   LogEntryId(uint32_t _term, uint32_t _index)
       : term_(flatbuffers::EndianScalar(_term)),
@@ -202,7 +204,6 @@ struct VoteRequestBuilder {
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  VoteRequestBuilder &operator=(const VoteRequestBuilder &);
   flatbuffers::Offset<VoteRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<VoteRequest>(end);
@@ -267,7 +268,6 @@ struct VoteResponseBuilder {
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  VoteResponseBuilder &operator=(const VoteResponseBuilder &);
   flatbuffers::Offset<VoteResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<VoteResponse>(end);
@@ -349,7 +349,6 @@ struct AppendLogRequestBuilder {
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  AppendLogRequestBuilder &operator=(const AppendLogRequestBuilder &);
   flatbuffers::Offset<AppendLogRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<AppendLogRequest>(end);
@@ -443,7 +442,6 @@ struct AppendLogResponseBuilder {
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  AppendLogResponseBuilder &operator=(const AppendLogResponseBuilder &);
   flatbuffers::Offset<AppendLogResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<AppendLogResponse>(end);
@@ -540,7 +538,6 @@ struct MessageBuilder {
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  MessageBuilder &operator=(const MessageBuilder &);
   flatbuffers::Offset<Message> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<Message>(end);
@@ -619,7 +616,7 @@ inline const flatbuffers::TypeTable *ActionTypeTable() {
     "AppendLogResponse"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_UNION, 5, type_codes, type_refs, nullptr, names
+    flatbuffers::ST_UNION, 5, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -635,7 +632,7 @@ inline const flatbuffers::TypeTable *HeaderTypeTable() {
     "srcServerId"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_STRUCT, 2, type_codes, nullptr, values, names
+    flatbuffers::ST_STRUCT, 2, type_codes, nullptr, nullptr, values, names
   };
   return &tt;
 }
@@ -651,7 +648,7 @@ inline const flatbuffers::TypeTable *LogEntryIdTypeTable() {
     "index"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_STRUCT, 2, type_codes, nullptr, values, names
+    flatbuffers::ST_STRUCT, 2, type_codes, nullptr, nullptr, values, names
   };
   return &tt;
 }
@@ -671,7 +668,7 @@ inline const flatbuffers::TypeTable *VoteRequestTypeTable() {
     "lastLogEntry"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, names
+    flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -688,7 +685,7 @@ inline const flatbuffers::TypeTable *VoteResponseTypeTable() {
     "granted"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -712,7 +709,7 @@ inline const flatbuffers::TypeTable *AppendLogRequestTypeTable() {
     "data"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 5, type_codes, type_refs, nullptr, names
+    flatbuffers::ST_TABLE, 5, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -734,7 +731,7 @@ inline const flatbuffers::TypeTable *AppendLogResponseTypeTable() {
     "resend"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 4, type_codes, type_refs, nullptr, names
+    flatbuffers::ST_TABLE, 4, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -755,7 +752,7 @@ inline const flatbuffers::TypeTable *MessageTypeTable() {
     "action"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, names
+    flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
