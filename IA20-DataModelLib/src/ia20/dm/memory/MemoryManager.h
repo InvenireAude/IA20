@@ -24,6 +24,7 @@ namespace Memory {
 class MemoryManager {
 public:
 
+
 	virtual ~MemoryManager() throw();
 
 	MemoryManager();
