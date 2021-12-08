@@ -1,5 +1,5 @@
 /*
- * File: SimpleType.h
+ * File: IntegerType.h
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
@@ -7,27 +7,27 @@
  */
 
 
-#ifndef _IA20_DM_SimpleType_H_
-#define _IA20_DM_SimpleType_H_
+#ifndef _IA20_DM_IntegerType_H_
+#define _IA20_DM_IntegerType_H_
 
 #include <ia20/commonlib/commonlib.h>
 
-#include "Type.h"
+#include "SimpleType.h"
 
 namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-/** The SimpleType class.
+/** The IntegerType class.
  *
  */
-class SimpleType : public Type {
+class IntegerType : public SimpleType{
 public:
 
-  ~SimpleType() throw();
+ ~IntegerType() throw();
+	IntegerType();
 
 protected:
-	SimpleType(Kind iKind);
 
 };
 
@@ -35,4 +35,4 @@ protected:
 }
 }
 
-#endif /* _IA20_DM_SimpleType_H_ */
+#endif /* _IA20_DM_IntegerType_H_ */

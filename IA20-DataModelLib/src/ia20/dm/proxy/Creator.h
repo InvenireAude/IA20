@@ -1,5 +1,5 @@
 /*
- * File: SimpleType.h
+ * File: Creator.h
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
@@ -7,32 +7,37 @@
  */
 
 
-#ifndef _IA20_DM_SimpleType_H_
-#define _IA20_DM_SimpleType_H_
+#ifndef _IA20_DM_Proxy_Creator_H_
+#define _IA20_DM_Proxy_Creator_H_
 
 #include <ia20/commonlib/commonlib.h>
 
-#include "Type.h"
+#include <ia20/dm/Type.h>
+#include <ia20/dm/DataObject.h>
 
 namespace IA20 {
 namespace DM {
+namespace Proxy {
 
 /*************************************************************************/
-/** The SimpleType class.
+/** The Creator class.
  *
  */
-class SimpleType : public Type {
+class Creator {
 public:
 
-  ~SimpleType() throw();
+	~Creator() throw();
+	Creator();
+
+  static Creator TheInstance;
 
 protected:
-	SimpleType(Kind iKind);
 
 };
 
 /*************************************************************************/
 }
 }
+}
 
-#endif /* _IA20_DM_SimpleType_H_ */
+#endif /* _IA20_DM_Proxy_Creator_H_ */

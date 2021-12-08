@@ -24,22 +24,28 @@ public:
   typedef int64_t Long;
   typedef double  Float;
   typedef bool    Boolean;
-  // typedef const char* String;
+  typedef const char* String;
 
   enum Kind {
-    CNone       = 0x00,
-    CInteger    = 0x01,
-    CLong       = 0x03,
-    CFloat      = 0x04,
-    CString     = 0x05,
-    CDataObject = 0x10,
+    CNoneType          = 0x00,
+    CIntegerType       = 0x01,
+    CLongType          = 0x03,
+    CFloatType         = 0x04,
+    CStringType        = 0x05,
+    CDataObjectType    = 0x06,
+    CNumberOfTypeKinds = 0x06,
   };
 
 
 	~Type() throw();
-	Type(Kind iKind);
+
+  inline Kind getKind()const{
+    return iKind;
+  }
 
 protected:
+	Type(Kind iKind);
+
 
   Kind iKind;
 
@@ -48,3 +54,4 @@ protected:
 /*************************************************************************/
 
 #endif /* _Type_H_ */
+

@@ -1,7 +1,13 @@
-#Wed Dec  8 10:06:44 AM CET 2021
+#Wed Dec  8 02:00:59 PM CET 2021
 FILES+=ia20/dm/ComplexType
 FILES+=ia20/dm/DataObject
+FILES+=ia20/dm/exceptions/ConvertionException
+FILES+=ia20/dm/exceptions/Exception
+FILES+=ia20/dm/IntegerType
 FILES+=ia20/dm/memory/MemoryManager
+FILES+=ia20/dm/proxy/Converter
+FILES+=ia20/dm/proxy/Creator
+FILES+=ia20/dm/proxy/Setter
 FILES+=ia20/dm/SimpleType
 FILES+=ia20/dm/Type
 FILES+=ia20/dm/TypedValue

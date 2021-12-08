@@ -17,6 +17,11 @@
 namespace IA20 {
 namespace DM {
 
+namespace Proxy {
+  class Setter;
+  class Converter;
+};
+
 /*************************************************************************/
 /** The TypedValue class.
  *
@@ -34,14 +39,25 @@ public:
     Type::Integer iValue;
     Type::Long    lValue;
     Type::Boolean bValue;
-
+    Type::String  sValue;
     DataObject*   pDataObject;
+
+    inline Holder(Type::Integer iValue):iValue(iValue){};
+    inline Holder(Type::String  sValue):sValue(sValue){};
+    inline Holder(DataObject*   pDataObject = NULL):pDataObject(pDataObject){};
   };
 
+  inline const Type* getType()const{
+    return pType;
+  }
+
 protected:
+  const Type* pType;
+  Holder      mHolder;
 
+  friend class Proxy::Converter;
+  friend class Proxy::Setter;
 };
-
 /*************************************************************************/
 }
 }
