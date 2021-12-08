@@ -1,2 +1,7 @@
-#Tue Dec  7 02:56:09 PM CET 2021
+#Wed Dec  8 10:06:44 AM CET 2021
+FILES+=ia20/dm/ComplexType
+FILES+=ia20/dm/DataObject
 FILES+=ia20/dm/memory/MemoryManager
+FILES+=ia20/dm/SimpleType
+FILES+=ia20/dm/Type
+FILES+=ia20/dm/TypedValue
