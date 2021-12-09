@@ -12,6 +12,7 @@
 
 #include <ia20/commonlib/commonlib.h>
 
+
 #include "SimpleType.h"
 
 namespace IA20 {
@@ -21,12 +22,13 @@ namespace DM {
 /** The IntegerType class.
  *
  */
-class IntegerType : public SimpleType{
+class IntegerType : public SimpleType {
 public:
 
- ~IntegerType() throw();
-	IntegerType();
+	virtual ~IntegerType() throw();
 
+
+	IntegerType();
 protected:
 
 };

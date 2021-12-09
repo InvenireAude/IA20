@@ -21,13 +21,14 @@ namespace DM {
 /** The SimpleType class.
  *
  */
-class SimpleType : public Type {
+class SimpleType : public Type{
 public:
 
-  ~SimpleType() throw();
+	virtual ~SimpleType() throw();
 
-protected:
+
 	SimpleType(Kind iKind);
+protected:
 
 };
 

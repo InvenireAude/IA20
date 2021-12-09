@@ -29,7 +29,7 @@ namespace Proxy {
 
 class DataObject;
 
-class TypedValue {
+struct TypedValue {
 public:
 
  ~TypedValue() throw();
@@ -47,16 +47,9 @@ public:
     inline Holder(DataObject*   pDataObject = NULL):pDataObject(pDataObject){};
   };
 
-  inline const Type* getType()const{
-    return pType;
-  }
-
-protected:
   const Type* pType;
   Holder      mHolder;
 
-  friend class Proxy::Converter;
-  friend class Proxy::Setter;
 };
 /*************************************************************************/
 }

@@ -1,33 +1,33 @@
 /*
- * File: ConvertionException.cpp
+ * File: ConversionException.cpp
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
  */
 
-#include "ConvertionException.h"
+#include "ConversionException.h"
 
 
 namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-ConvertionException::ConvertionException(){
+ConversionException::ConversionException(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-ConvertionException::ConvertionException(const String& strInfo):
+ConversionException::ConversionException(const String& strInfo):
   DM::Exception(strInfo){
 	IA20_TRACER;
 }
 /*************************************************************************/
-ConvertionException::~ConvertionException() throw(){
+ConversionException::~ConversionException() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-const char* ConvertionException::getName(){
+const char* ConversionException::getName(){
 	IA20_TRACER;
-	return "ConvertionException";
+	return "ConversionException";
 }
 /*************************************************************************/
 }

@@ -26,9 +26,24 @@ public:
 
   ~DataObject();
 
-	DataObject(DataObject *pParent, const TypedValue& mValue);
+
+  inline bool isRoot()const{
+    return pParent == NULL;
+  }
+
+  DataObject* getParent()const;
+
+  virtual Type::Integer getInteger()const;
+  virtual Type::String  getString()const;
+  virtual void          saveToStream(std::ostream& os)const;
+
+  void setParent(DataObject *pParent);
+
+  static DataObject* Create(void *pOwnerAddress, const Type* pType, DataObject *pParent = NULL);
 
 protected:
+
+	DataObject(const Type* pType, DataObject *pParent = NULL);
 
   DataObject *pParent;
   TypedValue mValue;

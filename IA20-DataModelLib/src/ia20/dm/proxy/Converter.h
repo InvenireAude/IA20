@@ -32,20 +32,10 @@ public:
 
  static Converter TheInstance;
 
- void convert(Type::Kind iKindFrom, const TypedValue::Holder& holderFrom,
-              Type::Kind iKindTo, TypedValue::Holder& holderTo);
-
- static void ConvertStringToInteger(const TypedValue::Holder& holderFrom, TypedValue::Holder& holderTo);
+ Type::Integer convertStringToInteger(const TypedValue::Holder& holderFrom);
+ void convertIntegerToStream(const TypedValue::Holder& holderFrom, std::ostream& os);
 
 protected:
-
-  typedef void (*ConvertFunPtr)(const TypedValue::Holder& holderFrom,
-                                TypedValue::Holder& holderTo);
-
-  static const int CTabSize = Type::Kind::CNumberOfTypeKinds*Type::Kind::CNumberOfTypeKinds + 1;
-  ConvertFunPtr tConverters[CTabSize];
-
- static void ConvertByCopy(const TypedValue::Holder& holderFrom, TypedValue::Holder& holderTo);
 
 };
 

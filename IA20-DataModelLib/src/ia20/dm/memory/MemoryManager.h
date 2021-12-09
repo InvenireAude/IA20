@@ -41,7 +41,7 @@ public:
   template<class C>
     static C* AllocateLocally(void* pAddress){
       IA20_CHECK_IF_NULL(TheThreadLocal);
-      return TheThreadLocal->allocate(pAddress, sizeof(C));
+      return reinterpret_cast<C*>(TheThreadLocal->allocate(pAddress, sizeof(C)));
   };
 
   static void* AllocateLocally(void* pAddress, SizeType iSize){

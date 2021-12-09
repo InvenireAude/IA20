@@ -1,24 +1,24 @@
 /*
- * File: IntegerType.cpp
+ * File: ComplexDataObject.cpp
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
  */
 
-#include "IntegerType.h"
+#include "ComplexDataObject.h"
 
 
 namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-IntegerType::IntegerType():
-  SimpleType(Type::CIntegerType){
+ComplexDataObject::ComplexDataObject(const Type* pType, DataObject *pParent):
+  DataObject(pType, pParent){
 	IA20_TRACER;
 }
 
 /*************************************************************************/
-IntegerType::~IntegerType() throw(){
+ComplexDataObject::~ComplexDataObject() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/

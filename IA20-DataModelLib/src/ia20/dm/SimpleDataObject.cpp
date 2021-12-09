@@ -1,27 +1,26 @@
 /*
- * File: Creator.cpp
+ * File: SimpleDataObject.cpp
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
  */
 
-#include "Creator.h"
+#include "SimpleDataObject.h"
 
 
 namespace IA20 {
 namespace DM {
-namespace Proxy {
 
 /*************************************************************************/
-Creator::Creator(){
+SimpleDataObject::SimpleDataObject(const Type* pType, DataObject *pParent):
+  DataObject(pType, pParent){
 	IA20_TRACER;
 }
 
 /*************************************************************************/
-Creator::~Creator() throw(){
+SimpleDataObject::~SimpleDataObject() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-}
 }
 }

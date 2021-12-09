@@ -1,5 +1,5 @@
 /*
- * File: ConvertionException.h
+ * File: ConversionException.h
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
@@ -7,8 +7,8 @@
  */
 
 
-#ifndef _IA20_DM_ConvertionException_H_
-#define _IA20_DM_ConvertionException_H_
+#ifndef _IA20_DM_ConversionException_H_
+#define _IA20_DM_ConversionException_H_
 
 #include <ia20/commonlib/commonlib.h>
 
@@ -18,15 +18,15 @@ namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-/** The ConvertionException class.
+/** The ConversionException class.
  *
  */
-class ConvertionException : public DM::Exception{
+class ConversionException : public DM::Exception{
 public:
 
-	virtual ~ConvertionException() throw();
-	ConvertionException();
-	ConvertionException(const String& strInfo);
+	virtual ~ConversionException() throw();
+	ConversionException();
+	ConversionException(const String& strInfo);
 
   virtual const char*  getName();
 protected:
@@ -37,4 +37,4 @@ protected:
 }
 }
 
-#endif /* _IA20_DM_ConvertionException_H_ */
+#endif /* _IA20_DM_ConversionException_H_ */

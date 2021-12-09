@@ -1,5 +1,5 @@
 /*
- * File: Creator.h
+ * File: StringType.h
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
@@ -7,30 +7,27 @@
  */
 
 
-#ifndef _IA20_DM_Proxy_Creator_H_
-#define _IA20_DM_Proxy_Creator_H_
+#ifndef _IA20_DM_StringType_H_
+#define _IA20_DM_StringType_H_
 
 #include <ia20/commonlib/commonlib.h>
 
-#include <ia20/dm/Type.h>
-#include <ia20/dm/DataObject.h>
+#include "SimpleType.h"
 
 namespace IA20 {
 namespace DM {
-namespace Proxy {
 
 /*************************************************************************/
-/** The Creator class.
+/** The StringType class.
  *
  */
-class Creator {
+class StringType : public SimpleType {
 public:
 
-	~Creator() throw();
-	Creator();
+	virtual ~StringType() throw();
 
-  static Creator TheInstance;
 
+	StringType();
 protected:
 
 };
@@ -38,6 +35,5 @@ protected:
 /*************************************************************************/
 }
 }
-}
 
-#endif /* _IA20_DM_Proxy_Creator_H_ */
+#endif /* _IA20_DM_StringType_H_ */

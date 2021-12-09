@@ -21,6 +21,6 @@ ComplexType::ComplexType(Kind iKind):
 ComplexType::~ComplexType() throw(){
 	IA20_TRACER;
 }
-/*************************************************************************/
+
 }
 }

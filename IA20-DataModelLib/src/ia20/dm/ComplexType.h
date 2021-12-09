@@ -27,6 +27,7 @@ public:
 	~ComplexType() throw();
 	ComplexType(Kind iKind);
 
+
 protected:
 
 };
