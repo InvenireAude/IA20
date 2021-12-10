@@ -13,17 +13,20 @@ namespace IA20 {
 namespace DM {
 namespace Proxy {
 
+Converter Converter::TheInstance;
+
 /*************************************************************************/
- Type::Integer convertStringToInteger(const TypedValue::Holder& holderFrom){
+ Type::Integer Converter::convertStringToInteger(const Type::CString csValue){
   try{
-		return std::stoi(holderFrom.sValue,0,10);
+		return std::stoi(csValue,0,10);
 	}catch(std::exception& e){
-		IA20_THROW(ConversionException("Conversion error: [")<<holderFrom.sValue<<"]");
+    PrintTrace(std::cout);
+		IA20_THROW(ConversionException("Conversion error: [")<<csValue<<"]");
 	}
  }
 /*************************************************************************/
- void convertIntegerToStream(const TypedValue::Holder& holderFrom, std::ostream& os){
-   os<<holderFrom.iValue;
+ void Converter::convertIntegerToStream(const Type::Integer iValue, std::ostream& os){
+   os<<iValue;
  }
 /*************************************************************************/
 }

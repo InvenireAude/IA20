@@ -52,6 +52,17 @@ public:
   void *allocate(void* pAddress, uint32_t iSize);
   void free(void* pAddress);
 
+  static void AssureCreated(bool bRecycle = false){
+
+    if(TheThreadLocal){
+      delete TheThreadLocal;
+      TheThreadLocal = NULL;
+    }
+
+    if(!TheThreadLocal)
+      TheThreadLocal = new MemoryManager();
+  }
+
 protected:
 
   struct SegmentList {
@@ -74,7 +85,7 @@ protected:
 
 
   static inline SegmentList* GetSegmentAddress(void* pAddress){
-       AddressIntegerType pValue = ((AddressIntegerType)pAddress) & ~CSegmentMask;
+      AddressIntegerType pValue = ((AddressIntegerType)pAddress) & CSegmentMask;
       return static_cast<SegmentList*>((void*)pValue);
   };
 

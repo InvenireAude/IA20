@@ -9,6 +9,9 @@
 
 #include <ia20/dm/exception/ConversionException.h>
 #include <ia20/dm/proxy/Converter.h>
+#include <ia20/dm/memory/MemoryManager.h>
+
+#include <string.h>
 
 namespace IA20 {
 namespace DM {
@@ -26,18 +29,22 @@ StringDataObject::~StringDataObject() throw(){
 /*************************************************************************/
 Type::Integer StringDataObject::getInteger()const{
 	IA20_TRACER;
-  return Proxy::Converter::TheInstance.convertStringToInteger(mValue.mHolder);
+  return Proxy::Converter::TheInstance.convertStringToInteger(mValue.mHolder.csValue);
 }
 /*************************************************************************/
-Type::String StringDataObject::getString()const{
+Type::CString StringDataObject::getCString()const{
 	IA20_TRACER;
-  IA20_THROW(ConversionException("Unsupported conversion: [")<<mValue.pType->getKind()<<"-> String (const char*) ]");
+  return mValue.mHolder.csValue;
 }
 /*************************************************************************/
-
+void StringDataObject::setString(const String& strValue){
+  mValue.mHolder.csValue = (Type::CString)Memory::MemoryManager::AllocateLocally(this, strValue.length() + 1 );
+  memcpy((char*)mValue.mHolder.csValue, strValue.c_str(), strValue.length() + 1);
+}
+/*************************************************************************/
 void StringDataObject::saveToStream(std::ostream& os)const{
 	IA20_TRACER;
-  Proxy::Converter::TheInstance.convertIntegerToStream(mValue.mHolder, os);
+  os<<mValue.mHolder.csValue;
 }
 /*************************************************************************/
 }

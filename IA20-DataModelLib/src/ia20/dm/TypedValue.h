@@ -28,6 +28,8 @@ namespace Proxy {
  */
 
 class DataObject;
+class DataObjectContainer;
+class DataObjectArray;
 
 struct TypedValue {
 public:
@@ -36,14 +38,18 @@ public:
 	TypedValue();
 
   union Holder {
+
     Type::Integer iValue;
     Type::Long    lValue;
     Type::Boolean bValue;
-    Type::String  sValue;
-    DataObject*   pDataObject;
+    Type::CString csValue;
+
+    DataObject*            pDataObject;
+    DataObjectContainer*   pContainer;
+    DataObjectArray*       pArray;
 
     inline Holder(Type::Integer iValue):iValue(iValue){};
-    inline Holder(Type::String  sValue):sValue(sValue){};
+    inline Holder(Type::CString csValue):csValue(csValue){};
     inline Holder(DataObject*   pDataObject = NULL):pDataObject(pDataObject){};
   };
 

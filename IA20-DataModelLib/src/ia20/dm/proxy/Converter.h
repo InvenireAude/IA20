@@ -27,13 +27,13 @@ namespace Proxy {
 class Converter {
 public:
 
-	~Converter() throw();
-	Converter();
+	~Converter() throw(){};
+	Converter(){};
 
  static Converter TheInstance;
 
- Type::Integer convertStringToInteger(const TypedValue::Holder& holderFrom);
- void convertIntegerToStream(const TypedValue::Holder& holderFrom, std::ostream& os);
+ Type::Integer convertStringToInteger(const Type::CString csValue);
+ void convertIntegerToStream(const Type::Integer iValue, std::ostream& os);
 
 protected:
 

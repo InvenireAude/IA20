@@ -18,6 +18,7 @@
 
 
 #include "ia20/dm/tc/TCMemoryManager.h"
+#include "ia20/dm/tc/TCDataObject.h"
 
 int main(int argc, char* argv[]) {
 	IA20_TRACER;
@@ -31,6 +32,7 @@ int main(int argc, char* argv[]) {
         ptrSuite->setVerbose();
 
         TC::TCMemoryManager    tcMemoryManager(ptrSuite.get());
+        TC::TCDataObject       tcDataObject(ptrSuite.get());
 
 		ptrSuite->run(argc == 1 ? "" : argv[1]);
 		ptrSuite->printResults(std::cout);

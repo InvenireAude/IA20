@@ -1,24 +1,26 @@
 /*
- * File: SimpleType.cpp
+ * File: Property.cpp
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
  */
 
-#include "SimpleType.h"
+#include "Property.h"
 
 
 namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-SimpleType::SimpleType(Kind iKind, const String& strName):
- Type(iKind, strName){
+Property::Property(const Type* pType, const String& strName, unsigned int iIdx):
+  pType(pType),
+  strName(strName),
+  iIdx(iIdx){
 	IA20_TRACER;
 }
 
 /*************************************************************************/
-SimpleType::~SimpleType() throw(){
+Property::~Property() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/

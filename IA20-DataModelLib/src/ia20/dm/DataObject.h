@@ -21,11 +21,15 @@ namespace DM {
 /** The DataObject class.
  *
  */
+
 class DataObject {
 public:
 
   ~DataObject();
 
+  inline const Type* getType()const{
+    return mValue.pType;
+  }
 
   inline bool isRoot()const{
     return pParent == NULL;
@@ -34,12 +38,20 @@ public:
   DataObject* getParent()const;
 
   virtual Type::Integer getInteger()const;
-  virtual Type::String  getString()const;
-  virtual void          saveToStream(std::ostream& os)const;
+  virtual Type::CString getCString()const;
 
-  void setParent(DataObject *pParent);
+  virtual void setInteger(Type::Integer iValue);
+  virtual void setString(const String& strValue);
 
-  static DataObject* Create(void *pOwnerAddress, const Type* pType, DataObject *pParent = NULL);
+  virtual void saveToStream(std::ostream& os)const;
+
+  virtual void createProperty(unsigned int iIdx);
+
+  virtual void setProperty(unsigned int iIdx, DataObject* pDataObject);
+  virtual void setProperty(const String& strName, DataObject* pDataObject);
+
+  virtual DataObject* getProperty(unsigned int iIdx)const;
+  virtual DataObject* getProperty(const String& strName)const;
 
 protected:
 

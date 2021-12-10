@@ -21,13 +21,17 @@ namespace DM {
 /** The StringType class.
  *
  */
+class DataObject;
+
 class StringType : public SimpleType {
 public:
 
 	virtual ~StringType() throw();
 
+	StringType(const String& strName);
 
-	StringType();
+  virtual DataObject* create(DataObject *pParent = NULL)const;
+
 protected:
 
 };

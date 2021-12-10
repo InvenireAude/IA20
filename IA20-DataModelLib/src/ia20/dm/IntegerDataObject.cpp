@@ -17,6 +17,7 @@ namespace DM {
 IntegerDataObject::IntegerDataObject(const Type* pType, DataObject *pParent):
   SimpleDataObject(pType, pParent){
 	IA20_TRACER;
+  mValue.mHolder.iValue = 8888;
 }
 
 /*************************************************************************/
@@ -29,9 +30,19 @@ Type::Integer IntegerDataObject::getInteger()const{
   return mValue.mHolder.iValue;
 }
 /*************************************************************************/
+void IntegerDataObject::setInteger(Type::Integer iValue){
+	IA20_TRACER;
+  mValue.mHolder.iValue = iValue;
+}
+/*************************************************************************/
+void IntegerDataObject::setString(const String& strValue){
+	IA20_TRACER;
+  mValue.mHolder.iValue = Proxy::Converter::TheInstance.convertStringToInteger(strValue.c_str());
+}
+/*************************************************************************/
 void IntegerDataObject::saveToStream(std::ostream& os)const{
 	IA20_TRACER;
-  Proxy::Converter::TheInstance.convertIntegerToStream(mValue.mHolder, os);
+  Proxy::Converter::TheInstance.convertIntegerToStream(mValue.mHolder.iValue, os);
 }
 /*************************************************************************/
 

@@ -17,7 +17,7 @@
 
 namespace IA20 {
 namespace DM {
-
+class DataObject;
 /*************************************************************************/
 /** The IntegerType class.
  *
@@ -26,13 +26,13 @@ class IntegerType : public SimpleType {
 public:
 
 	virtual ~IntegerType() throw();
+	IntegerType(const String& strName);
 
+ virtual DataObject* create(DataObject *pParent = NULL)const;
 
-	IntegerType();
 protected:
 
 };
-
 /*************************************************************************/
 }
 }

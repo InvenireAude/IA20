@@ -15,7 +15,7 @@
 #include "DataObject.h"
 namespace IA20 {
 namespace DM {
-
+class ComplexType;
 /*************************************************************************/
 /** The ComplexDataObject class.
  *
@@ -26,11 +26,19 @@ public:
 	virtual ~ComplexDataObject() throw();
 
 
-	ComplexDataObject(const Type* pType, DataObject *pParent = NULL);
+	ComplexDataObject(const ComplexType* pType, DataObject *pParent = NULL);
+
+  virtual void createProperty(unsigned int iIdx);
+  virtual void setProperty(unsigned int iIdx, DataObject* pDataObject);
+  virtual void setProperty(const String& strName, DataObject* pDataObject);
+
+  virtual DataObject* getProperty(unsigned int iIdx)const;
+  virtual DataObject* getProperty(const String& strName)const;
+
 protected:
-
+   const ComplexType* pComplexType;
+  DataObject** tabDataObjects;
 };
-
 /*************************************************************************/
 }
 }

@@ -12,6 +12,8 @@
 #include <ia20/dm/memory/MemoryManager.h>
 
 #include "ComplexDataObject.h"
+#include "Type.h"
+#include "ComplexType.h"
 #include "IntegerDataObject.h"
 #include "StringDataObject.h"
 
@@ -30,35 +32,6 @@ DataObject::~DataObject() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-DataObject* Create(void *pOwnerAddress, const Type* pType, DataObject *pParent = NULL){
-	IA20_TRACER;
-
-  DataObject *pResult = NULL;
-
-  switch(pType->getKind()){ //TODO switch+case => proxy table [getKind()] -> create(pType,pParent);
-
-    case Type::CDataObjectType:
-      pResult = Memory::MemoryManager::AllocateLocally<ComplexDataObject>(pOwnerAddress);
-      new(pResult) ComplexDataObject(pType, pParent);
-    break;
-
-    case Type::CStringType:
-      pResult = Memory::MemoryManager::AllocateLocally<StringDataObject>(pOwnerAddress);
-      new(pResult) StringDataObject(pType, pParent);
-    break;
-
-    case Type::CIntegerType:
-      pResult = Memory::MemoryManager::AllocateLocally<StringDataObject>(pOwnerAddress);
-      new(pResult) IntegerDataObject(pType, pParent);
-    break;
-
-    default:
-      IA20_THROW(InternalException("Not implemented Type::Kind in DataObject::Create():")<<pType->getKind());
-  }
-
-  return pResult;
-}
-/*************************************************************************/
 DataObject* DataObject::getParent()const{
   IA20_TRACER;
   IA20_CHECK_IF_NULL(pParent);
@@ -67,19 +40,55 @@ DataObject* DataObject::getParent()const{
 /*************************************************************************/
 Type::Integer DataObject::getInteger()const{
 	IA20_TRACER;
-  IA20_THROW(ConversionException("Unsupported conversion: [ ")<<mValue.pType->getKind()<<"-> Integer ]");
+  IA20_THROW(ConversionException("Unsupported conversion: [ ")<<mValue.pType->getName()<<"-> Integer ]");
 }
 /*************************************************************************/
-Type::String DataObject::getString()const{
+Type::CString DataObject::getCString()const{
 	IA20_TRACER;
-  IA20_THROW(ConversionException("Unsupported conversion: [ ")<<mValue.pType->getKind()<<"-> String ]");
+  IA20_THROW(ConversionException("Unsupported conversion: [ ")<<mValue.pType->getName()<<"-> CString ]");
+}
+/*************************************************************************/
+void DataObject::setInteger(Type::Integer iValue){
+	IA20_TRACER;
+  IA20_THROW(ConversionException("Unsupported conversion: [ ")<<mValue.pType->getName()<<"<= Integer ]");
+}
+/*************************************************************************/
+void DataObject::setString(const String& strValue){
+	IA20_TRACER;
+  IA20_THROW(ConversionException("Unsupported conversion: [ ")<<mValue.pType->getName()<<"<- CString ]");
 }
 /*************************************************************************/
 void DataObject::saveToStream(std::ostream& os)const{
 	IA20_TRACER;
-  IA20_THROW(ConversionException("Unsupported conversion: [ ")<<mValue.pType->getKind()<<"-> StringStream ]");
+  IA20_THROW(ConversionException("Unsupported conversion: [ ")<<mValue.pType->getName()<<"-> StringStream ]");
 }
 /*************************************************************************/
+void DataObject::createProperty(unsigned int iIdx){
+  IA20_TRACER;
+  IA20_THROW(ConversionException("Create property not allowed for: ")<<mValue.pType->getName());
+}
+/*************************************************************************/
+void DataObject::setProperty(unsigned int iIdx, DataObject* pDataObject){
+  IA20_TRACER;
+  IA20_THROW(ConversionException("Set property not allowed for: ")<<mValue.pType->getName());
+}
+/*************************************************************************/
+void DataObject::setProperty(const String& strName, DataObject* pDataObject){
+  IA20_TRACER;
+  IA20_THROW(ConversionException("Set property not allowed for: ")<<mValue.pType->getName());
+}
+/*************************************************************************/
+DataObject* DataObject::getProperty(unsigned int iIdx)const{
+  IA20_TRACER;
+  IA20_THROW(ConversionException("Get property not allowed for: ")<<mValue.pType->getName());
+}
+/*************************************************************************/
+DataObject* DataObject::getProperty(const String& strName)const{
+  IA20_TRACER;
+  IA20_THROW(ConversionException("Get property not allowed for: ")<<mValue.pType->getName());
+}
+/*************************************************************************/
+
 }
 }
 

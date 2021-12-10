@@ -28,11 +28,16 @@ public:
 
 	StringDataObject(const Type* pType, DataObject *pParent = NULL);
 
-protected:
+
 
   virtual Type::Integer getInteger()const;
-  virtual Type::String  getString()const;
+  virtual Type::CString getCString()const;
+
+  virtual void setString(const String& strValue);
+
   virtual void          saveToStream(std::ostream& os)const;
+
+protected:
 
 };
 /*************************************************************************/

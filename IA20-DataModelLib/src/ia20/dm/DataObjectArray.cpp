@@ -1,24 +1,24 @@
 /*
- * File: SimpleType.cpp
+ * File: DataObjectArray.cpp
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
  */
 
-#include "SimpleType.h"
-
+#include "DataObjectArray.h"
+#include "DataObjectContainer.h"
+#include <ia20/dm/memory/MemoryManager.h>
 
 namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-SimpleType::SimpleType(Kind iKind, const String& strName):
- Type(iKind, strName){
+DataObjectArray::DataObjectArray(const Type* pType, DataObject *pParent):
+  DataObject(pType, pParent){
 	IA20_TRACER;
 }
-
 /*************************************************************************/
-SimpleType::~SimpleType() throw(){
+DataObjectArray::~DataObjectArray() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/

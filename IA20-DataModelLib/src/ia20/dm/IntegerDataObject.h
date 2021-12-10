@@ -28,6 +28,10 @@ public:
 	IntegerDataObject(const Type* pType, DataObject *pParent  = NULL);
 
   virtual Type::Integer getInteger()const;
+
+  virtual void setInteger(Type::Integer iValue);
+  virtual void setString(const String& strValue);
+
   virtual void          saveToStream(std::ostream& os)const;
 
 protected:

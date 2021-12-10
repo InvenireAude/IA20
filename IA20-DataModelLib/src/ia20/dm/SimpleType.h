@@ -27,7 +27,7 @@ public:
 	virtual ~SimpleType() throw();
 
 
-	SimpleType(Kind iKind);
+	SimpleType(Kind iKind, const String& strName);
 protected:
 
 };

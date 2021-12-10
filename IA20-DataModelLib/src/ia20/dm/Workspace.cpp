@@ -1,24 +1,24 @@
 /*
- * File: SimpleType.cpp
+ * File: Workspace.cpp
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
  */
 
-#include "SimpleType.h"
-
+#include "Workspace.h"
+#include "DataObjectContainer.h"
+#include <ia20/dm/memory/MemoryManager.h>
 
 namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-SimpleType::SimpleType(Kind iKind, const String& strName):
- Type(iKind, strName){
+Workspace::Workspace():
+  DataObject(NULL, NULL){
 	IA20_TRACER;
 }
-
 /*************************************************************************/
-SimpleType::~SimpleType() throw(){
+Workspace::~Workspace() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
