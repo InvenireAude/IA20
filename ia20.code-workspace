@@ -86,7 +86,8 @@
       "thread": "cpp",
       "typeinfo": "cpp",
       "numbers": "cpp",
-      "span": "cpp"
+      "span": "cpp",
+      "semaphore": "cpp"
     }
   }
 }

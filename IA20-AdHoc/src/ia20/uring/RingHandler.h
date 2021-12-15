@@ -39,6 +39,8 @@ public:
 
   void prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::Address& address, int flags);
   void prepareRead(EventHandler* pEventHandler, int fd, struct iovec* iovec, off_t iOffset);
+  void prepareClose(EventHandler* pEventHandler, int fd);
+  void prepareShutdown(EventHandler* pEventHandler, int fd, int how);
   void prepareWrite(EventHandler* pEventHandler, int fd, struct iovec* iovec, off_t iOffset);
 
 protected:

@@ -9,6 +9,8 @@
 
 #include "URingException.h"
 
+#include <strings.h>
+
 namespace IA20 {
 namespace URing {
 
@@ -16,7 +18,14 @@ namespace URing {
 RingHandler::RingHandler(){
 	IA20_TRACER;
 
-  int iResult = io_uring_queue_init(CDefaultSize, &ring, 0);
+  struct io_uring_params params;
+
+  bzero(&params, sizeof(params));
+  params.flags |= IORING_SETUP_SQPOLL;
+  params.sq_thread_idle = 10000;
+
+
+  int iResult = io_uring_queue_init_params(CDefaultSize, &ring, &params);
 
   if(iResult != 0)
     IA20_THROW(URingException("io_uring_queue_init", -iResult));
@@ -63,6 +72,38 @@ void RingHandler::prepareRead(EventHandler* pEventHandler, int fd, struct iovec*
   _submit_and_check(&ring);
 }
 /*************************************************************************/
+void RingHandler::prepareClose(EventHandler* pEventHandler, int fd){
+  IA20_TRACER;
+
+  IA20_LOG(LogLevel::INSTANCE.isSystem(), "Prepare close, fd: "<<fd);
+
+  io_uring_sqe *sqe = io_uring_get_sqe(&ring);
+
+  if(!sqe)
+    IA20_THROW(URingException("io_uring_get_sqe",0));
+
+  io_uring_prep_close(sqe, fd);
+
+  io_uring_sqe_set_data(sqe, pEventHandler);
+  _submit_and_check(&ring);
+}
+/*************************************************************************/
+void RingHandler::prepareShutdown(EventHandler* pEventHandler, int fd, int how){
+  IA20_TRACER;
+
+  IA20_LOG(LogLevel::INSTANCE.isSystem(), "Prepare shutdown, fd: "<<fd);
+
+  io_uring_sqe *sqe = io_uring_get_sqe(&ring);
+
+  if(!sqe)
+    IA20_THROW(URingException("io_uring_get_sqe",0));
+
+  io_uring_prep_shutdown(sqe, fd, how);
+
+  io_uring_sqe_set_data(sqe, pEventHandler);
+  _submit_and_check(&ring);
+}
+/*************************************************************************/
 void RingHandler::prepareWrite(EventHandler* pEventHandler, int fd, struct iovec* iovec, off_t iOffset){
   IA20_TRACER;
 
@@ -89,7 +130,6 @@ void RingHandler::prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::
   if(!sqe)
     IA20_THROW(URingException("io_uring_get_sqe",0));
 
-
   io_uring_prep_accept(sqe, fd,
           (struct sockaddr *)&address.address, &address.iAddressLen, 0);
 
@@ -108,10 +148,18 @@ void RingHandler::handle(){
 
     IA20_LOG(LogLevel::INSTANCE.isSystem(), "Waiting for ring SQE ...");
 
+   //_submit_and_check(&ring);
+
     while(iResult == -62){ // wait is not a cancellation point
       Thread::Cancellation tc(true);
       __kernel_timespec ts = { 1L , 0L };
-      iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
+       //iResult = io_uring_wait_cqe(&ring, &cqe);
+      //iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
+      //usleep(1000000);
+      iResult = 0;
+      if(io_uring_wait_cqe_nr(&ring, &cqe, 0) != 0){
+        iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
+      }
       Thread::Cancellation::Test();
       IA20_LOG(LogLevel::INSTANCE.isSystem(), "iResult = "<<iResult);
     }
@@ -125,7 +173,7 @@ void RingHandler::handle(){
     io_uring_cqe_seen(&ring, cqe);
 
   // TODO if necessary
-    _submit_and_check(&ring);
+    ////_submit_and_check(&ring);
   };
 
 }
