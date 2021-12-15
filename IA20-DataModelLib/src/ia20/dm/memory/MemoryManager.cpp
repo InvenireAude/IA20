@@ -25,6 +25,7 @@ MemoryManager::MemoryManager(){
 /*************************************************************************/
 MemoryManager::~MemoryManager() throw(){
 	IA20_TRACER;
+  IA20_LOG(false,"MM Stacked segments: "<<stackSegments.size());
 }
 /*************************************************************************/
 MemoryManager::SegmentList* MemoryManager::allocateSegment(){
@@ -34,21 +35,21 @@ MemoryManager::SegmentList* MemoryManager::allocateSegment(){
 
     SegmentList *pResult = stackSegments.top();
     stackSegments.pop();
-
-    return pResult;
+    IA20_LOG(false, "reused segment at: "<<(void*)pResult);
+    return new(pResult) SegmentList();
   }
   //TODO provider class, temporary solution to get segmentsize rounded addressing ;)
   SegmentList *pResult = reinterpret_cast<SegmentList*>(new uint8_t[2*CSegmentSize]);
-  IA20_LOG(true, "New memory at: "<<(void*)pResult<<", to "<<(void*)((uint8_t*)pResult+2*CSegmentSize));
+  IA20_LOG(false, "New memory at: "<<(void*)pResult<<", to "<<(void*)((uint8_t*)pResult+2*CSegmentSize));
   pResult = GetSegmentAddress((uint8_t*)pResult+CSegmentSize);
 
-  IA20_LOG(true, "New segment at: "<<(void*)pResult);
+  IA20_LOG(false, "New segment at: "<<(void*)pResult);
   return new(pResult) SegmentList();
 }
 /*************************************************************************/
 void MemoryManager::freeSegment(MemoryManager::SegmentList* pSegment){
   IA20_TRACER;
-  IA20_LOG(true, "Free segment at: "<<(void*)pSegment);
+  IA20_LOG(false, "Free segment at: "<<(void*)pSegment);
   stackSegments.push(pSegment);
 }
 /*************************************************************************/
@@ -60,7 +61,7 @@ void *MemoryManager::allocate(void* pAddress, uint32_t iSize){
   SegmentList *pCursor = pAddress ? GetSegmentAddress(pAddress) : NULL;
 
   while(pCursor && sizeof(SegmentList) + pCursor->iFreeOffset + iSize > CSegmentSize){
-    IA20_LOG(true, "Memory left: "<<pCursor->iFreeOffset);
+    IA20_LOG(false, "Memory left: "<<pCursor->iFreeOffset);
     pCursor = pCursor->pNext;
   }
 
@@ -72,7 +73,7 @@ void *MemoryManager::allocate(void* pAddress, uint32_t iSize){
 
   pCursor->iFreeOffset += iSize;
 
-  IA20_LOG(true, "Allocated "<<iSize<<" bytes at: "<<(void*)pResult);
+  IA20_LOG(false, "Allocated "<<iSize<<" bytes at: "<<(void*)pResult);
   return pResult;
 }
 /*************************************************************************/
@@ -86,10 +87,10 @@ void MemoryManager::free(void* pAddress){
 
   while(pCursor){
     SegmentList *pNext = pCursor->pNext;
-    stackSegments.push(pCursor);
+    freeSegment(pCursor);
     pCursor = pNext;
   }
-
+  IA20_LOG(false, "Stacked segements: "<<stackSegments.size()<<" last at: "<<(void*)pAddress);
 }
 /*************************************************************************/
 }

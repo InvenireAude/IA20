@@ -48,37 +48,55 @@ void TCDataObject::caseBasic(){
 
 	IA20::TimeSample ts(true);
 
-  Memory::MemoryManager::AssureCreated();
+  DM::DataFactory::GetDefault();
 
-  unique_ptr<DM::Type> ptrIntegerType(new IntegerType("Integer"));
-  unique_ptr<DM::Type> ptrStringType(new StringType("String"));
+  unique_ptr<DM::DataFactory> ptrDataFactory(new DataFactory());
 
-  unique_ptr<DM::ComplexType> ptrPartyType(new ComplexType("Party"));
-  unique_ptr<DM::ComplexType> ptrPersonType(new ComplexType("Person",ptrPartyType.get()));
-  unique_ptr<DM::ComplexType> ptrOrganizationType(new ComplexType("Organization",ptrPartyType.get()));
+  const String& CNamespace("http://www.invenieaude.org");
 
-  ptrPartyType->defineProperty(ptrIntegerType.get(),"id");
-  ptrOrganizationType->defineProperty(ptrStringType.get(),"name");
-  ptrOrganizationType->defineProperty(ptrIntegerType.get(),"numberOfEmployees");
-  ptrPersonType->defineProperty(ptrStringType.get(),"firstName");
-  ptrPersonType->defineProperty(ptrStringType.get(),"lastName");
-  ptrPersonType->defineProperty(ptrIntegerType.get(),"age");
+  ptrDataFactory->createNamespace(CNamespace);
 
-  const ComplexType::PropertiesArray* tabPersonProperties(ptrPersonType->getProperties());
+  DM::ComplexType* pPartyType = ptrDataFactory->createType(CNamespace, Type::CDataObjectType, "Party")->asComplexType();
+  DM::ComplexType* pPersonType = ptrDataFactory->createType(CNamespace, Type::CDataObjectType, "Person", pPartyType)->asComplexType();
+  DM::ComplexType* pOrganizationType = ptrDataFactory->createType(CNamespace, Type::CDataObjectType, "Organization", pPartyType)->asComplexType();
+
+  const DM::Type* pIntegerType = ptrDataFactory->getType(DM::Namespace::CDefaultName, DM::IntegerType::CDefaultName);
+  const DM::Type* pStringType  = ptrDataFactory->getType(DM::Namespace::CDefaultName, DM::StringType::CDefaultName);
+
+  pPartyType->defineProperty(pIntegerType,"id");
+  pOrganizationType->defineProperty(pStringType,"name");
+  pOrganizationType->defineProperty(pIntegerType,"numberOfEmployees");
+  pPersonType->defineProperty(pStringType,"firstName");
+  pPersonType->defineProperty(pStringType,"lastName");
+  pPersonType->defineProperty(pIntegerType,"age");
+
+  Memory::MemoryManager::AssureCreated(true);
+  const ComplexType::PropertiesArray* tabPersonProperties(pPersonType->getProperties());
 
   cerr<<endl;
-  for(auto p : *tabPersonProperties){
-    cerr<<"Property ["<<p->getIdx()<<"]: "<<p->getName()<<", :"<<p->getType()->getName()<<endl;
+   for(auto p : *tabPersonProperties){
+      cerr<<"Property ["<<p->getIdx()<<"]: "<<p->getName()<<", :"<<p->getType()->getName()<<endl;
   }
   cerr<<endl;
 
 
-  DataObject *pPerson = ptrPersonType->create();
-  cerr<<"***"<<endl;
+  for(int j=0; j<10000000; j++){
+      DataObject *pPerson1 = pPersonType->create();
+      pPerson1->createProperty(0);
+      pPerson1->createProperty(1);
+      pPerson1->createProperty(2);
+      pPerson1->getProperty(0)->setInteger(123456789);
+      pPerson1->getProperty(1)->setString("John");
+      pPerson1->getProperty(2)->setString("Doe");
+      Memory::MemoryManager::Free(pPerson1);
+  }
+
+
+  DataObject *pPerson = pPersonType->create();
+
   pPerson->createProperty(0);
-  cerr<<"***"<<endl;
   pPerson->createProperty(1);
-  cerr<<"***"<<endl;
+  pPerson->createProperty(2);
 
   cerr<<"value: "<<pPerson->getProperty("id")->getInteger()<<endl;
   pPerson->getProperty("id")->setInteger(7777);
@@ -88,9 +106,23 @@ void TCDataObject::caseBasic(){
   cerr<<endl;
   pPerson->getProperty("id")->setString("9999");
   cerr<<"value: "<<pPerson->getProperty("id")->getInteger()<<endl;
-  //pPerson->getProperty(1)->setString("John");
+
+
+  for(int j=0; j<20; j++){
+    pPerson->getProperty(0)->setInteger(j);
+    pPerson->getProperty(1)->setString("John");
+    pPerson->getProperty(2)->setString("Doe");
+  }
+
+
   pPerson->getProperty("firstName")->setString("John");
   cerr<<"firstName: "<<pPerson->getProperty("firstName")->getCString()<<endl;
+
+  Memory::MemoryManager::Free(pPerson);
+  Memory::MemoryManager::AssureCreated(true);
+
+  cerr<<ts.getSample()<<endl;
+
 }
 
 /*************************************************************************/

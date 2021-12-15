@@ -15,32 +15,35 @@ namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-ComplexType::ComplexType(const String& strName, const Type* pParent):
-  Type(Type::CDataObjectType, strName),
+ComplexType::ComplexType(const String& strName, const Type* pBaseType):
+  Type(Type::CDataObjectType, strName, pBaseType),
   iPropertyOffset(-1){
 	IA20_TRACER;
 
-  if(!pParent){
+
+  if(!pBaseType){
     iPropertyOffset = 0;
-    this->pParent = NULL;
+    this->pBaseAsComplex = NULL;
    }else{
-    this->pParent = pParent->asComplexType();
+    this->pBaseAsComplex = pBaseType->Type::asComplexType();
    }
+
+  IA20_LOG(true, "!! ComplexType: "<<strName<<", parent size: "<<iPropertyOffset<<" parent: "<<pBaseAsComplex);
 }
 /*************************************************************************/
 ComplexType::~ComplexType() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-const ComplexType* ComplexType::asComplexType()const{
+ComplexType* ComplexType::asComplexType(){
    return this;
 }
 /*************************************************************************/
 void ComplexType::defineProperty(const Type* pType, const String& strName){
 	IA20_TRACER;
 
-  if(iPropertyOffset == -1 && pParent){
-    const PropertiesArray* pParentProperties = this->pParent->getProperties();
+  if(iPropertyOffset == -1 && pBaseAsComplex){
+    const PropertiesArray* pParentProperties = this->pBaseAsComplex->getProperties();
     iPropertyOffset = pParentProperties->size();
     IA20_LOG(true, "ComplexType: "<<strName<<", parent size: "<<iPropertyOffset);
     tabProperties.insert(tabProperties.end(),pParentProperties->begin(), pParentProperties->end());

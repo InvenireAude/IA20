@@ -12,9 +12,10 @@ namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-Type::Type(Kind iKind, const String& strName):
+Type::Type(Kind iKind, const String& strName, const Type* pBaseType):
   iKind(iKind),
-  strName(strName){
+  strName(strName),
+  pBaseType(pBaseType){
 	IA20_TRACER;
 }
 /*************************************************************************/
@@ -22,7 +23,7 @@ Type::~Type() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-const ComplexType* Type::asComplexType()const{
+ComplexType* Type::asComplexType(){
    IA20_THROW(BadUsageException("Not a complex type: ")<<strName);
 }
 /*************************************************************************/

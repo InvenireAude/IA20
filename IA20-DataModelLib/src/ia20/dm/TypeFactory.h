@@ -1,5 +1,5 @@
 /*
- * File: SimpleType.h
+ * File: TypeFactory.h
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
@@ -7,8 +7,8 @@
  */
 
 
-#ifndef _IA20_DM_SimpleType_H_
-#define _IA20_DM_SimpleType_H_
+#ifndef _IA20_DM_TypeFactory_H_
+#define _IA20_DM_TypeFactory_H_
 
 #include <ia20/commonlib/commonlib.h>
 
@@ -18,22 +18,16 @@ namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-/** The SimpleType class.
+/** The TypeFactory class.
  *
  */
-class SimpleType : public Type{
-public:
-
-	virtual ~SimpleType() throw();
-
-
-	SimpleType(Kind iKind, const String& strName, const Type* pBaseType);
+class TypeFactory {
 protected:
-
+  static Type* Create(Type::Kind iKind, const String& strName, const Type* pParent);
 };
 
 /*************************************************************************/
 }
 }
 
-#endif /* _IA20_DM_SimpleType_H_ */
+#endif /* _IA20_DM_TypeFactory_H_ */

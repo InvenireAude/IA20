@@ -13,9 +13,11 @@
 namespace IA20 {
 namespace DM {
 
+const String& StringType::CDefaultName("String");
+
 /*************************************************************************/
-StringType::StringType(const String& strName):
-SimpleType(Type::CStringType, strName){
+StringType::StringType(const String& strName, const Type* pBaseType):
+SimpleType(CKind, strName, pBaseType){
 	IA20_TRACER;
 }
 

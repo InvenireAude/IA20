@@ -31,9 +31,8 @@ ComplexDataObject::~ComplexDataObject() throw(){
 /*************************************************************************/
 void ComplexDataObject::createProperty(unsigned int iIdx){
   IA20_TRACER;
-  IA20_LOG(true, "New property ["<<iIdx<<"]: "<<mValue.pType->asComplexType()->getProperty(iIdx)->getType()->getName());
-  IA20_LOG(true, "New property ["<<iIdx<<"]: "<<mValue.pType->asComplexType()->getProperty(iIdx)->getType()->getKind());
-  tabDataObjects[iIdx] = mValue.pType->asComplexType()->getProperty(iIdx)->getType()->create(this);
+// IA20_LOG(true, "New property ["<<iIdx<<"]: "<<mValue.pType->asComplexType()->getProperty(iIdx)->getType()->getName());
+  tabDataObjects[iIdx] = pComplexType->getProperty(iIdx)->getType()->create(this);
 }
 /*************************************************************************/
 void ComplexDataObject::setProperty(unsigned int iIdx, DataObject* pDataObject){

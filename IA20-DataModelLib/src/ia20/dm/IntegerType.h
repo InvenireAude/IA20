@@ -26,9 +26,12 @@ class IntegerType : public SimpleType {
 public:
 
 	virtual ~IntegerType() throw();
-	IntegerType(const String& strName);
+	IntegerType(const String& strName, const Type* pBaseType = NULL);
 
  virtual DataObject* create(DataObject *pParent = NULL)const;
+
+ static const String& CDefaultName;
+ static const Type::Kind CKind = Type::CIntegerType;
 
 protected:
 

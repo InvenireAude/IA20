@@ -14,9 +14,11 @@
 namespace IA20 {
 namespace DM {
 
+const String& IntegerType::CDefaultName("Integer");
+
 /*************************************************************************/
-IntegerType::IntegerType(const String& strName):
-  SimpleType(Type::CIntegerType, strName){
+IntegerType::IntegerType(const String& strName, const Type* pBaseType):
+  SimpleType(Type::CIntegerType, strName, pBaseType){
 	IA20_TRACER;
 }
 /*************************************************************************/

@@ -51,7 +51,11 @@ public:
     return iKind;
   }
 
-  virtual const ComplexType* asComplexType()const;
+  const ComplexType* asComplexType()const{
+    return const_cast<Type*>(this)->asComplexType();
+  }
+
+  virtual ComplexType* asComplexType();
 
   inline const String& getName()const{
     return strName;
@@ -59,10 +63,20 @@ public:
 
  virtual DataObject* create(DataObject *pParent = NULL) const = 0;
 
+
+  inline bool isRoot()const{
+    return pBaseType == NULL;
+  }
+
+  const Type* getParent()const{
+    return pBaseType;
+  }
+
 protected:
-	Type(Kind iKind, const String& strName);
+	Type(Kind iKind, const String& strName, const Type* pBaseType);
   Kind iKind;
   String strName;
+  const Type *pBaseType;
 };
 
 /*************************************************************************/

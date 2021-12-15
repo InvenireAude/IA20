@@ -4,7 +4,7 @@ CCPPDEPSCMD=g++ -MM -MG
 #
 # Use += here since global settings are already set.
 
-CPPFLAGS+= -D__IA20_NO_TRACER__ -m64 -fPIC -g -O3 -std=c++17 -Wdeprecated
+CPPFLAGS+= -D__IA20_NO_TRACER__ -m64 -fPIC -O3 -std=c++17 -Wdeprecated
 CPPFLAGS+=-I/usr/include/libxml2
 LNFLAGS+=-O3 -m64 -fPIC
 LNLIBS+=-lxml2  -lpthread -luring

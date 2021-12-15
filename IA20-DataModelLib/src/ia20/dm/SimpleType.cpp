@@ -12,8 +12,8 @@ namespace IA20 {
 namespace DM {
 
 /*************************************************************************/
-SimpleType::SimpleType(Kind iKind, const String& strName):
- Type(iKind, strName){
+SimpleType::SimpleType(Kind iKind, const String& strName, const Type* pBaseType):
+ Type(iKind, strName, pBaseType){
 	IA20_TRACER;
 }
 

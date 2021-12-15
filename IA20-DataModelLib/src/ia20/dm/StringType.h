@@ -28,9 +28,12 @@ public:
 
 	virtual ~StringType() throw();
 
-	StringType(const String& strName);
+	StringType(const String& strName, const Type* pBaseType = NULL);
 
   virtual DataObject* create(DataObject *pParent = NULL)const;
+
+  static const String&    CDefaultName;
+  static const Type::Kind CKind = Type::CStringType;
 
 protected:
 

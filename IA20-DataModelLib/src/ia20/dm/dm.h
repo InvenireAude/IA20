@@ -22,4 +22,8 @@
 #include "ComplexType.h"
 #include "Property.h"
 
+#include "DataFactory.h"
+#include "Namespace.h"
+
+
 #endif /* _IA20_DM_dm_H_ */

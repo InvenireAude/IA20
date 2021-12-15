@@ -1,14 +1,18 @@
-#Fri Dec 10 03:14:58 PM CET 2021
+#Mon Dec 13 12:29:40 PM CET 2021
 FILES+=ia20/dm/ComplexDataObject
 FILES+=ia20/dm/ComplexType
+FILES+=ia20/dm/DataFactory
 FILES+=ia20/dm/DataObject
 FILES+=ia20/dm/DataObjectArray
 FILES+=ia20/dm/DataObjectContainer
 FILES+=ia20/dm/exception/ConversionException
 FILES+=ia20/dm/exception/Exception
+FILES+=ia20/dm/exception/InvalidTypeDefinitionException
+FILES+=ia20/dm/exception/ItemNotFoundException
 FILES+=ia20/dm/IntegerDataObject
 FILES+=ia20/dm/IntegerType
 FILES+=ia20/dm/memory/MemoryManager
+FILES+=ia20/dm/Namespace
 FILES+=ia20/dm/Property
 FILES+=ia20/dm/proxy/Converter
 FILES+=ia20/dm/SimpleDataObject
@@ -17,4 +21,5 @@ FILES+=ia20/dm/StringDataObject
 FILES+=ia20/dm/StringType
 FILES+=ia20/dm/Type
 FILES+=ia20/dm/TypedValue
+FILES+=ia20/dm/TypeFactory
 FILES+=ia20/dm/Workspace

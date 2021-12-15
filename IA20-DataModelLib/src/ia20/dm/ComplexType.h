@@ -32,17 +32,10 @@ class ComplexType : public Type {
 public:
 
 	~ComplexType() throw();
-	ComplexType(const String& strName, const Type* pParent = NULL);
+	ComplexType(const String& strName, const Type* pBaseType = NULL);
 
-  virtual const ComplexType* asComplexType()const;
+  virtual ComplexType* asComplexType();
 
-  inline bool isRoot()const{
-    return pParent == NULL;
-  }
-
-  const Type* getParent()const{
-    return pParent;
-  }
 
   void defineProperty(const Type* pType, const String& strName);
 
@@ -71,6 +64,8 @@ public:
 
  virtual DataObject* create(DataObject *pParent = NULL)const;
 
+ static const Type::Kind CKind = Type::CDataObjectType;
+
 protected:
 
   typedef std::vector< std::unique_ptr<Property> > LocalPropertiesArray;
@@ -78,7 +73,7 @@ protected:
   LocalPropertiesArray tabLocalProperties;
   PropertiesArray      tabProperties;
 
-  const ComplexType* pParent;
+  const ComplexType* pBaseAsComplex;
   unsigned int iPropertyOffset;
 };
 

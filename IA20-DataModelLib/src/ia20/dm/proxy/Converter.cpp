@@ -20,7 +20,6 @@ Converter Converter::TheInstance;
   try{
 		return std::stoi(csValue,0,10);
 	}catch(std::exception& e){
-    PrintTrace(std::cout);
 		IA20_THROW(ConversionException("Conversion error: [")<<csValue<<"]");
 	}
  }

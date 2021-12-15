@@ -49,6 +49,10 @@ public:
       return TheThreadLocal->allocate(pAddress, iSize);
   };
 
+  static void Free(void* pAddress){
+    TheThreadLocal->free(pAddress);
+  }
+
   void *allocate(void* pAddress, uint32_t iSize);
   void free(void* pAddress);
 
@@ -73,8 +77,8 @@ protected:
 
     inline SegmentList(SegmentList *pPrev=0, SegmentList *pNext = 0):
       pPrev(pPrev),
-      pNext(pNext){};
-
+      pNext(pNext),
+      iFreeOffset(0){};
   };
 
   SegmentList* allocateSegment();
