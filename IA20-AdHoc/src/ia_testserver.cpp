@@ -62,7 +62,7 @@ class Server : public ReadHandler, public WriteHandler, public ShutdownHandler {
         WriteHandler::iovec.iov_base = malloc(4096);
         memcpy(WriteHandler::iovec.iov_base, CStrData.c_str(), WriteHandler::iovec.iov_len);
         strData.reserve(10000);
-        ReadHandler::iovec.iov_len = 180;
+        ReadHandler::iovec.iov_len = 1800;
       };
 
   static const String CStrData;
@@ -81,15 +81,16 @@ class Server : public ReadHandler, public WriteHandler, public ShutdownHandler {
   }
 
   virtual void handleRead(off_t iDataLen){
-    //  std::cout<<"Got data: ["<<iDataLen<<"]"<<std::endl;
+      //std::cout<<"Got data: ["<<iDataLen<<"]"<<std::endl;
       strData = MiscTools::BinarytoHex(ReadHandler::iovec.iov_base,iDataLen);
-      ///std::cout<<strData<<std::endl;
+      //std::cout<<strData<<std::endl;
 
-      if(strData == CMSgCONNECT_Req){
-      //    std::cout<<"Connect"<<std::endl;
+      //if(strData == CMSgCONNECT_Req){
+        if(strData.rfind("1",0) == 0){
+         // std::cout<<"Connect"<<std::endl;
           sendAndRead(CMSgCONNECT_Res);
       }else if(strData.rfind(CMSgPUB_Req,0) == 0){
-        //  std::cout<<"Publish"<<std::endl;
+       // std::cout<<"Publish"<<std::endl;
           iMessages += iDataLen / 18;
           ReadHandler::prepare();
       }else if(strData == CMSgDISC_Req){
@@ -128,7 +129,7 @@ class Acceptor : public IO::TCP::AsyncServer::Acceptor {
     virtual void handleImpl(Net::Conn::TCP::FileHandle* pFileHandle){
       prepare();
 
-      std::unique_ptr<Server> ptrServer(new Server(pRingHandler, pFileHandle));    
+      std::unique_ptr<Server> ptrServer(new Server(pRingHandler, pFileHandle));
       ptrServer->ReadHandler::prepare();
       lstServers.push_back(std::move(ptrServer));
   }
@@ -150,19 +151,19 @@ using namespace MY;
 int main(){
 
     SYS::Signal::ThreadRegistration tr;
+    try{
 
     std::unique_ptr<URing::RingHandler>            ptrRingHandler;
 
     ptrRingHandler.reset(new RingHandler);
 
-    Net::Conn::TCP::Peer peer("127.0.0.1", 55556);
+    Net::Conn::TCP::Peer peer("0.0.0.0", 55556);
 
     std::unique_ptr<IO::TCP::AsyncServer> ptrAsyncServer(new IO::TCP::AsyncServer(peer, DefaultConnectionFactory::GetInstance()));
 
     std::unique_ptr<IO::TCP::AsyncServer::Acceptor>
          ptrAcceptor(new Acceptor(ptrAsyncServer.get(), ptrRingHandler.get()));
 
-    try{
       ptrAcceptor->prepare();
         ptrRingHandler->handle();
     }catch(Exception& e){

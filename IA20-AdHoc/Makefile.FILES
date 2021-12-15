@@ -1,4 +1,4 @@
-#Wed Dec 15 01:31:02 PM CET 2021
+#Wed Dec 15 05:26:25 PM CET 2021
 FILES+=ia20/net/conn/mcast/Base
 FILES+=ia20/net/conn/mcast/EndPoint
 FILES+=ia20/net/conn/mcast/Receiver
@@ -33,5 +33,6 @@ FILES+=ia20/uring/RingHandler
 FILES+=ia20/uring/URingException
 MAINFILES+=ia_raft_dumplog
 MAINFILES+=ia_testcases
+MAINFILES+=ia_testclient
 MAINFILES+=ia_test_raft
 MAINFILES+=ia_testserver
