@@ -117,7 +117,7 @@ void RingHandler::prepareWrite(EventHandler* pEventHandler, int fd, struct iovec
   io_uring_prep_writev(sqe, fd, iovec, 1, 0);
 
   io_uring_sqe_set_data(sqe, pEventHandler);
-  _submit_and_check(&ring);
+  //_submit_and_check(&ring);
 }
 /*************************************************************************/
 void RingHandler::prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::Address& address, int flags){
@@ -134,7 +134,7 @@ void RingHandler::prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::
           (struct sockaddr *)&address.address, &address.iAddressLen, 0);
 
   io_uring_sqe_set_data(sqe, pEventHandler);
-  _submit_and_check(&ring);
+ // _submit_and_check(&ring);
 }
 /*************************************************************************/
 void RingHandler::handle(){
@@ -155,6 +155,7 @@ void RingHandler::handle(){
       __kernel_timespec ts = { 1L , 0L };
        //iResult = io_uring_wait_cqe(&ring, &cqe);
       //iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
+<<<<<<< HEAD
       //usleep(1000000);
       iResult = 1;
 
@@ -164,6 +165,16 @@ void RingHandler::handle(){
       if(iResult != 0){
         iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
       }
+=======
+      //usleep(1);
+      iResult = 1;
+
+      for(int i=0; i<100000 && iResult !=0; i++)
+        iResult =  io_uring_wait_cqe_nr(&ring, &cqe, 0);
+
+      if(iResult != 0)
+        iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
+>>>>>>> c392d7715f0a65ca912543967e35f8f77e3a4d42
 
       Thread::Cancellation::Test();
       IA20_LOG(LogLevel::INSTANCE.isSystem(), "iResult = "<<iResult);

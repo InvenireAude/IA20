@@ -1,0 +1,3 @@
+#Mon Dec 20 01:56:00 PM CET 2021
+FILES+=ia20/iot/tc/TCBasicMQTT
+MAINFILES+=ia_testcases_iot
