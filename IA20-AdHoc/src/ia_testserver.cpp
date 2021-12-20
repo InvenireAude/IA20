@@ -48,7 +48,8 @@ namespace MY{
 
 static String CMSgCONNECT_Req("100C00044D5154540402003C0000");
 static String CMSgCONNECT_Res("20020000");
-static String CMSgPUB_Req("30100009686F6D652F74656D703132333435");
+//static String CMSgPUB_Req("30100009686F6D652F74656D703132333435");
+static String CMSgPUB_Req("414243444546");
 static String CMSgDISC_Req("E000");
 /*************************************************************************/
 class Server : public ReadHandler, public WriteHandler, public ShutdownHandler {
@@ -62,7 +63,7 @@ class Server : public ReadHandler, public WriteHandler, public ShutdownHandler {
         WriteHandler::iovec.iov_base = malloc(4096);
         memcpy(WriteHandler::iovec.iov_base, CStrData.c_str(), WriteHandler::iovec.iov_len);
         strData.reserve(10000);
-        ReadHandler::iovec.iov_len = 1800;
+        ReadHandler::iovec.iov_len = 702;
       };
 
   static const String CStrData;
@@ -80,27 +81,40 @@ class Server : public ReadHandler, public WriteHandler, public ShutdownHandler {
       ReadHandler::prepare();
   }
 
+  int iSkip = 0;
+  String strLastData;
+  size_t iTotalLen = 0;
   virtual void handleRead(off_t iDataLen){
-      //std::cout<<"Got data: ["<<iDataLen<<"]"<<std::endl;
+     iTotalLen += iDataLen;
+    //std::cout<<"Got data: ["<<iDataLen<<"]"<<std::endl;
       strData = MiscTools::BinarytoHex(ReadHandler::iovec.iov_base,iDataLen);
       //std::cout<<strData<<std::endl;
-
-      //if(strData == CMSgCONNECT_Req){
-        if(strData.rfind("1",0) == 0){
-         // std::cout<<"Connect"<<std::endl;
+// 2F74656D703132333435
+        if(strData == CMSgCONNECT_Req){
+        //if(strData.rfind("1",0) == 0){
+          std::cout<<"Connect"<<std::endl;
           sendAndRead(CMSgCONNECT_Res);
-      }else if(strData.rfind(CMSgPUB_Req,0) == 0){
-       // std::cout<<"Publish"<<std::endl;
-          iMessages += iDataLen / 18;
+      }else if(strData.find(CMSgPUB_Req) == 2*iSkip){
+          //std::cout<<"Publish"<<std::endl;
+          iMessages += (iDataLen - iSkip) / 18;
+          iSkip = 18 - (iDataLen - iSkip) % 18;
+          if(iSkip == 18)
+            iSkip = 0;
+           else
+            iMessages++;
+         // std::cout<<"Publish:"<<iDataLen<<", "<<iMessages<<", "<<iSkip<<std::endl;
+        //  std::cout<<strData<<std::endl<<std::endl;
+          strLastData = strData;
           ReadHandler::prepare();
-      }else if(strData == CMSgDISC_Req){
+      }else if(strData == CMSgDISC_Req || iDataLen == 0){
           std::cout<<"Disconnect"<<std::endl;
           ShutdownHandler::prepare(SHUT_RDWR);
       }else{
           if(iDataLen == 0){
               ShutdownHandler::prepare(SHUT_RDWR);
           }else{
-             std::cout<<"unknown: "<<iDataLen<<","<<strData<<std::endl;
+//             std::cout<<"unknown: "<<iSkip<<":"<<iDataLen<<","<<strData.find(CMSgPUB_Req)<<","<<strData<<std::endl;
+  //           std::cout<<strLastData<<std::endl<<std::endl;
             ReadHandler::prepare();
           }
       }
@@ -111,7 +125,7 @@ class Server : public ReadHandler, public WriteHandler, public ShutdownHandler {
   }
 
   virtual void handleShutdown(int iResult){
-      std::cout<<"Shutdown: ["<<iResult<<"], msgs: "<<iMessages<<std::endl;
+      std::cout<<"Shutdown: ["<<iResult<<"], msgs: "<<iMessages<<", "<<iTotalLen<<std::endl;
   }
 
   std::unique_ptr<FileHandle> ptrFileHandle;
