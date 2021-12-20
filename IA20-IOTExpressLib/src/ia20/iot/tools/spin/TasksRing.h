@@ -93,22 +93,19 @@ rte_spinlock_unlock (rte_spinlock_t *sl)
 class SpinLock{
     rte_spinlock_t sp ;
 public:
-    static volatile int iCounter;
     void lock() {
        rte_spinlock_lock(&sp);
        if(!sp.locked){
-         std::cerr<<(void*)this<<"failed:"<<iCounter<<std::endl;
+         std::cerr<<(void*)this<<"failed:"<<std::endl;
        }
     }
     void unlock() {
       if(!sp.locked){
-         std::cerr<<(void*)this<<"failed2:"<<iCounter<<std::endl;
+         std::cerr<<(void*)this<<"failed2:"<<std::endl;
        }
        rte_spinlock_unlock(&sp);
     }
 };
-
-volatile int SpinLock::iCounter = 0;
 
 static inline int
 rte_atomic16_cmpset(volatile uint16_t *dst, uint16_t exp, uint16_t src)
@@ -201,7 +198,7 @@ namespace SPIN {
 template<class D>
 class TasksRing : public IA20::IOT::Tools::TasksRing<D> {
 
-SpinLock sp;
+SpinLock1 sp;
 public:
 
 	virtual ~TasksRing() throw(){
@@ -238,7 +235,7 @@ virtual D *deque(){
   while(!IA20::SYS::Signal::GetInstance()->isStopping()){
     Thread::Cancellation::Test();
     sp.lock();
-    sp.iCounter++;
+    
     if(iLength > 0){
 
       D *pValue = vValues[ iHead ];
