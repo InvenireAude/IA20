@@ -1,0 +1,16 @@
+#Mon Dec 20 06:16:52 PM CET 2021
+FILES+=ia20/iot/ActionsStore
+FILES+=ia20/iot/ActivityStore
+FILES+=ia20/iot/Connections
+FILES+=ia20/iot/ConnectionsStore
+FILES+=ia20/iot/Engine
+FILES+=ia20/iot/exception/Exception
+FILES+=ia20/iot/exception/ItemNotFoundException
+FILES+=ia20/iot/Listener
+FILES+=ia20/iot/mocker/ActionsStore
+FILES+=ia20/iot/mocker/ActivityStore
+FILES+=ia20/iot/mocker/Listener
+FILES+=ia20/iot/mocker/MockerThread
+FILES+=ia20/iot/mqtt/Message
+FILES+=ia20/iot/SubscriptionsStore
+FILES+=ia20/iot/TopicsStore

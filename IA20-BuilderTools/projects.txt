@@ -1,4 +1,6 @@
 IA20-CommonLib
 IA20-DataModelLib
 IA20-DataModelLib-Tests
+IA20-IOTExpressLib
+IA20-IOTExpressLib-Tests
 IA20-AdHoc

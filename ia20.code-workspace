@@ -10,10 +10,16 @@
       "path": "IA20-DataModelLib"
     },
     {
+      "path": "IA20-IOTExpressLib"
+    },
+    {
       "path": "IA20-CommonLib-Tests"
     },
     {
       "path": "IA20-DataModelLib-Tests"
+    },
+    {
+      "path": "IA20-IOTExpressLib-Tests"
     },
     {
       "path": "IA20-AdHoc"
