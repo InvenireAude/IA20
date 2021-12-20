@@ -69,7 +69,7 @@ void RingHandler::prepareRead(EventHandler* pEventHandler, int fd, struct iovec*
   io_uring_prep_readv(sqe, fd, iovec, 1, 0);
 
   io_uring_sqe_set_data(sqe, pEventHandler);
-  _submit_and_check(&ring);
+  //_submit_and_check(&ring);
 }
 /*************************************************************************/
 void RingHandler::prepareClose(EventHandler* pEventHandler, int fd){
@@ -85,7 +85,7 @@ void RingHandler::prepareClose(EventHandler* pEventHandler, int fd){
   io_uring_prep_close(sqe, fd);
 
   io_uring_sqe_set_data(sqe, pEventHandler);
-  _submit_and_check(&ring);
+  //_submit_and_check(&ring);
 }
 /*************************************************************************/
 void RingHandler::prepareShutdown(EventHandler* pEventHandler, int fd, int how){
@@ -101,7 +101,7 @@ void RingHandler::prepareShutdown(EventHandler* pEventHandler, int fd, int how){
   io_uring_prep_shutdown(sqe, fd, how);
 
   io_uring_sqe_set_data(sqe, pEventHandler);
-  _submit_and_check(&ring);
+  //_submit_and_check(&ring);
 }
 /*************************************************************************/
 void RingHandler::prepareWrite(EventHandler* pEventHandler, int fd, struct iovec* iovec, off_t iOffset){
@@ -148,7 +148,7 @@ void RingHandler::handle(){
 
     IA20_LOG(LogLevel::INSTANCE.isSystem(), "Waiting for ring SQE ...");
 
-   //_submit_and_check(&ring);
+   _submit_and_check(&ring);
 
     while(iResult == -62){ // wait is not a cancellation point
       Thread::Cancellation tc(true);
@@ -156,10 +156,15 @@ void RingHandler::handle(){
        //iResult = io_uring_wait_cqe(&ring, &cqe);
       //iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
       //usleep(1000000);
-      iResult = 0;
-      if(io_uring_wait_cqe_nr(&ring, &cqe, 0) != 0){
+      iResult = 1;
+
+      for(int i=0; i<10 && iResult !=0; i++)
+        iResult = io_uring_wait_cqe_nr(&ring, &cqe, 0);
+
+      if(iResult != 0){
         iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
       }
+
       Thread::Cancellation::Test();
       IA20_LOG(LogLevel::INSTANCE.isSystem(), "iResult = "<<iResult);
     }

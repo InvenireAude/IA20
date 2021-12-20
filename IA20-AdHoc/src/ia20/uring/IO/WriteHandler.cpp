@@ -19,7 +19,6 @@ WriteHandler::WriteHandler(RingHandler* pRingHandler, Net::Conn::TCP::FileHandle
   FileHandler(pFileHandle),
   iOffset(0){
 	IA20_TRACER;
-
   iovec.iov_base = 0;
   iovec.iov_len = 0;
 }
@@ -30,6 +29,7 @@ WriteHandler::~WriteHandler() throw(){
 /*************************************************************************/
 void WriteHandler::prepare(){
 	IA20_TRACER;
+   iovecBackup = iovec;
    pRingHandler->prepareWrite(this, pFileHandle->iFileDescriptor, &iovec, 0);
 }
 /*************************************************************************/
@@ -41,7 +41,15 @@ void WriteHandler::handle(int iResult){
   if(iResult < 0)
     IA20_THROW(URingException("Failure in WriteHandler", -iResult));
 
-  handleWrite(iResult);
+  if(iovec.iov_len > iResult){
+   // IA20_LOG(true, "left to write ="<<iovec.iov_len<<" - "<<iResult);
+    iovec.iov_base = (uint8_t*)iovec.iov_base + iResult;
+    iovec.iov_len -= iResult;
+    pRingHandler->prepareWrite(this, pFileHandle->iFileDescriptor, &iovec, 0);
+  }else{
+    handleWrite(iResult);
+  }
+
 }
 /*************************************************************************/
 }

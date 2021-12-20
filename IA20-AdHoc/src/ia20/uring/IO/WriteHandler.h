@@ -45,8 +45,11 @@ protected:
 	WriteHandler(RingHandler* pRingHandler, Net::Conn::TCP::FileHandle* pFileHandle);
 
   struct iovec iovec;
+  struct iovec iovecBackup;
+  
   off_t        iOffset;
 
+  
   virtual void handleWrite(off_t  iDataLen) = 0;
 };
 
