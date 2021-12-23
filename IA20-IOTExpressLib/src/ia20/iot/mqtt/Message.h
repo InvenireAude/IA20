@@ -23,23 +23,18 @@ namespace MQTT {
 class Message {
 public:
 
-	Message(const String& strHex){ //TODO tmp for prototyping only
-    MiscTools::HexToBinary(strHex, tabData, 4000);
-    iLen = strHex.length()/2;
+	Message(){ //TODO tmp for prototyping only
   };
 
   enum Type {
     MT_CONNECT  = 1
   };
 
-  friend std::ostream& operator<<(std::ostream&os, const Message& m){
-     os<<MiscTools::BinarytoHex(m.tabData, m.iLen);
-     return os;
-   }
-
-protected:
-  uint8_t tabData[4000];//TODO tmp for prototyping only
-  uint16_t iLen;//TODO tmp for prototyping only
+//protected:
+  Type     iType;
+  uint8_t  *pPayload;
+  long      iMessageId;
+  uint16_t iLen; //TODO tmp for prototyping only
 };
 /*************************************************************************/
 }

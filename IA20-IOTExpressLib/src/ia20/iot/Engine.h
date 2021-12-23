@@ -19,39 +19,43 @@
 namespace IA20 {
 namespace IOT {
 
+namespace Memory{
+  class SharableMemoryPool;
+}
+
 /*************************************************************************/
 /** The Engine class.
  *
  */
 class Engine {
+  protected:
+
+  struct ListenerDetails {
+    
+    Listener*             pListener;
+    Listener::RingType*   pRingRequest;
+    Listener::RingType*   pRingResponse;
+    Memory::SharableMemoryPool* pMemoryPool;
+
+  };
+
 public:
 
 	virtual ~Engine() throw();
 
   Engine(
-    Listener::RingType::Interface*      pListenerInterface,
-    ActivityStore::RingType::Interface* pActivityStoreInterface,
-    ActionsStore::RingType::Interface*  pActionsStoreInterface
-  );
+    Listener*      pListener
+   );
 
-  void serveListener();
-  void serveActivityStore();
-  void serveActionsStore();
-
+  void serve();
+  
 protected:
-  Listener::RingType::Interface*      pListenerInterface;
-  ActivityStore::RingType::Interface* pActivityStoreInterface;
-  ActionsStore::RingType::Interface*  pActionsStoreInterface;
 
-  Listener::RingType* pListenerRingRequest;
-  Listener::RingType* pListenerRingResponse;
+  typedef std::vector<ListenerDetails> ListenerVector;
+  ListenerVector tabListners;
 
-
-  ActivityStore::RingType* pActivityStoreRingRequest;
-  ActivityStore::RingType* pActivityStoreRingResponse;
-
-  ActionsStore::RingType*  pActionsStoreRingRequest;
-  ActionsStore::RingType*  pActionsStoreRingResponse;
+  void serveLister(ListenerDetails& ld);
+  void addListener(Listener* pListener);
 };
 
 /*************************************************************************/

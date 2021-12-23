@@ -155,7 +155,6 @@ void RingHandler::handle(){
       __kernel_timespec ts = { 1L , 0L };
        //iResult = io_uring_wait_cqe(&ring, &cqe);
       //iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
-<<<<<<< HEAD
       //usleep(1000000);
       iResult = 1;
 
@@ -165,16 +164,16 @@ void RingHandler::handle(){
       if(iResult != 0){
         iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
       }
-=======
-      //usleep(1);
-      iResult = 1;
+// =======
+//       //usleep(1);
+//       iResult = 1;
 
-      for(int i=0; i<100000 && iResult !=0; i++)
-        iResult =  io_uring_wait_cqe_nr(&ring, &cqe, 0);
+//       for(int i=0; i<100000 && iResult !=0; i++)
+//         iResult =  io_uring_wait_cqe_nr(&ring, &cqe, 0);
 
-      if(iResult != 0)
-        iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
->>>>>>> c392d7715f0a65ca912543967e35f8f77e3a4d42
+//       if(iResult != 0)
+//         iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
+// >>>>>>> c392d7715f0a65ca912543967e35f8f77e3a4d42
 
       Thread::Cancellation::Test();
       IA20_LOG(LogLevel::INSTANCE.isSystem(), "iResult = "<<iResult);

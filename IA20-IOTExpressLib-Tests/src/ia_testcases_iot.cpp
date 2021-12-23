@@ -18,6 +18,7 @@
 
 
 #include "ia20/iot/tc/TCBasicMQTT.h"
+#include "ia20/iot/tc/TCBasic.h"
 
 int main(int argc, char* argv[]) {
 	IA20_TRACER;
@@ -32,7 +33,8 @@ int main(int argc, char* argv[]) {
 	    std::unique_ptr<TestSuite> ptrSuite(new TestSuite());
         ptrSuite->setVerbose();
 
-        TC::TCBasicMQTT    tcMemoryManager(ptrSuite.get());
+        TC::TCBasic        tcBasic(ptrSuite.get());
+   		TC::TCBasicMQTT    tcBasicMQTT(ptrSuite.get());
 
 		ptrSuite->run(argc == 1 ? "" : argv[1]);
 		ptrSuite->printResults(std::cout);

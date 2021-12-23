@@ -43,7 +43,32 @@ TCBasicMQTT::~TCBasicMQTT() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-static String CMSgCONNECT_Req("100C00044D5154540402003C0000");
+static String CMSgCONNECT_Req1(
+  "100C00044D5154540402003C0000"
+  );
+static String CMSgCONNECT_Req(
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
+  );
+
 /*************************************************************************/
 void TCBasicMQTT::caseBasic(){
 
@@ -57,25 +82,28 @@ void TCBasicMQTT::caseBasic(){
   int rc1 = pthread_setaffinity_np(pthread_self(),sizeof(cpu_set_t), &cpuset);
 
 
+ env.ptrListener->start();
+
+  String strTest(CMSgCONNECT_Req);
+  strTest += strTest;
+//  strTest += strTest;
+  // strTest += strTest;
+  // strTest += strTest;
+  // strTest += strTest;
   for(int i=0; i<1000000; i++){
     //cerr<<i<<"\t"<<ts.getSample()<<endl;
-    env.ptrListener->sendMessage(CMSgCONNECT_Req);
-    env.ptrEngine->serveListener();
-    env.ptrEngine->serveActivityStore();
-    env.ptrEngine->serveActionsStore();
+    env.ptrListener->sendMessage(strTest);
+    env.ptrEngine->serve();
+    //env.ptrListener->serve();
   }
 
+  
   cerr<<ts.getSample()<<endl;
   cerr.flush();
 
   env.ptrListener->stop();
-  env.ptrActivityStore->stop();
-  env.ptrActionsStore->stop();
-
   env.ptrListener->join();
-  env.ptrActivityStore->join();
-  env.ptrActionsStore->join();
-
+  
 
 }
 /*************************************************************************/
@@ -85,17 +113,17 @@ void TCBasicMQTT::TestEnv::reset(){
   //  ptrActionsStore.reset(new Mocker::ActionsStore(Tools::SYS::TasksRing<ActionsStore::Task>::CreateInterface(50)));
   //  ptrListener.reset(new Mocker::Listener(Tools::SYS::TasksRing<Listener::Task>::CreateInterface(50)));
 
-   ptrActivityStore.reset(new Mocker::ActivityStore(Tools::SPIN::TasksRing<ActivityStore::Task>::CreateInterface(50)));
-   ptrActionsStore.reset(new Mocker::ActionsStore(Tools::SPIN::TasksRing<ActionsStore::Task>::CreateInterface(50)));
-   ptrListener.reset(new Mocker::Listener(Tools::SPIN::TasksRing<Listener::Task>::CreateInterface(50)));
+  //  ptrActivityStore.reset(new Mocker::ActivityStore(Tools::SPIN::TasksRing<ActivityStore::Task>::CreateInterface(50)));
+  //  ptrActionsStore.reset(new Mocker::ActionsStore(Tools::SPIN::TasksRing<ActionsStore::Task>::CreateInterface(50)));
 
-  ptrEngine.reset(new Engine(ptrListener->getInterface(),
-              ptrActivityStore->getInterface(),
-              ptrActionsStore->getInterface()));
+  ptrListener.reset(new Mocker::Listener(Tools::SPIN::TasksRing<Listener::Task>::CreateInterface(50)));
+  
+  ptrEngine.reset(new Engine(ptrListener.get()));
+  
 
-  ptrListener->start();
-  ptrActivityStore->start();
-  ptrActionsStore->start();
+
+  // ptrActivityStore->start();
+  // ptrActionsStore->start();
 }
 /*************************************************************************/
 }

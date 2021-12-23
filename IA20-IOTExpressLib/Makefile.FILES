@@ -1,4 +1,4 @@
-#Mon Dec 20 06:16:52 PM CET 2021
+#Tue Dec 21 04:38:16 PM CET 2021
 FILES+=ia20/iot/ActionsStore
 FILES+=ia20/iot/ActivityStore
 FILES+=ia20/iot/Connections
@@ -7,6 +7,8 @@ FILES+=ia20/iot/Engine
 FILES+=ia20/iot/exception/Exception
 FILES+=ia20/iot/exception/ItemNotFoundException
 FILES+=ia20/iot/Listener
+FILES+=ia20/iot/memory/SharableMemoryPool
+FILES+=ia20/iot/memory/StreamBufferList
 FILES+=ia20/iot/mocker/ActionsStore
 FILES+=ia20/iot/mocker/ActivityStore
 FILES+=ia20/iot/mocker/Listener

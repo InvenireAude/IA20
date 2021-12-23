@@ -12,8 +12,10 @@ namespace IA20 {
 namespace IOT {
 
 /*************************************************************************/
-Listener::Listener(std::unique_ptr<RingType::Interface>&& ptrInterface):
-ptrInterface(std::move(ptrInterface)){
+Listener::Listener(std::unique_ptr<RingType::Interface>&& ptrInterface,
+				Memory::SharableMemoryPool* pMemoryPool):
+ptrInterface(std::move(ptrInterface)),
+pMemoryPool(pMemoryPool){
 	IA20_TRACER;
 }
 /*************************************************************************/

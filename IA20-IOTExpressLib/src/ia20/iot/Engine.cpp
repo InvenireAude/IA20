@@ -7,84 +7,86 @@
 
 #include "Engine.h"
 
-#include "mqtt/Message.h"
+#include <ia20/iot/mqtt/Message.h>
+#include <ia20/iot/memory/SharableMemoryPool.h>
+#include <ia20/iot/memory/StreamBufferList.h>
+
+#include<string.h>
 
 namespace IA20 {
 namespace IOT {
 
 /*************************************************************************/
-Engine::Engine(
-    Listener::RingType::Interface*      pListenerInterface,
-    ActivityStore::RingType::Interface* pActivityStoreInterface,
-    ActionsStore::RingType::Interface*  pActionsStoreInterface):
-  pListenerInterface(pListenerInterface),
-  pActivityStoreInterface(pActivityStoreInterface),
-  pActionsStoreInterface(pActionsStoreInterface){
-	IA20_TRACER;
+Engine::Engine(Listener*  pListener){
+	
+  IA20_TRACER;
 
-  pActionsStoreRingRequest = pActionsStoreInterface->getRequests();
-  pActionsStoreRingResponse = pActionsStoreInterface->getResponses();
-
-  pActivityStoreRingRequest  = pActivityStoreInterface->getRequests();
-  pActivityStoreRingResponse = pActivityStoreInterface->getResponses();
-
-  pListenerRingRequest  = pListenerInterface->getRequests();
-  pListenerRingResponse = pListenerInterface->getResponses();
+  IA20_CHECK_IF_NULL(pListener);
+  addListener(pListener);
 
 }
-
 /*************************************************************************/
 Engine::~Engine() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-void Engine::serveListener(){
+void Engine::serve(){
   IA20_TRACER;
 
-  IA20_LOG(false, "Serve Listener ");
+  for(auto it : tabListners){
+    serveLister(it);
+  }
 
-  std::unique_ptr<Listener::Task> ptrTask(pListenerRingRequest->deque());
-
-  MQTT::Message& m = *ptrTask->pMessage;
-
-  IA20_LOG(false, "Got1: "<<m);
-
-  std::unique_ptr<ActivityStore::Task> ptrTask2(new ActivityStore::Task);
-  ptrTask2->pMessage = ptrTask->pMessage;
-  pActivityStoreRingRequest->enque(ptrTask2.release());
 }
 /*************************************************************************/
-void Engine::serveActivityStore(){
+void Engine::serveLister(Engine::ListenerDetails& ld){
+
   IA20_TRACER;
+  //IA20_LOG(true, "Serve Listener ");
 
-  IA20_LOG(false, "Serve ActivityStore ");
+  Memory::SharableMemoryPool::unique_ptr<Listener::Task> 
+    ptrTask(ld.pRingRequest->deque(), ld.pMemoryPool->getDeleter());
 
-  std::unique_ptr<ActivityStore::Task> ptrTask(pActivityStoreRingResponse->deque());
+  MQTT::Message *pMessage = reinterpret_cast<MQTT::Message*>(ptrTask.get() + 1);
+  //IA20_LOG(true, "Got1: "<<(void*)pMessage);
+  //IA20_LOG(true, "Got1: "<<pMessage->iMessageId);
+ 
+  Memory::StreamBufferList sbl(reinterpret_cast<uint8_t*>(pMessage + 1));
+  Memory::StreamBufferList::Reader reader(sbl);
+  
+  int i=0;
+  static uint8_t pData[40000];
+  uint8_t *pCursor =  pData;
+  uint8_t *pFrom;
+  uint32_t iLength;
+  
+  while(reader.getNext(pFrom, iLength)){
+    IA20_LOG(false, "Reading: "<<iLength<<" bytes.");
+    memcpy(pCursor, pFrom, iLength);
+    pCursor += iLength;
+  }
 
-  MQTT::Message& m = *ptrTask->pMessage;
+//  String strHEX = MiscTools::BinarytoHex(pData, pCursor - pData);
+//  IA20_LOG(true, "Message: "<<strHEX);
 
-  IA20_LOG(false, "Got2: "<<m);
+  Memory::SharableMemoryPool::unique_ptr<Listener::Task> 
+    ptrTask2(ld.pMemoryPool->allocate<Listener::Task>(NULL), ld.pMemoryPool->getDeleter());
 
-  std::unique_ptr<ActionsStore::Task> ptrTask2(new ActionsStore::Task);
-  ptrTask2->pMessage = ptrTask->pMessage;
-  pActionsStoreRingResponse->enque(ptrTask2.release());
-}
+  MQTT::Message* pMessage2 = new(ld.pMemoryPool->allocate<MQTT::Message>(ptrTask2.get()))MQTT::Message();;
+  pMessage2->iMessageId = pMessage->iMessageId + 10000000;
+
+  ld.pRingResponse->enque(ptrTask2.release());
+} 
 /*************************************************************************/
-void Engine::serveActionsStore(){
-  IA20_TRACER;
+void Engine::addListener(Listener* pListener){
 
-  IA20_LOG(false, "Serve ActionsStore ");
+  ListenerDetails ld;
+  ld.pListener = pListener;
+  ld.pRingRequest  = pListener->getInterface()->getRequests();
+  ld.pRingResponse = pListener->getInterface()->getResponses();
+  ld.pMemoryPool = pListener->getMemoryPool();
 
-  std::unique_ptr<ActionsStore::Task> ptrTask(pActionsStoreRingResponse->deque());
-
-  MQTT::Message& m = *ptrTask->pMessage;
-
-  IA20_LOG(false, "Got3: "<<m);
-
-  std::unique_ptr<Listener::Task> ptrTask2(new Listener::Task);
-  ptrTask2->pMessage = ptrTask->pMessage;
-  pListenerRingResponse->enque(ptrTask2.release());
-
+  tabListners.push_back(ld);
 }
 /*************************************************************************/
 }

@@ -34,10 +34,13 @@ public:
 
   void sendMessage(const String& strHex);
 
+  void serve();
+  
 protected:
 
   void run();
 
+  std::unique_ptr<Memory::SharableMemoryPool> ptrMemoryPoolHolder;
 };
 
 /*************************************************************************/
