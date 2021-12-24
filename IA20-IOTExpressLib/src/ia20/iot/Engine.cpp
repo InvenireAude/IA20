@@ -10,6 +10,8 @@
 #include <ia20/iot/mqtt/Message.h>
 #include <ia20/iot/memory/SharableMemoryPool.h>
 #include <ia20/iot/memory/StreamBufferList.h>
+#include <ia20/iot/mqtt/HeaderReader.h>
+#include <ia20/iot/mqtt/FixedHeaderBuilder.h>
 
 #include<string.h>
 
@@ -49,36 +51,44 @@ void Engine::serveLister(Engine::ListenerDetails& ld){
 
   // IA20_LOG(true, "Task get: "<<(void*)ptrTask.get());
   
-  MQTT::Message *pMessage = ptrTask->getMessage();
+  uint8_t *pMessage = ptrTask->getMessage();
   
+  IA20_LOG(true, "Task get msg: "<<(void*)ptrTask->getMessage());
+
   // IA20_LOG(true, "Got1: "<<(void*)pMessage);
   // IA20_LOG(true, "Got1: "<<pMessage->iMessageId);
  
-  Memory::StreamBufferList sbl(reinterpret_cast<uint8_t*>(pMessage + 1));
+  Memory::StreamBufferList sbl(reinterpret_cast<uint8_t*>(pMessage));
   Memory::StreamBufferList::Reader reader(sbl);
   
-  int i=0;
-  static uint8_t pData[40000];
-  uint8_t *pCursor =  pData;
-  uint8_t *pFrom;
-  uint32_t iLength;
-  
-  while(reader.getNext(pFrom, iLength)){
-    IA20_LOG(false, "Reading: "<<iLength<<" bytes.");
-    memcpy(pCursor, pFrom, iLength);
-    pCursor += iLength;
-  }
+  uint8_t* pData;
+  Memory::StreamBufferList::DataLengthType iDataLength;
 
-//  String strHEX = MiscTools::BinarytoHex(pData, pCursor - pData);
-//  IA20_LOG(true, "Message: "<<strHEX);
+  if(!reader.getNext(pData, iDataLength)){
+    IA20_LOG(true, "Empty message ?");
+  }
+  IA20_LOG(true, (void*)pData);
+  
+  IA20_LOG(true, MiscTools::BinarytoHex(pData,iDataLength));
+
+  MQTT::HeaderReader headerReader(pData);
+
+  IA20_LOG(true, "MessageType:"<<(int)headerReader.getType());
+  IA20_LOG(true, "Length:"<<headerReader.getLength());
 
   Memory::SharableMemoryPool::unique_ptr<Listener::Task> 
     ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
         Listener::Task(Listener::Task::CA_SendMQTT), ld.pMemoryPool->getDeleter());
 
-  MQTT::Message* pMessage2 = new(ld.pMemoryPool->allocate<MQTT::Message>(ptrTask2.get()))MQTT::Message();;
-  pMessage2->iMessageId = pMessage->iMessageId + 10000000;
-  ptrTask2->setMessage(pMessage2);
+  uint8_t *pData2 = (uint8_t *)ld.pMemoryPool->allocate(ptrTask2.get(),120);
+  
+  ptrTask2->setMessage(pData2);
+  ptrTask2->iMessageId = ptrTask->iMessageId + 10000000;
+  
+  MQTT::FixedHeaderBuilder builder;
+  builder.setType(MQTT::Message::MT_CONNACK);
+  builder.setID(headerReader.getID());
+  builder.build(pData2);
   ld.pRingResponse->enque(ptrTask2.release());
 } 
 /*************************************************************************/

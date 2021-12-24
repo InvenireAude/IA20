@@ -41,19 +41,19 @@ public:
       CA_SendMQTT         = 4
     };
 
-    inline void setMessage(MQTT::Message* pMessage){
+    inline void setMessage(uint8_t* pMessage){
      //IA20_LOG(true, "Message s at:"<<(void*)pMessage<<" "<<(void*)this);
       offsetToMessage.set(pMessage);
     }
 
-    inline MQTT::Message* getMessage(){
+    inline uint8_t* getMessage(){
 
       //IA20_LOG(true, "Message g at:"<<(void*)this);
 
       if(!offsetToMessage)
         IA20_THROW(InternalException("No MQTT::Message set in the listener task."));
       
-      return offsetToMessage.get<MQTT::Message>();
+      return offsetToMessage.get<uint8_t>();
     }
     
     inline Task(Action iAction):iAction(iAction){};
@@ -62,6 +62,8 @@ public:
       return iAction;
     }
 
+    long iMessageId;
+    
   protected:
 
     Action iAction;

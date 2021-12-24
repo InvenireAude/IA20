@@ -36,10 +36,12 @@ class TCBasicMQTT:
 public:
 
 	TCBasicMQTT(TestSuite* pTestSuite);
+
 	virtual ~TCBasicMQTT()  throw ();
 
-
 	void caseLengthConverter();
+	void caseFixedHeaderBuild();
+  void caseFixedHeaderReader();
 
 protected:
 

@@ -143,9 +143,9 @@ public:
 	};
 
 
-	inline Chunk* getHead(){
+	inline uint8_t* getHead()const{
 		IA20_CHECK_IF_NULL(pHead);
-		return pHead;
+		return (uint8_t*)pHead;
 	}
 
 protected:

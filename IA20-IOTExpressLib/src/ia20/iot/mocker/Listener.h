@@ -31,11 +31,10 @@ public:
 	virtual ~Listener() throw();
 	Listener(std::unique_ptr<RingType::Interface>&& ptrInterface);
 
-
   void sendMessage(const String& strHex);
 
   void serve();
-  
+
 protected:
 
   void run();

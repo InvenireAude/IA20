@@ -42,11 +42,16 @@ public:
       return pData;
    }
 
-
    static inline VLIntType decodeVL(uint8_t* pData){
+      VLIntType iValue;
+      decodeVL(pData, iValue);
+      return iValue;
+   }
+
+   static inline uint8_t* decodeVL(uint8_t* pData, VLIntType& iValue){
 
      uint32_t m = 1;
-     uint32_t iValue = 0;
+     iValue = 0;
 
      uint8_t iByte;
 
@@ -62,7 +67,7 @@ public:
 
      }while ((iByte & 0x80) != 0);
 
-    return iValue;
+    return pData;
    }
 
 };

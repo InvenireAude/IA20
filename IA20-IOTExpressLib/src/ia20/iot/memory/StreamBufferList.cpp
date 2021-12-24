@@ -26,7 +26,7 @@ StreamBufferList::StreamBufferList(SharableMemoryPool* pMemoryPool, void* pOnwer
 
 	pHead = allocateChunk(pOnwerAddress);
 
-	IA20_LOG(false, "SBL head1: "<<(void*)pHead<<", owner: "<<(void*)pOnwerAddress);
+	IA20_LOG(true, "SBL head1: "<<(void*)pHead<<", owner: "<<(void*)pOnwerAddress);
 }
 /*************************************************************************/
 StreamBufferList::StreamBufferList(void *pFromMemory):
@@ -34,7 +34,7 @@ StreamBufferList::StreamBufferList(void *pFromMemory):
 	pMemoryPool(NULL){
 	IA20_TRACER;	
 
-	IA20_LOG(false, "SBL head2: "<<(void*)pHead);
+	IA20_LOG(true, "SBL head2: "<<(void*)pHead);
 }
 /*************************************************************************/
 StreamBufferList::~StreamBufferList() throw(){
@@ -62,7 +62,7 @@ bool StreamBufferList::Reader::getNext(uint8_t* &refPtrData, DataLengthType& iDa
 	if(bFinished)
 		return false;
 
-	IA20_LOG(false, (*pChunk)<<"getDataStart: "<<(void*)pChunk->getDataStart());
+	IA20_LOG(false, (*pChunk)<<", getDataStart: "<<(void*)pChunk->getDataStart());
 	refPtrData  = pChunk->getDataStart();
 	iDataLength = pChunk->iDataLength;
 

@@ -27,17 +27,22 @@ public:
      //TODO tmp for prototyping only
   };
 
-  enum Type {
-    MT_NONE     = 0,
-    MT_CONNECT  = 1,
-    MT_CONNACK  = 2,
-    MT_PUBLISH  = 3,
-    MT_PUBACK   = 4,
-    MT_PUBREC   = 5,
-    MT_PUBREL   = 6,
-    MT_PUBCOMP  = 7,
-    MT_SUBSCRIBE = 8,
-    MT_SUBACK    = 9,
+  enum Flag : uint8_t {
+    MF_NONE = 0,
+    MF_1    = 1,
+  };
+
+  enum Type : uint8_t {
+    MT_NONE        = 0,
+    MT_CONNECT     = 1,
+    MT_CONNACK     = 2,
+    MT_PUBLISH     = 3,
+    MT_PUBACK      = 4,
+    MT_PUBREC      = 5,
+    MT_PUBREL      = 6,
+    MT_PUBCOMP     = 7,
+    MT_SUBSCRIBE   = 8,
+    MT_SUBACK      = 9,
     MT_UNSUBSCRIBE = 10,
     MT_UNSUBACK    = 11,
     MT_PINGREQ     = 12,
@@ -47,10 +52,11 @@ public:
   };
 
 //protected:
-  Type     iType;
-  uint8_t  *pPayload;
-  long      iMessageId;
-  uint16_t iLen; //TODO tmp for prototyping only
+  // Type      iType;
+  // uint8_t  *pPayload;
+  // long      iMessageId;
+  // uint16_t  iLen; 
+  //TODO tmp for prototyping only
 };
 /*************************************************************************/
 }
