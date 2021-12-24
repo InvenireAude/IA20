@@ -41,8 +41,8 @@ void Listener::serve(){
   Memory::SharableMemoryPool::unique_ptr<Task> ptrTask(
     ptrInterface->getResponses()->deque(), pMemoryPool->getDeleter());
 
-  MQTT::Message *pMessage = reinterpret_cast<MQTT::Message*>(ptrTask.get() + 1);
-
+  MQTT::Message *pMessage = ptrTask->getMessage();
+  
   //IA20_LOG(true, "Response: "<<pMessage->iMessageId<<" "<<icount++);
 }
 /*************************************************************************/
@@ -74,14 +74,14 @@ void Listener::sendMessage(const String& strHex){
   static MQTT::Message *theMessage = NULL;
 
   Memory::SharableMemoryPool::unique_ptr<Task> ptrTask(
-    pMemoryPool->allocate<Task>(0), pMemoryPool->getDeleter());
+    new(pMemoryPool->allocate<Task>(0))Task(Listener::Task::CA_ReceiveMQTT), pMemoryPool->getDeleter());
 
   // if(!theMessage){
   //   theMessage = new(pMemoryPool->allocate<MQTT::Message>(ptrTask.get())) MQTT::Message(strHex);
   // }
 
-  ptrTask->iAction = Listener::Task::CA_ReceiveMQTT;
   MQTT::Message* pMessage = new(pMemoryPool->allocate<MQTT::Message>(ptrTask.get()))MQTT::Message();;
+  ptrTask->setMessage(pMessage);
 
 //  IA20_LOG(true, "Send1: "<<(void*)pMessage);
 
@@ -108,7 +108,10 @@ void Listener::sendMessage(const String& strHex){
   static int iMessageId = 0;
   pMessage->iMessageId = ++iMessageId;
 
+  //IA20_LOG(true, "Task set: "<<(void*)ptrTask.get());
+  
   ptrInterface->getRequests()->enque(ptrTask.release());
+
 
 }
 /*************************************************************************/

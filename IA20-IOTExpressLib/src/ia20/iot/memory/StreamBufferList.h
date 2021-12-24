@@ -11,6 +11,7 @@
 #define _IA20_IOT_Memory_StreamBufferList_H_
 
 #include <ia20/commonlib/commonlib.h>
+#include <ia20/iot/tools/OffsetPtr.h>
 
 #include <string.h>
 
@@ -29,7 +30,7 @@ class StreamBufferList {
 
 public:	
 
-	typedef	int32_t OffsetNextType;
+	typedef	Tools::OffsetPtr<3> OffsetNextType;
 	typedef	uint32_t DataLengthType;
 	
 
@@ -39,32 +40,29 @@ protected:
 
 		static  DataLengthType CMaxChunkSize;
 
-		OffsetNextType iOffsetNext;
+		OffsetNextType offsetNext;
 		DataLengthType iDataLength;
 		DataLengthType iChunkSize;
 		int32_t	       _pad;
 
-		Chunk(DataLengthType iChunkSize):
-			iOffsetNext(0),
+		Chunk(DataLengthType iChunkSize):			
 			iDataLength(0),
 			iChunkSize(iChunkSize){};
 
 		inline void setNext(Chunk *pChunk){		
-			// compress, TODO addjust to ShareableMemoryPool rounding/alignment.
-			iOffsetNext =  pChunk ? ((uint8_t*)pChunk - (uint8_t*)this) >> 3 : 0;		
+			offsetNext.set(pChunk);
 		}
 
 		inline Chunk* getNext(){
-			return reinterpret_cast<Chunk*>(reinterpret_cast<uint8_t*>(this) + (iOffsetNext << 3));
+			return offsetNext.get<Chunk>();
 		}
 
 		inline const Chunk* getNext()const{
 			return const_cast<Chunk*>(this)->getNext();
 		}
 
-
 		inline bool isLast()const{
-			return !iOffsetNext;
+			return !offsetNext;
 		}
 
 		inline uint8_t* getDataStart()const{
@@ -73,7 +71,7 @@ protected:
 
 		friend
 		std::ostream& operator<<(std::ostream& os,const Chunk& c){
-			os<<"Chunk :"<<(void*)&c<<" ["<<c.iOffsetNext<<":"<<(int)c.iOffsetNext*(int)sizeof(Chunk)<<","<<c.iDataLength<<","<<c.iDataLength<<"]";
+			os<<"Chunk :"<<(void*)&c<<" {"<<c.offsetNext<<" "<<c.iDataLength<<","<<c.iDataLength<<"}";
 			return os;
 		}
 	};
@@ -128,7 +126,7 @@ public:
 				DataLengthType iChunkLen = 
 					iNewDataLength <= iAvailableLength ? iNewDataLength : iAvailableLength;
 				
-				IA20_LOG(true, "pCursor:"<<(void*)pCursor);
+				IA20_LOG(false, "pCursor:"<<(void*)pCursor);
 
 				memcpy(pCursor, pNewData, iChunkLen);
 				addData(iChunkLen);

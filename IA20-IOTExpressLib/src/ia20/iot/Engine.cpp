@@ -42,14 +42,17 @@ void Engine::serve(){
 void Engine::serveLister(Engine::ListenerDetails& ld){
 
   IA20_TRACER;
-  //IA20_LOG(true, "Serve Listener ");
+  // IA20_LOG(true, "Serve Listener ");
 
   Memory::SharableMemoryPool::unique_ptr<Listener::Task> 
     ptrTask(ld.pRingRequest->deque(), ld.pMemoryPool->getDeleter());
 
-  MQTT::Message *pMessage = reinterpret_cast<MQTT::Message*>(ptrTask.get() + 1);
-  //IA20_LOG(true, "Got1: "<<(void*)pMessage);
-  //IA20_LOG(true, "Got1: "<<pMessage->iMessageId);
+  // IA20_LOG(true, "Task get: "<<(void*)ptrTask.get());
+  
+  MQTT::Message *pMessage = ptrTask->getMessage();
+  
+  // IA20_LOG(true, "Got1: "<<(void*)pMessage);
+  // IA20_LOG(true, "Got1: "<<pMessage->iMessageId);
  
   Memory::StreamBufferList sbl(reinterpret_cast<uint8_t*>(pMessage + 1));
   Memory::StreamBufferList::Reader reader(sbl);
@@ -70,11 +73,12 @@ void Engine::serveLister(Engine::ListenerDetails& ld){
 //  IA20_LOG(true, "Message: "<<strHEX);
 
   Memory::SharableMemoryPool::unique_ptr<Listener::Task> 
-    ptrTask2(ld.pMemoryPool->allocate<Listener::Task>(NULL), ld.pMemoryPool->getDeleter());
+    ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
+        Listener::Task(Listener::Task::CA_SendMQTT), ld.pMemoryPool->getDeleter());
 
   MQTT::Message* pMessage2 = new(ld.pMemoryPool->allocate<MQTT::Message>(ptrTask2.get()))MQTT::Message();;
   pMessage2->iMessageId = pMessage->iMessageId + 10000000;
-
+  ptrTask2->setMessage(pMessage2);
   ld.pRingResponse->enque(ptrTask2.release());
 } 
 /*************************************************************************/
