@@ -18,8 +18,7 @@
 
 
 #include "TCBasicMQTT.h"
-
-
+#include <ia20/iot/tools/MQTT.h>
 
 #include <memory>
 using namespace std;
@@ -34,7 +33,7 @@ TCBasicMQTT::TCBasicMQTT(TestSuite* pTestSuite):
   TestUnit<TCBasicMQTT>(this, "BasicMQTT", pTestSuite){
 	IA20_TRACER;
 
-  addCase("caseBasic", &::IA20::TC::TCBasicMQTT::caseBasic);
+  addCase("caseLengthConverter", &::IA20::TC::TCBasicMQTT::caseLengthConverter);
 
   pTestSuite->addTestUnit(this);
 }
@@ -43,87 +42,47 @@ TCBasicMQTT::~TCBasicMQTT() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-static String CMSgCONNECT_Req1(
-  "100C00044D5154540402003C0000"
-  );
-static String CMSgCONNECT_Req(
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  "100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D5154540402003C0000100C00044D515454"
-  );
+void testLVEncodeDecode(Tools::MQTT::VLIntType a){
 
-/*************************************************************************/
-void TCBasicMQTT::caseBasic(){
-
-	IA20::TimeSample ts(true);
-
-  env.reset();
-
-  cpu_set_t cpuset;
-  CPU_ZERO(&cpuset);
-  CPU_SET(0, &cpuset);
-  int rc1 = pthread_setaffinity_np(pthread_self(),sizeof(cpu_set_t), &cpuset);
-
-
- env.ptrListener->start();
-
-  String strTest(CMSgCONNECT_Req);
-  strTest += strTest;
-//  strTest += strTest;
-  // strTest += strTest;
-  // strTest += strTest;
-  // strTest += strTest;
-  for(int i=0; i<1000000; i++){
-    //cerr<<i<<"\t"<<ts.getSample()<<endl;
-    env.ptrListener->sendMessage(strTest);
-    env.ptrEngine->serve();
-    //env.ptrListener->serve();
-  }
-
+  uint8_t buf[16];
+  *(uint64_t*)buf = 0L;
   
-  cerr<<ts.getSample()<<endl;
-  cerr.flush();
+  Tools::MQTT::VLIntType b;
 
-  env.ptrListener->stop();
-  env.ptrListener->join();
-  
+  uint8_t* pEnd = Tools::MQTT::encodeVL(buf, a);
+  b = Tools::MQTT::decodeVL(buf);
+
+  IA20_LOG(true, a<<"="<<MiscTools::BinarytoHex(buf,4));
+
+  if(a != b)
+    IA20_THROW(BadUsageException("Error in testLVEncodeDecode: [")<<(int)a<<","<<(int)b<<"]");
+
+  int iLen = pEnd - buf;
+
+  if( (a < 128 && iLen != 1) ||
+      (128 <= a && a < 16384 && iLen != 2) ||
+      (16384 <= a && a < 2097152 && iLen != 3) ||
+      (2097152 <= a && a < 268435456 && iLen != 4)){
+            IA20_THROW(BadUsageException("Error in testLVEncodeDecode (length): [")<<(int)a<<","<<iLen<<"]");
+      }
 
 }
 /*************************************************************************/
-void TCBasicMQTT::TestEnv::reset(){
+void TCBasicMQTT::caseLengthConverter(){
 
-  //  ptrActivityStore.reset(new Mocker::ActivityStore(Tools::SYS::TasksRing<ActivityStore::Task>::CreateInterface(50)));
-  //  ptrActionsStore.reset(new Mocker::ActionsStore(Tools::SYS::TasksRing<ActionsStore::Task>::CreateInterface(50)));
-  //  ptrListener.reset(new Mocker::Listener(Tools::SYS::TasksRing<Listener::Task>::CreateInterface(50)));
+	IA20::TimeSample ts(true);
 
-  //  ptrActivityStore.reset(new Mocker::ActivityStore(Tools::SPIN::TasksRing<ActivityStore::Task>::CreateInterface(50)));
-  //  ptrActionsStore.reset(new Mocker::ActionsStore(Tools::SPIN::TasksRing<ActionsStore::Task>::CreateInterface(50)));
-
-  ptrListener.reset(new Mocker::Listener(Tools::SPIN::TasksRing<Listener::Task>::CreateInterface(50)));
+  testLVEncodeDecode(0);
+  testLVEncodeDecode(1);
+  testLVEncodeDecode(127);
+  testLVEncodeDecode(128);
+  testLVEncodeDecode(16383);
+  testLVEncodeDecode(16384);
+  testLVEncodeDecode(2097151);
+  testLVEncodeDecode(2097152);
+  testLVEncodeDecode(268435454);
+  testLVEncodeDecode(268435455);
   
-  ptrEngine.reset(new Engine(ptrListener.get()));
-  
-
-
-  // ptrActivityStore->start();
-  // ptrActionsStore->start();
 }
 /*************************************************************************/
 }

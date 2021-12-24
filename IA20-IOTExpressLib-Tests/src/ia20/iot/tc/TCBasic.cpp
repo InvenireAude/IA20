@@ -87,39 +87,27 @@ void TCBasic::checkSBL(const String& strValue, int n){
   Memory::SharableMemoryPool::unique_ptr<long> ptrOnwer(
     env.ptrMemoryPool->allocate<long>(0), env.ptrMemoryPool->getDeleter());
 
-   Memory::StreamBufferList sbl(env.ptrMemoryPool.get(),ptrOnwer.get());
-   Memory::StreamBufferList::Writer writer(sbl);
-  
   String strTest(strValue);
   
   for(int i=0;i<n;i++)
     strTest+=strTest;
   
-  int i=0;
-  Memory::StreamBufferList::DataLengthType iLength;
-
-  while(i < strTest.length()){
-    writer.next(100);
-    IA20_LOG(false, "Got: "<<iLength<<" bytes.");
-    
-    iLength = writer.getAvailableLength();
-
-    if(strTest.length() - i < iLength)
-      iLength = strTest.length() - i;
-
-    IA20_LOG(false, "Writing: "<<iLength<<" bytes.");
-    memcpy(writer.getCursor(), strTest.substr(i,iLength).c_str(),iLength);
-    writer.addData(iLength);
-    i += iLength;
-  }
+  Memory::StreamBufferList sbl(env.ptrMemoryPool.get(),ptrOnwer.get());
+  Memory::StreamBufferList::Writer writer(sbl);
+  
+  writer.write((const uint8_t*)strTest.c_str(), strTest.length());
 
   Memory::StreamBufferList::Reader reader(sbl);
   
-  i=0;
+  int i=0;
   uint8_t *pData;
-  while(reader.getNext(pData,iLength)){
+  uint32_t iLength;
+
+  while(reader.getNext(pData, iLength)){
     IA20_LOG(false, "Reading: "<<iLength<<" bytes: "<<String((char*)pData,iLength));
-    if(memcmp(pData, strTest.substr(i,iLength).c_str(),iLength) != 0)
+    IA20_LOG(false, strTest.substr(i,iLength));
+    
+    if(memcmp(pData, strTest.substr(i,iLength).c_str(), iLength) != 0)
       IA20_THROW(BadUsageException("Reading from SBL failed at :")<<i<<"["<<strValue<<"]:"<<n);
     i += iLength;
   }
@@ -138,6 +126,7 @@ void TCBasic::caseStreamBufferList(){
 
   checkSBL("1234567890", 10);
   checkSBL("12345", 3);
+  checkSBL("abcdef", 13);
   checkSBL("123", 13);
   checkSBL("1234567890123", 13);
   

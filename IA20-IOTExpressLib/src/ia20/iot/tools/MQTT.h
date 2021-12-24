@@ -20,10 +20,50 @@ namespace Tools {
 /** The Hash class.
  *
  */
-class Hash {
+class MQTT {
 public:
 
-  //inline
+  typedef uint32_t VLIntType;
+
+  static inline uint8_t *encodeVL(uint8_t* pData, VLIntType iValue){
+
+    do {
+      
+        uint8_t encodedByte = iValue % 128; //TODO >>      
+        iValue = iValue / 128; // TODO
+        
+        if (iValue > 0)
+          encodedByte = encodedByte | 0x80;
+        
+        *pData++ = encodedByte;
+
+      }while (iValue > 0);
+
+      return pData;
+   }
+
+
+   static inline VLIntType decodeVL(uint8_t* pData){
+
+     uint32_t m = 1;
+     uint32_t iValue = 0;
+
+     uint8_t iByte;
+
+     do {
+
+      iByte = *pData++;
+      iValue += (iByte & 0x7f) * m;
+      
+      if (m > 128*128*128)
+        IA20_THROW(InternalException("Add exception for decodeVL"));
+     
+      m *= 128;
+
+     }while ((iByte & 0x80) != 0);
+
+    return iValue;
+   }
 
 };
 /*************************************************************************/

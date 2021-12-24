@@ -77,6 +77,9 @@ bool StreamBufferList::Reader::getNext(uint8_t* &refPtrData, DataLengthType& iDa
 /*************************************************************************/
 void StreamBufferList::Writer::next(DataLengthType iMinDataLength){
 		
+	if(iMinDataLength < sizeof(Chunk))
+		iMinDataLength = sizeof(Chunk);
+
 	if(!pChunk || pChunk->iChunkSize - pChunk->iDataLength < iMinDataLength){
 
 		if(!sbl.pMemoryPool)

@@ -17,14 +17,15 @@
  */
 
 
-#include "ia20/iot/tc/TCBasicMQTT.h"
 #include "ia20/iot/tc/TCBasic.h"
+#include "ia20/iot/tc/TCBasicMQTT.h"
+#include "ia20/iot/tc/TCMQTTServer.h"
 
 int main(int argc, char* argv[]) {
 	IA20_TRACER;
 
 	IA20::Logger::GetInstance();
-  IA20::SYS::Signal::GetInstance();
+    IA20::SYS::Signal::GetInstance();
 
 	std::cout << "Starting\n";
 
@@ -35,6 +36,7 @@ int main(int argc, char* argv[]) {
 
         TC::TCBasic        tcBasic(ptrSuite.get());
    		TC::TCBasicMQTT    tcBasicMQTT(ptrSuite.get());
+		TC::TCMQTTServer   tcMQTTServer(ptrSuite.get());
 
 		ptrSuite->run(argc == 1 ? "" : argv[1]);
 		ptrSuite->printResults(std::cout);

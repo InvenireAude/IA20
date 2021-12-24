@@ -12,6 +12,7 @@
 
 #include <ia20/commonlib/commonlib.h>
 
+#include <string.h>
 
 namespace IA20 {
 namespace IOT {
@@ -117,6 +118,24 @@ public:
 		inline uint8_t* getCursor()const{
 			return pCursor;
 		}
+
+		inline void write(const uint8_t* pNewData, DataLengthType iNewDataLength){
+
+			while(iNewDataLength){
+				
+				next(sizeof(Chunk));
+				
+				DataLengthType iChunkLen = 
+					iNewDataLength <= iAvailableLength ? iNewDataLength : iAvailableLength;
+				
+				IA20_LOG(true, "pCursor:"<<(void*)pCursor);
+
+				memcpy(pCursor, pNewData, iChunkLen);
+				addData(iChunkLen);
+				iNewDataLength -= iChunkLen;
+				pNewData       += iChunkLen;
+			}
+		};
 
 		protected:
 			Chunk *pChunk;

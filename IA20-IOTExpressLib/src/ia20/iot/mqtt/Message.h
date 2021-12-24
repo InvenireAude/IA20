@@ -23,11 +23,27 @@ namespace MQTT {
 class Message {
 public:
 
-	Message(){ //TODO tmp for prototyping only
+	Message(){
+     //TODO tmp for prototyping only
   };
 
   enum Type {
-    MT_CONNECT  = 1
+    MT_NONE     = 0,
+    MT_CONNECT  = 1,
+    MT_CONNACK  = 2,
+    MT_PUBLISH  = 3,
+    MT_PUBACK   = 4,
+    MT_PUBREC   = 5,
+    MT_PUBREL   = 6,
+    MT_PUBCOMP  = 7,
+    MT_SUBSCRIBE = 8,
+    MT_SUBACK    = 9,
+    MT_UNSUBSCRIBE = 10,
+    MT_UNSUBACK    = 11,
+    MT_PINGREQ     = 12,
+    MT_PINGRESP    = 13,
+    MT_DISCONNECT  = 14,
+    MT_AUTH        = 15
   };
 
 //protected:
