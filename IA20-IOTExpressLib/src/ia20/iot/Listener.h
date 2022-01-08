@@ -13,7 +13,7 @@
 #include <ia20/commonlib/commonlib.h>
 #include <ia20/iot/tools/TasksRing.h>
 #include <ia20/iot/tools/OffsetPtr.h>
-
+#include <ia20/iot/tools/IdentifiedByHandle.h>
 
 namespace IA20 {
 namespace IOT {
@@ -48,7 +48,7 @@ public:
 
     inline uint8_t* getMessage(){
 
-      //IA20_LOG(true, "Message g at:"<<(void*)this);
+     // IA20_LOG(true, "Message g at:"<<(void*)this<<" "<<offsetToMessage.get<uint8_t>());
 
       if(!offsetToMessage)
         IA20_THROW(InternalException("No MQTT::Message set in the listener task."));
@@ -63,13 +63,20 @@ public:
     }
 
     long iMessageId;
-    
+
+    void setHandle(Tools::IdentifiedByHandle::HandleType aHandle){
+      this->mHandle = aHandle;
+    }
+
+    Tools::IdentifiedByHandle::HandleType getHandle()const{
+      return mHandle;
+    }
+
   protected:
 
     Action iAction;
-    //padding ??
     MessageOffsetType offsetToMessage;
-    
+    Tools::IdentifiedByHandle::HandleType mHandle;
   };
 
 

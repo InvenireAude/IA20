@@ -38,7 +38,6 @@ public:
 	TCMQTTServer(TestSuite* pTestSuite);
 	virtual ~TCMQTTServer()  throw ();
 
-
 	void caseBasic();
 
 protected:

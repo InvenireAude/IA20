@@ -22,12 +22,12 @@ namespace Memory {
  */
 //TODO array of entry[] segments, index % SegmentSize
 
-template<class C, int CSize>
+template<class C, size_t CSize>
 class FixedObjectsPool {
 public:
 
 	~FixedObjectsPool() throw(){
-		// hopefully there is nothing allocted (TODO sanity checks ?)
+		// hopefully there is nothing allocated (TODO sanity checks ?)
 		if(tEntries)
 			delete reinterpret_cast<uint8_t*>(tEntries);
 	};
@@ -40,6 +40,7 @@ protected:
 public:
 
 	FixedObjectsPool():
+		iNumEntries(0),
 		tEntries(nullptr){
 		//TODO memory provider and some check and error reporting.
 		tEntries = reinterpret_cast<C*>(new uint8_t[sizeof(C) * CSize]);
@@ -47,7 +48,8 @@ public:
 			*reinterpret_cast<int32_t*>(tEntries + i) = iNextFreeIdx = i == 0 ? CEmpty : i - 1;
 		};
 
-		iNextFreeIdx = CSize -1 ;
+		iNextFreeIdx = CSize-1;
+
 	}
 
 	C* allocate(){
@@ -57,7 +59,7 @@ public:
 
 		C* pResult = tEntries + iNextFreeIdx;
 		iNextFreeIdx = *reinterpret_cast<int32_t*>(pResult);
-
+		iNumEntries++;
 		return pResult;
 	}
 
@@ -65,8 +67,23 @@ public:
 		int32_t iIdx = p - tEntries;
 		*reinterpret_cast<int32_t*>(tEntries + iIdx) = iNextFreeIdx;
 		iNextFreeIdx = iIdx;
+		iNumEntries--;
 	}
 
+
+	static size_t PointerToIdx(C* p){
+		int32_t iIdx = p - TheInstance.tEntries;
+		if(iIdx < 0 || iIdx >= CSize){
+			return ~0L;
+		}
+		return iIdx;
+	}
+
+	static C* IdxToPonter(int32_t iIdx){	
+		if(iIdx < 0 || iIdx >= CSize)
+			return NULL;	
+		return TheInstance.tEntries + iIdx;
+	}
 
 	static FixedObjectsPool TheInstance;
 	
@@ -97,10 +114,10 @@ public:
 	typedef std::unique_ptr<C, Deleter > unique_ptr;
 
 	C* tEntries;
-	uint32_t iSize;
+	uint32_t iNumEntries;
 };
 
-template<class C, int CSize>
+template<class C, size_t CSize>
 FixedObjectsPool<C,CSize> FixedObjectsPool<C,CSize>::TheInstance;
 /*************************************************************************/
 }

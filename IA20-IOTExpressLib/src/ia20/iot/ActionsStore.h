@@ -11,8 +11,9 @@
 #define _IA20_IOT_ActionsStore_H_
 
 #include <ia20/commonlib/commonlib.h>
+#include <ia20/iot/memory/StreamBufferList.h>
 
-#include <ia20/iot/tools/TasksRing.h>
+#include <map>
 
 namespace IA20 {
 namespace IOT {
@@ -27,25 +28,62 @@ namespace MQTT {
 class ActionsStore {
 public:
 
-  class Task {
+  class Action {
     public:
-    MQTT::Message *pMessage;
+    
+    inline const uint8_t* getData()const{
+      return reinterpret_cast<const uint8_t*>(this+1);
+    }
+
+    typedef uint32_t HandleType;
+
+    inline HandleType getHandle()const{
+      return iHandle;
+    }
+
+    inline Action(HandleType iHandle):iHandle(iHandle){};
+
+    protected:
+
+    HandleType iHandle;
+
+    inline uint8_t* getDataPointer(){
+      return reinterpret_cast<uint8_t*>(const_cast<Action*>(this+1));
+    }
+
+    static const size_t CAlignedSize;
+
+    static size_t ComputeRequiredMemory(uint32_t iDataLen){
+      return CAlignedSize + iDataLen;
+    };
+
+    friend class ActionsStore;
   };
 
-  typedef IA20::IOT::Tools::TasksRing<Task> RingType;
-
+  
 	virtual ~ActionsStore() throw();
+  ActionsStore();
 
-  ActionsStore(std::unique_ptr<RingType::Interface>&& ptrInterface);
-
-  inline RingType::Interface* getInterface()const{
-    return ptrInterface.get();
-  }
+  const Action* createAction(Memory::StreamBufferList::Reader& reader , uint32_t iDataLength);
+  const Action* lookup(Action::HandleType aHandle)const;
+  void          dispose(const Action* pAction);
 
 protected:
 
-  std::unique_ptr<RingType::Interface> ptrInterface;
 
+  //TODO temporary impl
+
+  struct Deleter { 
+    void operator() (Action* p) {
+        std::free(p);
+    }
+  };
+
+  typedef std::map<Action::HandleType, std::unique_ptr<Action, Deleter> > ActionsMap;
+
+  ActionsMap hmActions;
+  Action::HandleType iNextHandle;
+  
 };
 
 /*************************************************************************/

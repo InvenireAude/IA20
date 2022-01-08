@@ -1,7 +1,8 @@
-#Fri Dec 24 07:41:15 PM CET 2021
+#Thu Jan  6 07:39:26 PM CET 2022
+FILES+=ia20/iot
 FILES+=ia20/iot/ActionsStore
 FILES+=ia20/iot/ActivityStore
-FILES+=ia20/iot/Connections
+FILES+=ia20/iot/Connection
 FILES+=ia20/iot/ConnectionsStore
 FILES+=ia20/iot/Engine
 FILES+=ia20/iot/exception/Exception
@@ -17,5 +18,10 @@ FILES+=ia20/iot/mqtt/FixedHeaderBuilder
 FILES+=ia20/iot/mqtt/HeaderReader
 FILES+=ia20/iot/mqtt/Message
 FILES+=ia20/iot/mqtt/VariableHeaderBuilder
+FILES+=ia20/iot/Subscription
 FILES+=ia20/iot/SubscriptionsStore
+FILES+=ia20/iot/tools/StringRef
+FILES+=ia20/iot/tools/WordsMap
+FILES+=ia20/iot/tools/WordTokens
+FILES+=ia20/iot/Topic
 FILES+=ia20/iot/TopicsStore

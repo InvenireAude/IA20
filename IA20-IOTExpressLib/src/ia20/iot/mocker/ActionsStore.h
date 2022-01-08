@@ -29,7 +29,7 @@ public IOT::ActionsStore {
 public:
 
 	virtual ~ActionsStore() throw();
-	ActionsStore(std::unique_ptr<RingType::Interface>&& ptrInterface);
+	ActionsStore();
 
   virtual void run();
 

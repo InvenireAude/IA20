@@ -100,16 +100,16 @@ void TCBasic::checkSBL(const String& strValue, int n){
   Memory::StreamBufferList::Reader reader(sbl);
   
   int i=0;
-  uint8_t *pData;
-  uint32_t iLength;
 
-  while(reader.getNext(pData, iLength)){
-    IA20_LOG(false, "Reading: "<<iLength<<" bytes: "<<String((char*)pData,iLength));
-    IA20_LOG(false, strTest.substr(i,iLength));
+  while(reader.hasData()){
+    IA20_LOG(true, "Reading: "<<reader.getLength()<<" bytes: "<<String((char*)reader.getData(),reader.getLength()));
+    IA20_LOG(false, strTest.substr(i,reader.getLength()));
     
-    if(memcmp(pData, strTest.substr(i,iLength).c_str(), iLength) != 0)
+    if(memcmp(reader.getData(), strTest.substr(i,reader.getLength()).c_str(), reader.getLength()) != 0)
       IA20_THROW(BadUsageException("Reading from SBL failed at :")<<i<<"["<<strValue<<"]:"<<n);
-    i += iLength;
+
+    i += reader.getLength();
+    reader.getNext();
   }
 
   if(i != strTest.length())

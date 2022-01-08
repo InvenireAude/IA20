@@ -1,25 +1,20 @@
 /*
- * File: Connections.cpp
+ * File: StringRef.cpp
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
  */
 
-#include "Connections.h"
+#include "StringRef.h"
 
 
 namespace IA20 {
 namespace IOT {
+namespace Tools {
 
 /*************************************************************************/
-Connections::Connections(){
-	IA20_TRACER;
-}
 
 /*************************************************************************/
-Connections::~Connections() throw(){
-	IA20_TRACER;
 }
-/*************************************************************************/
 }
 }

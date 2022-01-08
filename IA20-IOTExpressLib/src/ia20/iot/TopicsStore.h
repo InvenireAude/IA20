@@ -11,6 +11,13 @@
 #define _IA20_IOT_TopicsStore_H_
 
 #include <ia20/commonlib/commonlib.h>
+#include <ia20/iot/memory/FixedObjectsPool.h>
+#include <ia20/iot/tools/WordsMap.h>
+#include <ia20/iot/tools/WordTokens.h>
+
+#include "Topic.h"
+
+#include <unordered_map>
 
 namespace IA20 {
 namespace IOT {
@@ -23,13 +30,39 @@ class TopicsStore {
 public:
 
 	virtual ~TopicsStore() throw();
-
-
 	TopicsStore();
+
+	Topic *getTopic(const Tools::StringRef& strTopic);
+	
+	Topic *getRoot()const{
+		return pRootTopic;
+	}
+
+	Topic* lookup(Topic* pParent, Tools::WordsMap::WordIdType iWordId)const;
+
+	Tools::WordsMap* getWordsMap()const{
+		return ptrWordsMap.get();
+	}
+	
 protected:
 
-};
+	typedef Memory::FixedObjectsPool<Topic, 10000> TopicPool;
+	typedef std::pair<Topic*, Tools::WordsMap::WordIdType> KeyType;
 
+	struct Hash{
+		size_t operator()(KeyType key)const{
+			return (uint64_t)key.first + key.second;
+		}
+	};
+
+	typedef std::unordered_map<KeyType, Topic*, Hash> ChildMap;
+
+	ChildMap hmChildren;
+
+	Topic* pRootTopic;
+
+	std::unique_ptr<Tools::WordsMap> ptrWordsMap;
+};
 /*************************************************************************/
 }
 }

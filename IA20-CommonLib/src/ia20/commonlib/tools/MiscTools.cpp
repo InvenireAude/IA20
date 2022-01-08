@@ -177,9 +177,10 @@ void  MiscTools::HexToBinary(const String& strInput,void *pData, size_t iBufLen)
 
  unsigned char* sData = reinterpret_cast<unsigned char*>(pData);
 
-	while(*s && *(s+1) && iBufLen--)
+	while(*s && *(s+1) && iBufLen--){
+		// IA20_LOG(true, "Writing: "<<(void*)sData<<" "<<iBufLen);
 		*sData++ = (HexValue(*s++)<<4) + HexValue(*s++);
-
+	}
 
 }
 /*************************************************************************/

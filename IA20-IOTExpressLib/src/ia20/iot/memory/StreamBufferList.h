@@ -10,6 +10,8 @@
 #ifndef _IA20_IOT_Memory_StreamBufferList_H_
 #define _IA20_IOT_Memory_StreamBufferList_H_
 
+#include <iostream>
+
 #include <ia20/commonlib/commonlib.h>
 #include <ia20/iot/tools/OffsetPtr.h>
 
@@ -86,13 +88,97 @@ public:
 	class Reader {
 	public:
 		inline Reader(const StreamBufferList& sbl):
-			pChunk(sbl.pHead),bFinished(false){}
+			pChunk(sbl.pHead),
+			bFinished(false),
+			pData(pChunk->getDataStart()),
+			iConsumedBytes(0),
+			iDataLength(pChunk->iDataLength){
+				IA20_LOG(true, "Starting at: "<<(void*)pData);
+			}
 
-		bool getNext(uint8_t* &refPtrData, DataLengthType& iDataLength);
+		void getNext();
 		
+		inline uint8_t* getData()const{
+			return pData;
+		}
+
+		inline DataLengthType getLength()const{
+			return iDataLength;
+		}
+
+		inline void advance(DataLengthType iStep){
+			
+			if(iStep < iDataLength){
+				iDataLength -= iStep;
+				pData += iStep;	
+				iConsumedBytes += iStep;			
+			}else if(iStep == iDataLength){
+				 getNext();
+			}else{
+				IA20_THROW(InternalException("advance(iStep > iDataLenght)"));
+			}
+		}
+
+		inline DataLengthType copy(uint8_t* pDst, DataLengthType iBytesToCopy = ~(DataLengthType)0){
+			
+			DataLengthType iLeft = iBytesToCopy;
+
+			while(iLeft > 0 && hasData()){
+				
+				DataLengthType iStepSize = iLeft;
+				
+				if(iStepSize > iDataLength){
+					iStepSize = iDataLength;
+				}
+
+				memcpy(pDst, pData, iStepSize);
+
+				iLeft -= iStepSize;
+				iDataLength -= iStepSize;
+				iConsumedBytes += iStepSize;
+
+				if(iDataLength == 0){
+					getNext();
+				}else{
+					pData += iStepSize;
+				}
+
+			}
+
+			return iBytesToCopy - iLeft;
+		}
+
+		inline bool hasData()const{
+			return !(pChunk->isLast() && iDataLength == 0);
+		}
+
+		inline uint8_t readByte(){
+
+			IA20_LOG(true, "Reading at: "<<(void*)pData<<", v:"<<(int)*pData<<", len: "<<iDataLength);
+			
+			if(!iDataLength){
+				getData();
+			}
+
+			if(iDataLength == 0)
+				IA20_THROW(EndOfDataException("StreamBuffer is empty!!!"));
+
+			iDataLength--;
+			iConsumedBytes++;
+			return *pData++;
+		}
+
+			inline DataLengthType getConsumedBytes()const{
+				return iConsumedBytes;
+			}
+
 		protected:
 			const Chunk *pChunk;
 			bool   bFinished;
+			
+			uint8_t* pData;
+			DataLengthType iDataLength;
+			DataLengthType iConsumedBytes;;
 	};
 
 	class Writer{

@@ -12,7 +12,9 @@
 
 #include <ia20/commonlib/commonlib.h>
 
-#include <ia20/iot/tools/TasksRing.h>
+
+#include "Subscription.h"
+#include "ActionsStore.h"
 
 namespace IA20 {
 namespace IOT {
@@ -24,27 +26,88 @@ namespace MQTT {
 /** The ActivityStore class.
  *
  */
+
+class SubscriptionStore;
+class ActionsStore;
+
 class ActivityStore {
+protected:
+  typedef uint32_t IndexType;
+
 public:
 
-  class Task {
+  class Activity {
     public:
-    MQTT::Message *pMessage;
-  };
 
-  typedef IA20::IOT::Tools::TasksRing<Task> RingType;
+
+    Activity(Subscription::HandleType mSubscriptionHandle,
+     ActionsStore::Action::HandleType mActionHandle):
+        mSubscriptionHandle(mSubscriptionHandle),
+        mActionHandle(mActionHandle){}
+
+
+      inline Subscription::HandleType getSubscriptionHandle()const{
+        return mSubscriptionHandle;
+      };
+      inline ActionsStore::Action::HandleType getActionHandle()const{
+        return mActionHandle;
+      };
+
+    protected:
+     
+     Subscription::HandleType         mSubscriptionHandle;
+     ActionsStore::Action::HandleType mActionHandle;
+
+  };
 
 	virtual ~ActivityStore() throw();
 
-  ActivityStore(std::unique_ptr<RingType::Interface>&& ptrInterface);
+  ActivityStore(
+    IndexType          iSize = 1000);
 
-  inline RingType::Interface* getInterface()const{
-    return ptrInterface.get();
-  }
+
+   inline void createActivity(Subscription::HandleType  mSubscriptionHandle,
+                       ActionsStore::Action::HandleType mActionHandle){
+      
+        if(iNumActivites == iSize)
+            IA20_THROW(ItemNotFoundException("iNumActivities == iSize"));
+        
+        IA20_LOG(true, "New Activity ["<<iHead<<"], Sub: "
+          <<(void*)(long)mSubscriptionHandle<<":"
+          <<(void*)(long)mActionHandle);
+
+        Activity* pActivity = tActivites + iHead++;
+        new(pActivity) Activity(mSubscriptionHandle, mActionHandle);
+
+        if(iHead == iSize){
+          iHead = 0;
+        }
+      }
+
+    inline Activity* back()const{
+      
+      if(iNumActivites == 0)
+        IA20_THROW(ItemNotFoundException("iNumActivities == 0"));
+
+      return tActivites + ((iHead - iNumActivites + iSize) % iSize);
+
+    }
+
+    void next(){
+
+       if(iNumActivites == 0)
+         IA20_THROW(ItemNotFoundException("iNumActivities == 0"));
+
+       iNumActivites --;
+    }
 
 protected:
 
-  std::unique_ptr<RingType::Interface> ptrInterface;
+  Activity* tActivites;
+
+  IndexType iSize;
+  IndexType iHead;
+  IndexType iNumActivites;
 
 };
 

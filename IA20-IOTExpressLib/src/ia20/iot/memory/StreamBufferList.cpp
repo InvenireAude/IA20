@@ -57,22 +57,22 @@ StreamBufferList::Chunk* StreamBufferList::allocateChunk(void* pOnwerAddress)con
 	return new(pResult)Chunk(iBytesAllocated - sizeof(Chunk));
 }
 /*************************************************************************/
-bool StreamBufferList::Reader::getNext(uint8_t* &refPtrData, DataLengthType& iDataLength){
+void StreamBufferList::Reader::getNext(){
 
 	if(bFinished)
-		return false;
-
-	IA20_LOG(false, (*pChunk)<<", getDataStart: "<<(void*)pChunk->getDataStart());
-	refPtrData  = pChunk->getDataStart();
-	iDataLength = pChunk->iDataLength;
-
-	if(!pChunk->isLast()){
-		pChunk = pChunk->getNext();
-	}else{
+		return;
+	
+	if(pChunk->isLast()){
+		IA20_LOG(true, "isLast()");
 		bFinished = true;
+		iDataLength = 0;
+	}else{
+		pChunk = pChunk->getNext();
+		IA20_LOG(true, (*pChunk)<<", getDataStart: "<<(void*)pChunk->getDataStart());
+		pData  = pChunk->getDataStart();
+		iDataLength = pChunk->iDataLength;
 	}
 
-	return true;
 }
 /*************************************************************************/
 void StreamBufferList::Writer::next(DataLengthType iMinDataLength){

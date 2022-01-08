@@ -11,6 +11,10 @@
 #define _IA20_IOT_Engine_H_
 
 #include <ia20/commonlib/commonlib.h>
+#include <ia20/iot/memory/SharableMemoryPool.h>
+
+#include <ia20/iot/mqtt/HeaderReader.h>
+#include <ia20/iot/mqtt/FixedHeaderBuilder.h>
 
 #include "Listener.h"
 #include "ActivityStore.h"
@@ -19,14 +23,18 @@
 namespace IA20 {
 namespace IOT {
 
-namespace Memory{
-  class SharableMemoryPool;
-}
 
 /*************************************************************************/
 /** The Engine class.
  *
  */
+
+class ConnectionsStore;
+class TopicsStore;
+class SubscriptionsStore;
+class ActionsStore;
+class ActivityStore;
+
 class Engine {
   protected:
 
@@ -56,6 +64,30 @@ protected:
 
   void serveLister(ListenerDetails& ld);
   void addListener(Listener* pListener);
+
+  struct Context {
+
+    Context(Listener::Task*, Memory::SharableMemoryPool::Deleter&);
+
+    Memory::SharableMemoryPool::unique_ptr<Listener::Task> ptrTask;
+    Memory::StreamBufferList sbl;
+    Memory::StreamBufferList::Reader reader;
+    MQTT::HeaderReader headerReader;
+
+  };
+
+  void handleConnect(Engine::ListenerDetails& ld, Context& ctx);
+  void handleSubscribe(Engine::ListenerDetails& ld, Context& ctx);
+  void handlePublish(Engine::ListenerDetails& ld, Context& ctx);
+
+
+  uint8_t buf[1024];
+  std::unique_ptr<ConnectionsStore>   ptrConnectionsStore;
+  std::unique_ptr<TopicsStore>        ptrTopicsStore;
+  std::unique_ptr<SubscriptionsStore> ptrSubscriptionsStore;
+  std::unique_ptr<ActionsStore>       ptrActionsStore;
+  std::unique_ptr<ActivityStore>      ptrActivityStore;
+
 };
 
 /*************************************************************************/

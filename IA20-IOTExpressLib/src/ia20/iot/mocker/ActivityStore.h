@@ -29,7 +29,9 @@ public IOT::ActivityStore {
 public:
 
 	virtual ~ActivityStore() throw();
-	ActivityStore(std::unique_ptr<RingType::Interface>&& ptrInterface);
+	ActivityStore(
+		
+	);
 
   virtual void run();
 

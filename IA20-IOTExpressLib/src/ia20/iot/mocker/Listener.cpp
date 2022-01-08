@@ -44,10 +44,11 @@ void Listener::serve(){
 
   uint8_t *pMessage = ptrTask->getMessage();
   
-  MQTT::HeaderReader headerReader(pMessage);
+   MQTT::HeaderReader headerReader(pMessage);
 
-  IA20_LOG(true, "MessageType:"<<(int)headerReader.getType());
-  IA20_LOG(true, "Length:"<<headerReader.getLength());
+   IA20_LOG(true, "MessageType:"<<(int)headerReader.getType());
+   IA20_LOG(true, "Length:"<<headerReader.getLength());
+   IA20_LOG(true, "Handle:"<<(void*)ptrTask->getHandle());
 
 
   //IA20_LOG(true, "Response: "<<pMessage->iMessageId<<" "<<icount++);
@@ -96,16 +97,22 @@ void Listener::sendMessage(const String& strHex){
 
   int iMessageLen = strHex.length()/2;
 
-  static std::unique_ptr<uint8_t> ptr(new uint8_t[iMessageLen]);
+  std::unique_ptr<uint8_t> ptr(new uint8_t[iMessageLen]);
+  
+  
   MiscTools::HexToBinary(strHex, ptr.get(), iMessageLen);
 
   Memory::StreamBufferList::Writer writer(sbl);
   int i=0;
 
   while(i < iMessageLen){
+    IA20_LOG(true, "A1");
     writer.next(32);
+    IA20_LOG(true, "B1");
     int iLength = (iMessageLen - i < writer.getAvailableLength()) ?  iMessageLen - i : writer.getAvailableLength();
-    IA20_LOG(true, "Writing: "<<iLength<<" bytes, to: "<<(void*)writer.getCursor());
+    IA20_LOG(true, "C: "<<iLength<<", "<<iMessageLen);
+    IA20_LOG(true, "Writing: "<<iLength<<",     "<<(void*)writer.getCursor());
+  //  IA20_LOG(true, "Writing: "<<iLength<<" bytes, to: "<<(void*)writer.getCursor());
     memcpy(writer.getCursor(), ptr.get() + i ,iLength);
     IA20_LOG(true, "Data: "<<MiscTools::BinarytoHex(writer.getCursor(), iLength));
     writer.addData(iLength);
