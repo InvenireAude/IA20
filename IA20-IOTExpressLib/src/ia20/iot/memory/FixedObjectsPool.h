@@ -82,6 +82,7 @@ public:
 	static C* IdxToPonter(int32_t iIdx){	
 		if(iIdx < 0 || iIdx >= CSize)
 			return NULL;	
+		IA20_LOG(true, "IdxToPonter: "<<iIdx<<" "<<(TheInstance.tEntries + iIdx));
 		return TheInstance.tEntries + iIdx;
 	}
 

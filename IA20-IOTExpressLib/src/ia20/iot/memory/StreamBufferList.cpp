@@ -94,6 +94,8 @@ void StreamBufferList::Writer::next(DataLengthType iMinDataLength){
 		pChunk = pNew;	
 	}
 
+	IA20_LOG(true, "pCursor2:"<<(void*)pChunk->getDataStart()<<", "<<pChunk->iDataLength);
+
 	pCursor           = pChunk->getDataStart() + pChunk->iDataLength;
 	iAvailableLength  = pChunk->iChunkSize - pChunk->iDataLength;
 }

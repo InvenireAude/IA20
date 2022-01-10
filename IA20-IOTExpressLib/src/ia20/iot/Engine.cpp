@@ -9,10 +9,9 @@
 
 #include<string.h>
 
-//#include <ia20/iot/mqtt/Message.h>
+
 #include <ia20/iot/memory/SharableMemoryPool.h>
 #include <ia20/iot/memory/StreamBufferList.h>
-//#include <ia20/iot/mqtt/Message.h>
 #include <ia20/iot/tools/StringRef.h>
 
 
@@ -20,7 +19,7 @@
 #include "TopicsStore.h"
 #include "Subscription.h"
 #include "SubscriptionsStore.h"
-#include "ActionsStore.h"
+#include "MessageStore.h"
 #include "Topic.h"
 
 namespace IA20 {
@@ -40,7 +39,7 @@ Engine::Engine(Listener*  pListener){
   ptrSubscriptionsStore.reset(
     new SubscriptionsStore(ptrConnectionsStore.get(), ptrTopicsStore.get()));
   
-  ptrActionsStore.reset(new ActionsStore());
+  ptrMessageStore.reset(new MessageStore());
 
   ptrActivityStore.reset(new ActivityStore());
   
@@ -57,6 +56,7 @@ void Engine::serve(){
     serveLister(it);
   }
 
+  handleActivities();
 }
 /*************************************************************************/
 Engine::Context::Context(Listener::Task* pTask, Memory::SharableMemoryPool::Deleter& deleter):
@@ -74,7 +74,8 @@ Engine::Context::Context(Listener::Task* pTask, Memory::SharableMemoryPool::Dele
 void Engine::serveLister(Engine::ListenerDetails& ld){
 
   IA20_TRACER;
-  IA20_LOG(true, "Serve Listener ");
+  IA20_LOG(true, " ************************");
+  IA20_LOG(true, " **** Serve Listener ****");
 
   Context ctx(ld.pRingRequest->deque(), ld.pMemoryPool->getDeleter());
 
@@ -102,6 +103,7 @@ void Engine::serveLister(Engine::ListenerDetails& ld){
 void Engine::addListener(Listener* pListener){
 
   ListenerDetails ld;
+  ld.iIdx = tabListners.size();
   ld.pListener = pListener;
   ld.pRingRequest  = pListener->getInterface()->getRequests();
   ld.pRingResponse = pListener->getInterface()->getResponses();
@@ -141,13 +143,13 @@ void Engine::addListener(Listener* pListener){
     uint32_t iPropertiesLen = ctx.reader.readByte();
     IA20_LOG(true, "PropertiesLen: "<<(int)iPropertiesLen);
 
-    Connection* pConnection = ptrConnectionsStore->create(1, (wchar_t*)"CLIENT10");
+    Connection* pConnection = ptrConnectionsStore->create(ld.iIdx, (wchar_t*)"CLIENT10");
 
   Memory::SharableMemoryPool::unique_ptr<Listener::Task> 
     ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
-        Listener::Task(Listener::Task::CA_SendMQTT), ld.pMemoryPool->getDeleter());
+        Listener::Task(Listener::Task::CA_SendDirect), ld.pMemoryPool->getDeleter());
 
-  ptrTask2->setHandle(pConnection->getHandle());
+  ptrTask2->setConnectionHandle(pConnection->getHandle());
 
   uint8_t *pData2 = (uint8_t *)ld.pMemoryPool->allocate(ptrTask2.get(),120);
   
@@ -191,16 +193,17 @@ void Engine::addListener(Listener* pListener){
       IA20_LOG(true, "Topic ["<<iTopicLen<<":"<<rc<<"]"
         <<String((char*)buf,iTopicLen)<<"("<<(int)iOptions<<")");
       Tools::StringRef strTopic(buf,iTopicLen);
-      ptrSubscriptionsStore->addSubscription(0, strTopic, iOptions);
+      ptrSubscriptionsStore->addSubscription(ctx.ptrTask->getConnectionHandle(), strTopic, iOptions);
     }
     
     Memory::SharableMemoryPool::unique_ptr<Listener::Task> 
     ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
-        Listener::Task(Listener::Task::CA_SendMQTT), ld.pMemoryPool->getDeleter());
+        Listener::Task(Listener::Task::CA_SendDirect), ld.pMemoryPool->getDeleter());
 
   uint8_t *pData2 = (uint8_t *)ld.pMemoryPool->allocate(ptrTask2.get(),120);
   
   ptrTask2->setMessage(pData2);
+  ptrTask2->setConnectionHandle(ctx.ptrTask->getConnectionHandle());
   ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 10000000;
   
   MQTT::FixedHeaderBuilder builder;
@@ -251,7 +254,7 @@ void Engine::addListener(Listener* pListener){
 
   Memory::StreamBufferList::Reader reader(ctx.sbl);
 
-  const ActionsStore::Action* pAction = ptrActionsStore->createAction(reader, iDataLen);
+  const Message* pMessage = ptrMessageStore->createMessage(reader, iDataLen);
 
 	Tools::WordTokens tokens;
 	tokens.read(strTopic, ptrTopicsStore->getWordsMap());
@@ -262,34 +265,100 @@ void Engine::addListener(Listener* pListener){
 		pCurrent = ptrTopicsStore->lookup(pCurrent, *it);
 	}
 
+  for(auto& l : tabListners){
+    l.tmp.iCounter = 0;
+  }
+
   if(pCurrent->hasFirstSubscription()){
     Subscription* pSubscription = pCurrent->getFirstSubscription();
    
     while(pSubscription){
-       ptrActivityStore->createActivity(pSubscription->getHandle(), pAction->getHandle());
+       Connection *pConnection = ptrConnectionsStore->get(pSubscription->getConnectionHandle());
+       
+       ptrActivityStore->createActivity(pSubscription->getConnectionHandle(), pMessage->getHandle());
+       
+       tabListners[pConnection->getListenerIdx()].tmp.iCounter++;
+
        pSubscription = pSubscription->getNext();
     }
+
+  for(auto& l : tabListners)
+    if(l.tmp.iCounter > 0){
+
+      Memory::SharableMemoryPool::unique_ptr<Listener::Task> 
+          ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
+              Listener::Task(Listener::Task::CA_SetContent), ld.pMemoryPool->getDeleter());
+
+      uint8_t *pData2 = (uint8_t *)ld.pMemoryPool->allocate(ptrTask2.get(),120);
+      
+      Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
+      Memory::StreamBufferList::Writer writer(sbl);
+
+      IA20_LOG(true, "Write, set_content: "<<(int)pMessage->getDataLength());
+
+      writer.write(pMessage->getData(), pMessage->getDataLength());
+      ptrTask2->setMessage(sbl.getHead());
+      ptrTask2->setMessageHandle(pMessage->getHandle());
+      ptrTask2->setContentUsageCount(l.tmp.iCounter);
+      ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 90000000;  
+      l.pRingResponse->enque(ptrTask2.release());
+    }
+    
   }
 
   Memory::SharableMemoryPool::unique_ptr<Listener::Task> 
   ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
-        Listener::Task(Listener::Task::CA_SendMQTT), ld.pMemoryPool->getDeleter());
+        Listener::Task(Listener::Task::CA_SendDirect), ld.pMemoryPool->getDeleter());
 
   uint8_t *pData2 = (uint8_t *)ld.pMemoryPool->allocate(ptrTask2.get(),120);
   
   ptrTask2->setMessage(pData2);
   ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 10000000;
-  
+ 
   MQTT::FixedHeaderBuilder builder;
   
   builder.setType(MQTT::Message::MT_PUBACK);
-
+  ptrTask2->setConnectionHandle(ctx.ptrTask->getConnectionHandle());
   builder.setID(ctx.headerReader.getID());
   
   builder.build(pData2);
   
   ld.pRingResponse->enque(ptrTask2.release());
  }
+/*************************************************************************/
+void Engine::handleActivities(){
+   IA20_TRACER;
+
+    IA20_LOG(true, "handleActivities0");
+
+   while(ptrActivityStore->hasActivities()){
+     Activity* pActivity = ptrActivityStore->back();
+
+    IA20_LOG(true, "handleActivities");
+
+
+     ListenerDetails& ld(tabListners[0]);
+
+     Memory::SharableMemoryPool::unique_ptr<Listener::Task> 
+      ptrTask(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
+        Listener::Task(Listener::Task::CA_SendShared), ld.pMemoryPool->getDeleter());
+
+      ptrTask->iMessageId = 20000000;
+      ptrTask->setConnectionHandle(pActivity->getConnectionHandle());
+      ptrTask->setMessageHandle(pActivity->getMessageHandle());        
+      
+      // IA20_LOG(true, "serve 1:  "<<(void*)(long)ptrTask->getMessageHandle());
+      // IA20_LOG(true, "server 2:  "<<(void*)(long)ptrTask->getConnectionHandle());
+
+      // IA20_LOG(true, "HEX:  "<<(void*)ptrTask.get()<<" "<<MiscTools::BinarytoHex((void*)ptrTask.get(), sizeof(Listener::Task)));
+
+
+      ld.pRingResponse->enque(ptrTask.release());
+
+      ptrActivityStore->next();
+   }
+
+}  
 /*************************************************************************/
 }
 }

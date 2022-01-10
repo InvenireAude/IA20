@@ -37,12 +37,13 @@ void SubscriptionsStore::addSubscription(Connection::HandleType aConnectionHandl
 	
 	SubscriptionsStore::SubscriptionList *pList = getList(aConnectionHandle);
 
-	std::unique_ptr<Subscription> ptrSubscription(new Subscription(iNextHandle++, strTopic, aConnectionHandle));
+	std::unique_ptr<Subscription> ptrSubscription(new Subscription(iNextHandle, strTopic, aConnectionHandle));
 	
 	pTopicsStore->getTopic(strTopic)->addSubscription(ptrSubscription.get());
 
-	pList->push_back(std::move(ptrSubscription));
+	pList->push_back(ptrSubscription.get());
 
+	hmSubscriptions[iNextHandle++] = std::move(ptrSubscription);
 }
 /*************************************************************************/
 SubscriptionsStore::SubscriptionList* SubscriptionsStore::getList(Connection::HandleType aHandle){
@@ -50,16 +51,28 @@ SubscriptionsStore::SubscriptionList* SubscriptionsStore::getList(Connection::Ha
 
 	SubscriptionsStore::SubscriptionList* pResult;
 
-	SubscriptionsMap::iterator it = hmSubscriptions.find(aHandle);
+	ConnectionSubsMap::iterator it = hmConnectionSubs.find(aHandle);
 
-	if(it == hmSubscriptions.end()){
-		hmSubscriptions[aHandle].reset(new SubscriptionList);
-		pResult = hmSubscriptions[aHandle].get();
+	if(it == hmConnectionSubs.end()){
+		hmConnectionSubs[aHandle].reset(new SubscriptionList);
+		pResult = hmConnectionSubs[aHandle].get();
 	} else {
 		pResult = it->second.get();
 	}
 
 	return pResult;
+}
+/*************************************************************************/
+Subscription* SubscriptionsStore::lookup(Subscription::HandleType aHandle)const{
+	IA20_TRACER;
+
+	SubscriptionsMap::const_iterator it = hmSubscriptions.find(aHandle);
+
+	if(it == hmSubscriptions.end()){
+		IA20_THROW(ItemNotFoundException("Subscription: ")<<(void*)(long)aHandle);
+	} 
+
+	return it->second.get();
 }
 /*************************************************************************/
 

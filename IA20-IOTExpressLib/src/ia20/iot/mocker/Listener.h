@@ -13,6 +13,8 @@
 #include <ia20/commonlib/commonlib.h>
 
 #include "../Listener.h"
+#include "../Connection.h"
+
 #include "MockerThread.h"
 
 namespace IA20 {
@@ -40,6 +42,17 @@ protected:
   void run();
 
   std::unique_ptr<Memory::SharableMemoryPool> ptrMemoryPoolHolder;
+
+  struct ContentEntry{
+    int   iUsageCount;
+    uint8_t *pPayLoad;
+  };
+
+  typedef std::map<Tools::IdentifiedByHandle::HandleType, ContentEntry> ContentMap;
+
+  ContentMap hmContent; 
+
+  Connection::HandleType aConnectionHandle;
 };
 
 /*************************************************************************/

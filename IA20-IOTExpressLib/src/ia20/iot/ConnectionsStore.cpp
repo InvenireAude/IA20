@@ -45,7 +45,7 @@ Connection *ConnectionsStore::get(Connection::HandleType aHandle){
 	Connection *pConnection = ConnectionsPool::IdxToPonter(0xffffffff & aHandle);
 
 	if(!pConnection || pConnection->getHandle() != aHandle){
-		IA20_THROW(ItemNotFoundException("Connection"));
+		IA20_THROW(ItemNotFoundException("Connection, handle: ")<<(void*)(long)aHandle);
 	}
 
 	return pConnection;

@@ -45,7 +45,7 @@ protected:
   struct TestEnv {
 
     std::unique_ptr<IOT::Mocker::ActivityStore> ptrActivityStore;
-    std::unique_ptr<IOT::Mocker::ActionsStore>  ptrActionsStore;
+    // std::unique_ptr<IOT::Mocker::ActionsStore>  ptrActionsStore;
     std::unique_ptr<IOT::Mocker::Listener>      ptrListener;
 
 

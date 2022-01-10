@@ -11,10 +11,12 @@
 #define _IA20_IOT_ActivityStore_H_
 
 #include <ia20/commonlib/commonlib.h>
+#include <ia20/iot/memory/FixedObjectsPool.h>
 
 
-#include "Subscription.h"
-#include "ActionsStore.h"
+#include "Connection.h"
+#include "Activity.h"
+#include "MessageStore.h"
 
 namespace IA20 {
 namespace IOT {
@@ -27,8 +29,8 @@ namespace MQTT {
  *
  */
 
-class SubscriptionStore;
-class ActionsStore;
+class ConnectionStore;
+class MessageStore;
 
 class ActivityStore {
 protected:
@@ -36,52 +38,30 @@ protected:
 
 public:
 
-  class Activity {
-    public:
-
-
-    Activity(Subscription::HandleType mSubscriptionHandle,
-     ActionsStore::Action::HandleType mActionHandle):
-        mSubscriptionHandle(mSubscriptionHandle),
-        mActionHandle(mActionHandle){}
-
-
-      inline Subscription::HandleType getSubscriptionHandle()const{
-        return mSubscriptionHandle;
-      };
-      inline ActionsStore::Action::HandleType getActionHandle()const{
-        return mActionHandle;
-      };
-
-    protected:
-     
-     Subscription::HandleType         mSubscriptionHandle;
-     ActionsStore::Action::HandleType mActionHandle;
-
-  };
+  typedef Memory::FixedObjectsPool<Activity, 1000> ActivityPool;
 
 	virtual ~ActivityStore() throw();
 
-  ActivityStore(
-    IndexType          iSize = 1000);
+  ActivityStore(IndexType iSize = 1000);
 
-
-   inline void createActivity(Subscription::HandleType  mSubscriptionHandle,
-                       ActionsStore::Action::HandleType mActionHandle){
+   inline void createActivity(Connection::HandleType  mConnectionHandle,
+                              Message::HandleType     mMessageHandle){
       
         if(iNumActivites == iSize)
             IA20_THROW(ItemNotFoundException("iNumActivities == iSize"));
         
         IA20_LOG(true, "New Activity ["<<iHead<<"], Sub: "
-          <<(void*)(long)mSubscriptionHandle<<":"
-          <<(void*)(long)mActionHandle);
+          <<(void*)(long)mConnectionHandle<<":"
+          <<(void*)(long)mMessageHandle);
 
-        Activity* pActivity = tActivites + iHead++;
-        new(pActivity) Activity(mSubscriptionHandle, mActionHandle);
+        Activity* pActivity = ActivityPool::New(0, mConnectionHandle, mMessageHandle);
+        tActivites[iHead++] = pActivity;
 
         if(iHead == iSize){
           iHead = 0;
         }
+
+        iNumActivites++;
       }
 
     inline Activity* back()const{
@@ -89,21 +69,27 @@ public:
       if(iNumActivites == 0)
         IA20_THROW(ItemNotFoundException("iNumActivities == 0"));
 
-      return tActivites + ((iHead - iNumActivites + iSize) % iSize);
+      return tActivites[(iHead - iNumActivites + iSize) % iSize];
 
     }
 
-    void next(){
+    inline void next(){
 
        if(iNumActivites == 0)
          IA20_THROW(ItemNotFoundException("iNumActivities == 0"));
 
-       iNumActivites --;
+       ActivityPool::Free(tActivites[(iHead - iNumActivites + iSize) % iSize]);
+       
+       iNumActivites--;
+    }
+
+    inline bool hasActivities()const{
+      return iNumActivites > 0;
     }
 
 protected:
 
-  Activity* tActivites;
+  Activity** tActivites;
 
   IndexType iSize;
   IndexType iHead;

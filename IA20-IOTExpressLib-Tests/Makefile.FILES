@@ -1,4 +1,4 @@
-#Thu Dec 23 05:03:30 PM CET 2021
+#Mon Jan 10 01:03:18 PM CET 2022
 FILES+=ia20/iot/tc/TCBasic
 FILES+=ia20/iot/tc/TCBasicMQTT
 FILES+=ia20/iot/tc/TCMQTTServer

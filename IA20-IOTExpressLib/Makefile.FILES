@@ -1,6 +1,6 @@
-#Thu Jan  6 07:39:26 PM CET 2022
+#Mon Jan 10 10:14:27 AM CET 2022
 FILES+=ia20/iot
-FILES+=ia20/iot/ActionsStore
+FILES+=ia20/iot/Activity
 FILES+=ia20/iot/ActivityStore
 FILES+=ia20/iot/Connection
 FILES+=ia20/iot/ConnectionsStore
@@ -10,7 +10,8 @@ FILES+=ia20/iot/exception/ItemNotFoundException
 FILES+=ia20/iot/Listener
 FILES+=ia20/iot/memory/SharableMemoryPool
 FILES+=ia20/iot/memory/StreamBufferList
-FILES+=ia20/iot/mocker/ActionsStore
+FILES+=ia20/iot/Message
+FILES+=ia20/iot/MessageStore
 FILES+=ia20/iot/mocker/ActivityStore
 FILES+=ia20/iot/mocker/Listener
 FILES+=ia20/iot/mocker/MockerThread

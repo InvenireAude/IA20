@@ -15,6 +15,9 @@
 #include <ia20/iot/tools/OffsetPtr.h>
 #include <ia20/iot/tools/IdentifiedByHandle.h>
 
+#include "MessageStore.h"
+#include "Connection.h"
+
 namespace IA20 {
 namespace IOT {
 namespace MQTT {
@@ -35,10 +38,12 @@ public:
   class Task {
     public:
     
-    enum Action : uint8_t {
+    enum Command : uint8_t {
       CA_None             = 0,
-      CA_ReceiveMQTT      = 3,
-      CA_SendMQTT         = 4
+      CA_InputMsg         = 3,
+      CA_SendDirect       = 4,
+      CA_SetContent       = 5,
+      CA_SendShared       = 6
     };
 
     inline void setMessage(uint8_t* pMessage){
@@ -56,27 +61,61 @@ public:
       return offsetToMessage.get<uint8_t>();
     }
     
-    inline Task(Action iAction):iAction(iAction){};
+    inline Task(Command iCommand):
+      iCommand(iCommand),
+      iContentUsageCount(0),
+      aConnectionHandle(0L),
+      aMessageHandle(0x55555555){};
 
-    inline Action getAction()const{
-      return iAction;
+    inline Command getCommand()const{
+     // IA20_LOG(true,"command addr:"<<(void*)&iCommand);
+      return iCommand;
     }
 
     long iMessageId;
 
-    void setHandle(Tools::IdentifiedByHandle::HandleType aHandle){
-      this->mHandle = aHandle;
+    void setConnectionHandle(Connection::HandleType aConnectionHandle){
+      this->aConnectionHandle = aConnectionHandle;
     }
 
-    Tools::IdentifiedByHandle::HandleType getHandle()const{
-      return mHandle;
+    Connection::HandleType getConnectionHandle()const{
+      return aConnectionHandle;
+    }
+
+    void setMessageHandle(Message::HandleType aMessageHandle){
+      this->aMessageHandle = aMessageHandle;
+      
+            //           IA20_LOG(true, "set message handle:  "
+            // <<(void*)(long)this->aMessageHandle);
+
+    }
+
+    Message::HandleType getMessageHandle()const{
+
+    // IA20_LOG(true,"message addr:"<<(void*)&aMessageHandle);
+    //                 IA20_LOG(true, "get message handle:  "
+    //       <<(void*)(long)this->aMessageHandle);
+      return aMessageHandle;
+    }
+
+   
+    void setContentUsageCount(uint32_t iContentUsageCount){
+      this->iContentUsageCount = iContentUsageCount;
+    }
+
+    uint32_t getContentUsageCount()const{
+      return iContentUsageCount;
     }
 
   protected:
 
-    Action iAction;
-    MessageOffsetType offsetToMessage;
-    Tools::IdentifiedByHandle::HandleType mHandle;
+    Command iCommand;
+
+    Connection::HandleType                aConnectionHandle;
+    Message::HandleType                   aMessageHandle;
+    uint32_t                              iContentUsageCount;
+    
+    MessageOffsetType                     offsetToMessage;
   };
 
 

@@ -205,14 +205,14 @@ public:
 
 		inline void write(const uint8_t* pNewData, DataLengthType iNewDataLength){
 
-			while(iNewDataLength){
+			while(iNewDataLength > 0){
 				
 				next(sizeof(Chunk));
 				
 				DataLengthType iChunkLen = 
 					iNewDataLength <= iAvailableLength ? iNewDataLength : iAvailableLength;
 				
-				IA20_LOG(false, "pCursor:"<<(void*)pCursor);
+				IA20_LOG(true, "pCursor:"<<(void*)pCursor<<", "<<iChunkLen);
 
 				memcpy(pCursor, pNewData, iChunkLen);
 				addData(iChunkLen);

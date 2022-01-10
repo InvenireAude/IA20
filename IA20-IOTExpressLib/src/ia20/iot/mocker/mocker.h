@@ -10,7 +10,6 @@
 #define _IA20_iot_mocker_H_
 
 #include "ActivityStore.h"
-#include "ActionsStore.h"
 #include "Listener.h"
 
 #endif /* _IA20_iot_mocker_H_ */

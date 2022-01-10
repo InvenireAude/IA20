@@ -17,17 +17,17 @@ ActivityStore::ActivityStore(
 ):
 iSize(iSize),
 iHead(0),
-tActivites(NULL),
+//tActivites(NULL),
 iNumActivites(0){
 	IA20_TRACER;
-	tActivites = static_cast<Activity*>(std::aligned_alloc(sizeof(Activity)*iSize, alignof(Activity)));
+	tActivites = new Activity*[iSize];
 }
 /*************************************************************************/
 ActivityStore::~ActivityStore() throw(){
 	IA20_TRACER;
 
 	if(tActivites)
-		std::free(tActivites);
+		delete[] tActivites;
 }
 /*************************************************************************/
 }

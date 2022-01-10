@@ -27,6 +27,8 @@ Subscription::Subscription(HandleType aHandle,
 /*************************************************************************/
 Subscription::~Subscription() throw(){
 	IA20_TRACER;
+
+	IA20_LOG(true,"~~~Subscription: ["<<this->strTopic<<"]:"<<(void*)(long)aHandle);
 }
 /*************************************************************************/
 }

@@ -31,6 +31,10 @@ public:
                HandleType   aHandle,
                wchar_t* utfClientId);
 
+    unsigned int getListenerIdx()const{
+        return iListener;
+    }
+
     static const size_t CMaxClientIdLen = 23;
 
 protected:

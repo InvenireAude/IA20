@@ -57,17 +57,15 @@ void TCMQTTServer::caseBasic(){
 
   env.reset();
 
-  cpu_set_t cpuset;
-  CPU_ZERO(&cpuset);
-  CPU_SET(0, &cpuset);
-  int rc1 = pthread_setaffinity_np(pthread_self(),sizeof(cpu_set_t), &cpuset);
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(0, &cpuset);
+    int rc1 = pthread_setaffinity_np(pthread_self(),sizeof(cpu_set_t), &cpuset);
 
+    //nv.ptrListener->start();
+    //String strTest(CMSgCONNECT_Req);
 
- //nv.ptrListener->start();
-
-//  String strTest(CMSgCONNECT_Req);
-
- // for(int i=0; i<1; i++){
+    //for(int i=0; i<1; i++){
     //cerr<<i<<"\t"<<ts.getSample()<<endl;
     
     env.ptrListener->sendMessage(CMSgCONNECT_Req);
@@ -81,9 +79,13 @@ void TCMQTTServer::caseBasic(){
     env.ptrListener->sendMessage(CMSgPUBLISH1_Req);
     env.ptrEngine->serve();
     env.ptrListener->serve();
+    env.ptrListener->serve();
+    env.ptrListener->serve();
 
     env.ptrListener->sendMessage(CMSgPUBLISH2_Req);
     env.ptrEngine->serve();
+    env.ptrListener->serve();
+    env.ptrListener->serve();
     env.ptrListener->serve();
 
   //}

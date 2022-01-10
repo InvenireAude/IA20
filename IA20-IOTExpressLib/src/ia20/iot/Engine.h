@@ -18,7 +18,7 @@
 
 #include "Listener.h"
 #include "ActivityStore.h"
-#include "ActionsStore.h"
+#include "MessageStore.h"
 
 namespace IA20 {
 namespace IOT {
@@ -32,7 +32,7 @@ namespace IOT {
 class ConnectionsStore;
 class TopicsStore;
 class SubscriptionsStore;
-class ActionsStore;
+class MessageStore;
 class ActivityStore;
 
 class Engine {
@@ -40,12 +40,18 @@ class Engine {
 
   struct ListenerDetails {
     
+    int                   iIdx;
     Listener*             pListener;
     Listener::RingType*   pRingRequest;
     Listener::RingType*   pRingResponse;
     Memory::SharableMemoryPool* pMemoryPool;
 
+    union {
+      uint32_t iCounter;  
+    } tmp;
+
   };
+
 
 public:
 
@@ -80,12 +86,13 @@ protected:
   void handleSubscribe(Engine::ListenerDetails& ld, Context& ctx);
   void handlePublish(Engine::ListenerDetails& ld, Context& ctx);
 
-
+  void handleActivities();
+  
   uint8_t buf[1024];
   std::unique_ptr<ConnectionsStore>   ptrConnectionsStore;
   std::unique_ptr<TopicsStore>        ptrTopicsStore;
   std::unique_ptr<SubscriptionsStore> ptrSubscriptionsStore;
-  std::unique_ptr<ActionsStore>       ptrActionsStore;
+  std::unique_ptr<MessageStore>       ptrMessageStore;
   std::unique_ptr<ActivityStore>      ptrActivityStore;
 
 };

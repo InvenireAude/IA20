@@ -18,7 +18,7 @@
 
 #include "Connection.h"
 #include "Subscription.h"
-#include "ActionsStore.h"
+#include "MessageStore.h"
 
 namespace IA20 {
 namespace IOT {
@@ -35,10 +35,13 @@ class ActivityStore;
 
 class SubscriptionsStore {
 
-	typedef std::list< std::unique_ptr<Subscription> > SubscriptionList;
+	typedef std::list< Subscription* > SubscriptionList;
 
 	typedef std::unordered_map<Connection::HandleType, 
-		       std::unique_ptr<SubscriptionList> > SubscriptionsMap;
+		       std::unique_ptr<SubscriptionList> > ConnectionSubsMap;
+
+	typedef std::unordered_map<Subscription::HandleType, 
+		       std::unique_ptr<Subscription> > SubscriptionsMap;
 
 public:
 
@@ -52,13 +55,15 @@ public:
 
 	SubscriptionList* getList(Connection::HandleType aHandle);
 
-	
+	Subscription* lookup(Subscription::HandleType aHandle)const;
+
 protected:
 
 	ConnectionsStore* pConnectionsStore;
 	TopicsStore*      pTopicsStore;
 	
-	SubscriptionsMap hmSubscriptions;
+	SubscriptionsMap  hmSubscriptions;
+	ConnectionSubsMap hmConnectionSubs;
 
 	Subscription::HandleType iNextHandle;
 };
