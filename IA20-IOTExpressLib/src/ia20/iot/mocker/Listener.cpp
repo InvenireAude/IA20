@@ -22,18 +22,27 @@ namespace IOT {
 namespace Mocker {
 
 /*************************************************************************/
-Listener::Listener(std::unique_ptr<RingType::Interface>&& ptrInterface):
+Listener::Listener(std::unique_ptr<RingType::Interface>&& ptrInterface, int iMaxConnections):
   IOT::Listener(std::move(ptrInterface), NULL),
+  tabConnections(iMaxConnections),
   ptrMemoryPoolHolder(new Memory::SharableMemoryPool){
 	IA20_TRACER;
 
   pMemoryPool = ptrMemoryPoolHolder.get();
-  aConnectionHandle = 999999;
+
+  for(auto& c: tabConnections){
+    c.aConnectionHandle = 0x999999;
+  }
 }
 
 /*************************************************************************/
 Listener::~Listener() throw(){
 	IA20_TRACER;
+
+  for(auto& c: tabConnections){
+    std::cerr<<"MQTT Connection: "<<c.aConnectionHandle<<std::endl;
+    std::cerr<<c.ssWire.str()<<std::endl;
+  }
 }
 /*************************************************************************/
 void Listener::serve(){
@@ -45,7 +54,8 @@ void Listener::serve(){
     ptrInterface->getResponses()->deque(), pMemoryPool->getDeleter());
 
 
-  
+  uint8_t buf[5000];
+
    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "*** Mocker got    ");
   //  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "HEX:  "<<(void*)ptrTask.get()<<" "<<MiscTools::BinarytoHex((void*)ptrTask.get(), sizeof(Listener::Task)));
 
@@ -57,20 +67,30 @@ void Listener::serve(){
      case Task::CA_SendDirect :
         {
           uint8_t *pMessage = ptrTask->getMessage();
-          MQTT::HeaderReader headerReader(pMessage);
-    
+          Memory::StreamBufferList sbl(pMessage);
+          Memory::StreamBufferList::Reader reader(sbl);
+          MQTT::HeaderReader headerReader(reader);
+
           IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "* CA_SendDirect    ");
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Reference Id:      "<<(void*)(long)ptrTask->getReferenceId());
           IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Connection Handle: "<<(void*)(long)ptrTask->getConnectionHandle());
           IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "MessageType:       "<<(int)headerReader.getType());
           IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Length:            "<<headerReader.getLength());
 
           if(headerReader.getType() == MQTT::Message::MT_CONNACK){
-            aConnectionHandle = ptrTask->getConnectionHandle();          
+            hmConnectionHandles[ptrTask->getConnectionHandle()] = &tabConnections[ptrTask->getReferenceId()];
+            tabConnections[ptrTask->getReferenceId()].aConnectionHandle = ptrTask->getConnectionHandle();
           }
+
+          Memory::StreamBufferList::Reader reader2(sbl);
+          int rc = reader2.copy(buf, 5000);
+          IA20_LOG(true, "rc "<<rc);
+          hmConnectionHandles[ptrTask->getConnectionHandle()]->ssWire<<"OUTPUT1:\t"<<MiscTools::BinarytoHex(buf,rc)<<"\n";
+
         }
-    
+
      break;
- 
+
      case Task::CA_SetContent :
         {
           uint8_t *pMessage = ptrTask->getMessage();
@@ -80,19 +100,39 @@ void Listener::serve(){
           Memory::StreamBufferList sbl(ptrTask->getMessage());
           Memory::StreamBufferList::Reader reader(sbl);
           MQTT::HeaderReader headerReader (reader);
-    
+
           IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "* CA_SetContent    "<<(void*)pMessage);
           IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "ContentUsageCount: "<<ptrTask->getContentUsageCount());
           IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Message Handle:    "<<(void*)(long)ptrTask->getMessageHandle());
           IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "MessageType:       "<<(int)headerReader.getType());
           IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Length:            "<<headerReader.getLength());
+
+          hmContent[ptrTask->getMessageHandle()].pPayLoad    = ptrTask->getMessage();
+          hmContent[ptrTask->getMessageHandle()].iUsageCount = ptrTask->getContentUsageCount();
         }
      break;
 
      case Task::CA_SendShared :
+        {
+
         IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "* CA_SendShared    ");
         IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Connection Handle: "<<(void*)(long)ptrTask->getConnectionHandle());
         IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Messagee Handle:   "<<(void*)(long)ptrTask->getMessageHandle());
+
+        Memory::StreamBufferList sbl(hmContent[ptrTask->getMessageHandle()].pPayLoad);
+        Memory::StreamBufferList::Reader reader(sbl);
+        int rc = reader.copy(buf, 5000);
+
+        hmConnectionHandles[ptrTask->getConnectionHandle()]->ssWire<<"OUTPUT2:\t"<<MiscTools::BinarytoHex(buf,rc)<<"\n";
+
+        IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Content usage count: "<<hmContent[ptrTask->getMessageHandle()].iUsageCount);
+
+        if(--hmContent[ptrTask->getMessageHandle()].iUsageCount == 0){
+          hmContent.erase(ptrTask->getMessageHandle());
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " ! content removed.");
+        }
+
+        }
      break;
 
    }
@@ -116,15 +156,15 @@ void Listener::run(){
 
 
   while(!SYS::Signal::GetInstance()->isStopping()){
-    
+
   //   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Waiting ...");
     serve();
-    
+
   }
 
 }
 /*************************************************************************/
-void Listener::sendMessage(const String& strHex){
+void Listener::sendMessage(const String& strHex, int iConnectionId){
   IA20_TRACER;
 
   static MQTT::Message *theMessage = NULL;
@@ -137,7 +177,7 @@ void Listener::sendMessage(const String& strHex){
   // }
 
 //  MQTT::Message* pMessage = new(pMemoryPool->allocate<MQTT::Message>(ptrTask.get()))MQTT::Message();;
- 
+
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "*** Mocker send: "<<strHex);
 
   Memory::StreamBufferList sbl(pMemoryPool, ptrTask.get());
@@ -146,7 +186,7 @@ void Listener::sendMessage(const String& strHex){
   int iMessageLen = strHex.length()/2;
 
   std::unique_ptr<uint8_t> ptr(new uint8_t[iMessageLen]);
-  
+
   MiscTools::HexToBinary(strHex, ptr.get(), iMessageLen);
 
   Memory::StreamBufferList::Writer writer(sbl);
@@ -167,15 +207,18 @@ void Listener::sendMessage(const String& strHex){
   }
 
   ptrTask->setMessage(sbl.getHead());
-  ptrTask->setConnectionHandle(aConnectionHandle);
+  ptrTask->setConnectionHandle(tabConnections[iConnectionId].aConnectionHandle);
+  ptrTask->setReferenceId(iConnectionId);
+
   static int iMessageId = 0;
 
   ptrTask->iMessageId = ++iMessageId;
 
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Task set msg: "<<(void*)ptrTask->getMessage());
-  
-  
+
   ptrInterface->getRequests()->enque(ptrTask.release());
+
+  tabConnections[iConnectionId].ssWire<<"INPUT:  \t"<<strHex<<"\n";
 
 }
 /*************************************************************************/

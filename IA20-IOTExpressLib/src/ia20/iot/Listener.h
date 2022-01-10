@@ -37,7 +37,7 @@ public:
 
   class Task {
     public:
-    
+
     enum Command : uint8_t {
       CA_None             = 0,
       CA_InputMsg         = 3,
@@ -57,15 +57,24 @@ public:
 
       if(!offsetToMessage)
         IA20_THROW(InternalException("No MQTT::Message set in the listener task."));
-      
+
       return offsetToMessage.get<uint8_t>();
     }
-    
+
     inline Task(Command iCommand):
       iCommand(iCommand),
       iContentUsageCount(0),
+      iReferenceId(0),
       aConnectionHandle(0L),
       aMessageHandle(0x55555555){};
+
+    inline Task(Command iCommand, const Task& o):
+      iCommand(iCommand),
+      iContentUsageCount(0),
+      iReferenceId(o.iReferenceId),
+      aConnectionHandle(o.aConnectionHandle),
+      aMessageHandle(o.aMessageHandle){};
+
 
     inline Command getCommand()const{
      // IA20_LOG(true,"command addr:"<<(void*)&iCommand);
@@ -84,7 +93,7 @@ public:
 
     void setMessageHandle(Message::HandleType aMessageHandle){
       this->aMessageHandle = aMessageHandle;
-      
+
             //           IA20_LOG(true, "set message handle:  "
             // <<(void*)(long)this->aMessageHandle);
 
@@ -98,7 +107,7 @@ public:
       return aMessageHandle;
     }
 
-   
+
     void setContentUsageCount(uint32_t iContentUsageCount){
       this->iContentUsageCount = iContentUsageCount;
     }
@@ -107,14 +116,23 @@ public:
       return iContentUsageCount;
     }
 
+    void setReferenceId(uint32_t iReferenceId){
+      this->iReferenceId = iReferenceId;
+    }
+
+    uint32_t getReferenceId()const{
+      return iReferenceId;
+    }
+
   protected:
 
     Command iCommand;
+    uint32_t                              iReferenceId;
 
     Connection::HandleType                aConnectionHandle;
     Message::HandleType                   aMessageHandle;
     uint32_t                              iContentUsageCount;
-    
+
     MessageOffsetType                     offsetToMessage;
   };
 

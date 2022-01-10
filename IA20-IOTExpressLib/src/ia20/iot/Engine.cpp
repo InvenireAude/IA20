@@ -150,22 +150,25 @@ void Engine::addListener(Listener* pListener){
 
   Memory::SharableMemoryPool::unique_ptr<Listener::Task>
     ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
-        Listener::Task(Listener::Task::CA_SendDirect), ld.pMemoryPool->getDeleter());
+        Listener::Task(Listener::Task::CA_SendDirect, *ctx.ptrTask), ld.pMemoryPool->getDeleter());
 
   ptrTask2->setConnectionHandle(pConnection->getHandle());
-
-  uint8_t *pData2 = (uint8_t *)ld.pMemoryPool->allocate(ptrTask2.get(),120);
-
-  ptrTask2->setMessage(pData2);
   ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 10000000;
 
   MQTT::FixedHeaderBuilder builder;
 
   builder.setType(MQTT::Message::MT_CONNACK);
-
   builder.setID(ctx.headerReader.getID());
 
-  builder.build(pData2);
+  uint8_t buf2[100];
+  uint8_t* pEnd = builder.build(buf2);
+  IA20_LOG(true, "builder: "<<MiscTools::BinarytoHex(buf2, pEnd-buf2));
+
+  Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
+  Memory::StreamBufferList::Writer writer(sbl);
+  writer.write(buf2,pEnd - buf2);
+  IA20_LOG(true, "builder: "<<(void*)sbl.getHead()<<", "<<MiscTools::BinarytoHex(sbl.getHead()+16, 2));
+  ptrTask2->setMessage(sbl.getHead());
 
   ld.pRingResponse->enque(ptrTask2.release());
 
@@ -203,9 +206,7 @@ void Engine::addListener(Listener* pListener){
     ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
         Listener::Task(Listener::Task::CA_SendDirect), ld.pMemoryPool->getDeleter());
 
-  uint8_t *pData2 = (uint8_t *)ld.pMemoryPool->allocate(ptrTask2.get(),120);
 
-  ptrTask2->setMessage(pData2);
   ptrTask2->setConnectionHandle(ctx.ptrTask->getConnectionHandle());
   ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 10000000;
 
@@ -214,8 +215,14 @@ void Engine::addListener(Listener* pListener){
   builder.setType(MQTT::Message::MT_SUBACK);
 
   builder.setID(ctx.headerReader.getID());
+  builder.setLength(0);
 
-  builder.build(pData2);
+  uint8_t buf2[100];
+  uint8_t* pEnd = builder.build(buf2);
+  Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
+  Memory::StreamBufferList::Writer writer(sbl);
+  writer.write(buf2,pEnd - buf2);
+  ptrTask2->setMessage(sbl.getHead());
 
   ld.pRingResponse->enque(ptrTask2.release());
 
@@ -309,13 +316,13 @@ void Engine::addListener(Listener* pListener){
 
   }
 
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Create a reply");
+
   Memory::SharableMemoryPool::unique_ptr<Listener::Task>
   ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
         Listener::Task(Listener::Task::CA_SendDirect), ld.pMemoryPool->getDeleter());
 
-  uint8_t *pData2 = (uint8_t *)ld.pMemoryPool->allocate(ptrTask2.get(),120);
 
-  ptrTask2->setMessage(pData2);
   ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 10000000;
 
   MQTT::FixedHeaderBuilder builder;
@@ -324,8 +331,12 @@ void Engine::addListener(Listener* pListener){
   ptrTask2->setConnectionHandle(ctx.ptrTask->getConnectionHandle());
   builder.setID(ctx.headerReader.getID());
 
-  builder.build(pData2);
-
+  uint8_t buf2[100];
+  uint8_t* pEnd = builder.build(buf2);
+  Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
+  Memory::StreamBufferList::Writer writer(sbl);
+  writer.write(buf2,pEnd - buf2);
+  ptrTask2->setMessage(sbl.getHead());
   ld.pRingResponse->enque(ptrTask2.release());
  }
 /*************************************************************************/

@@ -31,9 +31,9 @@ public IOT::Listener {
 public:
 
 	virtual ~Listener() throw();
-	Listener(std::unique_ptr<RingType::Interface>&& ptrInterface);
+	Listener(std::unique_ptr<RingType::Interface>&& ptrInterface, int iMaxConnections = 1);
 
-  void sendMessage(const String& strHex);
+  void sendMessage(const String& strHex, int iConnectionId = 0);
 
   void serve();
 
@@ -48,11 +48,26 @@ protected:
     uint8_t *pPayLoad;
   };
 
-  typedef std::map<Tools::IdentifiedByHandle::HandleType, ContentEntry> ContentMap;
+  typedef std::map<Message::HandleType, ContentEntry> ContentMap;
 
-  ContentMap hmContent; 
+  ContentMap hmContent;
 
-  Connection::HandleType aConnectionHandle;
+  struct ConnectionEntry {
+
+    StringStream ssWire;
+    Connection::HandleType aConnectionHandle;
+
+  };
+
+
+  typedef std::vector<ConnectionEntry> ConnectionTab;
+
+  ConnectionTab  tabConnections;
+
+  typedef std::map<Connection::HandleType, ConnectionEntry*> ConnectionHandleMap;
+
+  ConnectionHandleMap hmConnectionHandles;
+
 };
 
 /*************************************************************************/

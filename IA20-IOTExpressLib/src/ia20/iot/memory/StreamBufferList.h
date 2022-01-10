@@ -30,11 +30,11 @@ class SharableMemoryPool;
 //TODO template ?
 class StreamBufferList {
 
-public:	
+public:
 
 	typedef	Tools::OffsetPtr<3> OffsetNextType;
 	typedef	uint32_t DataLengthType;
-	
+
 
 protected:
 
@@ -47,11 +47,11 @@ protected:
 		DataLengthType iChunkSize;
 		int32_t	       _pad;
 
-		Chunk(DataLengthType iChunkSize):			
+		Chunk(DataLengthType iChunkSize):
 			iDataLength(0),
 			iChunkSize(iChunkSize){};
 
-		inline void setNext(Chunk *pChunk){		
+		inline void setNext(Chunk *pChunk){
 			offsetNext.set(pChunk);
 		}
 
@@ -82,7 +82,7 @@ public:
 
 	StreamBufferList(SharableMemoryPool* pMemoryPool, void* pOnwerAddress);
 	StreamBufferList(void *pFromMemory);
-	
+
 	~StreamBufferList() throw();
 
 	class Reader {
@@ -93,11 +93,11 @@ public:
 			pData(pChunk->getDataStart()),
 			iConsumedBytes(0),
 			iDataLength(pChunk->iDataLength){
-				IA20_LOG(true, "Starting at: "<<(void*)pData);
+				IA20_LOG(true, "Starting at: "<<(void*)pData<<", len: "<<iDataLength);
 			}
 
 		void getNext();
-		
+
 		inline uint8_t* getData()const{
 			return pData;
 		}
@@ -107,11 +107,11 @@ public:
 		}
 
 		inline void advance(DataLengthType iStep){
-			
+
 			if(iStep < iDataLength){
 				iDataLength -= iStep;
-				pData += iStep;	
-				iConsumedBytes += iStep;			
+				pData += iStep;
+				iConsumedBytes += iStep;
 			}else if(iStep == iDataLength){
 				 getNext();
 			}else{
@@ -119,14 +119,14 @@ public:
 			}
 		}
 
-		inline DataLengthType copy(uint8_t* pDst, DataLengthType iBytesToCopy = ~(DataLengthType)0){
-			
+		inline DataLengthType copy(uint8_t* pDst, DataLengthType iBytesToCopy = 10000){
+
 			DataLengthType iLeft = iBytesToCopy;
 
 			while(iLeft > 0 && hasData()){
-				
+
 				DataLengthType iStepSize = iLeft;
-				
+
 				if(iStepSize > iDataLength){
 					iStepSize = iDataLength;
 				}
@@ -155,7 +155,7 @@ public:
 		inline uint8_t readByte(){
 
 			IA20_LOG(true, "Reading at: "<<(void*)pData<<", v:"<<(int)*pData<<", len: "<<iDataLength);
-			
+
 			if(!iDataLength){
 				getData();
 			}
@@ -175,7 +175,7 @@ public:
 		protected:
 			const Chunk *pChunk;
 			bool   bFinished;
-			
+
 			uint8_t* pData;
 			DataLengthType iDataLength;
 			DataLengthType iConsumedBytes;;
@@ -190,7 +190,7 @@ public:
 			iAvailableLength(0){}
 
 	 	void next(DataLengthType iMinDataLength);
-	
+
 		inline void addData(DataLengthType iNewDataLength){
 			pChunk->iDataLength += iNewDataLength;
 		}
@@ -206,19 +206,20 @@ public:
 		inline void write(const uint8_t* pNewData, DataLengthType iNewDataLength){
 
 			while(iNewDataLength > 0){
-				
+
 				next(sizeof(Chunk));
-				
-				DataLengthType iChunkLen = 
+
+				DataLengthType iChunkLen =
 					iNewDataLength <= iAvailableLength ? iNewDataLength : iAvailableLength;
-				
-				IA20_LOG(true, "pCursor:"<<(void*)pCursor<<", "<<iChunkLen);
+
+        IA20_LOG(true, "pCursor:"<<(void*)pCursor<<", "<<iChunkLen);
 
 				memcpy(pCursor, pNewData, iChunkLen);
 				addData(iChunkLen);
 				iNewDataLength -= iChunkLen;
 				pNewData       += iChunkLen;
 			}
+
 		};
 
 		protected:
