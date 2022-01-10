@@ -27,8 +27,6 @@
 
 #include <iostream>
 
-#define IA20_LOG_LEVEL_GLOBAL_ENV "IA20_DBG_GLOBAL"
-#define IA20_LOG_LEVEL_COMMON_ENV "IA20_DBG_COMMONLIB"
 
 namespace IA20{
 
@@ -55,9 +53,10 @@ public:
 		inline bool isLogic()        { return this->bIsLogic;       };
 
 	/*************************************************************************/
+    static const char* CLevelEnv_GLOBAL;
 
 		LogLevelBase(const char *sEnvVarName,
-					 const char *sEnvSecondaryVarName = IA20_LOG_LEVEL_GLOBAL_ENV);
+					 const char *sEnvSecondaryVarName = CLevelEnv_GLOBAL);
 
 		virtual ~LogLevelBase();
 
@@ -85,8 +84,12 @@ public:
 class LogLevel : public LogLevelBase {
 	public:
 
-	static LogLevelBase INSTANCE; // The global instance.
+	static LogLevel INSTANCE; // The global instance.
 
+  static const char* CLevelEnv_COMMONLIB;
+
+  LogLevel():
+    LogLevelBase(CLevelEnv_COMMONLIB){};
 
 };
 

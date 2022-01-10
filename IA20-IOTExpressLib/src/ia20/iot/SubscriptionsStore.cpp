@@ -14,6 +14,8 @@
 #include "TopicsStore.h"
 #include "Topic.h"
 
+#include <ia20/iot/logger/LogLevel.h>
+
 namespace IA20 {
 namespace IOT {
 

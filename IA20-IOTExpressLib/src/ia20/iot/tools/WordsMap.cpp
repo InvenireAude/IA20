@@ -8,6 +8,8 @@
 #include "WordsMap.h"
 
 
+#include <ia20/iot/logger/LogLevel.h>
+
 namespace IA20 {
 namespace IOT {
 namespace Tools {
@@ -32,12 +34,12 @@ WordsMap::WordIdType WordsMap::lookup(const Tools::StringRef& strValue){
 	ValuesMap::const_iterator it = hmValues.find(strValue);
 	
 	if( it != hmValues.end() ){
-		IA20_LOG(true, "Got token: ["<<(String)strValue<<"]="<<it->second);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Got token: ["<<(String)strValue<<"]="<<it->second);
 		return it->second;
 	}else{
 		WordIdType iWord = hmValues.size();
 		hmValues[strValue] = iWord;
-		IA20_LOG(true, "New token: ["<<(String)strValue<<"]="<<iWord);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "New token: ["<<(String)strValue<<"]="<<iWord);
 		return iWord;
 	}
 

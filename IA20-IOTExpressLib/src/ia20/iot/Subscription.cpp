@@ -8,6 +8,8 @@
 #include "Subscription.h"
 
 
+#include <ia20/iot/logger/LogLevel.h>
+
 namespace IA20 {
 namespace IOT {
 
@@ -21,14 +23,14 @@ Subscription::Subscription(HandleType aHandle,
 	pNext(NULL){
 	IA20_TRACER;
 	
-	IA20_LOG(true,"Subscription: ["<<this->strTopic<<"]:"<<(void*)(long)aHandle);
+	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Subscription: ["<<this->strTopic<<"]:"<<(void*)(long)aHandle);
 
 }
 /*************************************************************************/
 Subscription::~Subscription() throw(){
 	IA20_TRACER;
 
-	IA20_LOG(true,"~~~Subscription: ["<<this->strTopic<<"]:"<<(void*)(long)aHandle);
+	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"~~~Subscription: ["<<this->strTopic<<"]:"<<(void*)(long)aHandle);
 }
 /*************************************************************************/
 }

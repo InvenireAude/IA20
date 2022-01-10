@@ -15,6 +15,8 @@
 
 #include <string.h>
 
+#include <ia20/iot/logger/LogLevel.h>
+
 namespace IA20 {
 namespace IOT {
 namespace Mocker {
@@ -44,10 +46,10 @@ void Listener::serve(){
 
 
   
-   IA20_LOG(true, "*** Mocker got    ");
-  //  IA20_LOG(true, "HEX:  "<<(void*)ptrTask.get()<<" "<<MiscTools::BinarytoHex((void*)ptrTask.get(), sizeof(Listener::Task)));
+   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "*** Mocker got    ");
+  //  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "HEX:  "<<(void*)ptrTask.get()<<" "<<MiscTools::BinarytoHex((void*)ptrTask.get(), sizeof(Listener::Task)));
 
-   IA20_LOG(true, "Command:           "<<(int)ptrTask->getCommand());
+   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Command:           "<<(int)ptrTask->getCommand());
 
 
    switch(ptrTask->getCommand()){
@@ -57,10 +59,10 @@ void Listener::serve(){
           uint8_t *pMessage = ptrTask->getMessage();
           MQTT::HeaderReader headerReader(pMessage);
     
-          IA20_LOG(true, "* CA_SendDirect    ");
-          IA20_LOG(true, "Connection Handle: "<<(void*)(long)ptrTask->getConnectionHandle());
-          IA20_LOG(true, "MessageType:       "<<(int)headerReader.getType());
-          IA20_LOG(true, "Length:            "<<headerReader.getLength());
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "* CA_SendDirect    ");
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Connection Handle: "<<(void*)(long)ptrTask->getConnectionHandle());
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "MessageType:       "<<(int)headerReader.getType());
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Length:            "<<headerReader.getLength());
 
           if(headerReader.getType() == MQTT::Message::MT_CONNACK){
             aConnectionHandle = ptrTask->getConnectionHandle();          
@@ -72,32 +74,32 @@ void Listener::serve(){
      case Task::CA_SetContent :
         {
           uint8_t *pMessage = ptrTask->getMessage();
-          // IA20_LOG(true, "CA_SetContent 1:  "<<(void*)(long)ptrTask->getMessageHandle());
-          // IA20_LOG(true, "CA_SetContent 2:  "<<(void*)(long)ptrTask->getConnectionHandle());
+          // IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "CA_SetContent 1:  "<<(void*)(long)ptrTask->getMessageHandle());
+          // IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "CA_SetContent 2:  "<<(void*)(long)ptrTask->getConnectionHandle());
 
           Memory::StreamBufferList sbl(ptrTask->getMessage());
           Memory::StreamBufferList::Reader reader(sbl);
           MQTT::HeaderReader headerReader (reader);
     
-          IA20_LOG(true, "* CA_SetContent    "<<(void*)pMessage);
-          IA20_LOG(true, "ContentUsageCount: "<<ptrTask->getContentUsageCount());
-          IA20_LOG(true, "Message Handle:    "<<(void*)(long)ptrTask->getMessageHandle());
-          IA20_LOG(true, "MessageType:       "<<(int)headerReader.getType());
-          IA20_LOG(true, "Length:            "<<headerReader.getLength());
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "* CA_SetContent    "<<(void*)pMessage);
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "ContentUsageCount: "<<ptrTask->getContentUsageCount());
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Message Handle:    "<<(void*)(long)ptrTask->getMessageHandle());
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "MessageType:       "<<(int)headerReader.getType());
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Length:            "<<headerReader.getLength());
         }
      break;
 
      case Task::CA_SendShared :
-        IA20_LOG(true, "* CA_SendShared    ");
-        IA20_LOG(true, "Connection Handle: "<<(void*)(long)ptrTask->getConnectionHandle());
-        IA20_LOG(true, "Messagee Handle:   "<<(void*)(long)ptrTask->getMessageHandle());
+        IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "* CA_SendShared    ");
+        IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Connection Handle: "<<(void*)(long)ptrTask->getConnectionHandle());
+        IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Messagee Handle:   "<<(void*)(long)ptrTask->getMessageHandle());
      break;
 
    }
 
 
 
-  //IA20_LOG(true, "Response: "<<pMessage->iMessageId<<" "<<icount++);
+  //IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Response: "<<pMessage->iMessageId<<" "<<icount++);
 }
 /*************************************************************************/
 void Listener::run(){
@@ -115,7 +117,7 @@ void Listener::run(){
 
   while(!SYS::Signal::GetInstance()->isStopping()){
     
-  //   IA20_LOG(true, "Waiting ...");
+  //   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Waiting ...");
     serve();
     
   }
@@ -136,7 +138,7 @@ void Listener::sendMessage(const String& strHex){
 
 //  MQTT::Message* pMessage = new(pMemoryPool->allocate<MQTT::Message>(ptrTask.get()))MQTT::Message();;
  
-  IA20_LOG(true, "*** Mocker send: "<<strHex);
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "*** Mocker send: "<<strHex);
 
   Memory::StreamBufferList sbl(pMemoryPool, ptrTask.get());
   //TODO helper StringToSBL
@@ -151,15 +153,15 @@ void Listener::sendMessage(const String& strHex){
   int i=0;
 
   while(i < iMessageLen){
-    IA20_LOG(true, "A1");
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "A1");
     writer.next(32);
-    IA20_LOG(true, "B1");
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "B1");
     int iLength = (iMessageLen - i < writer.getAvailableLength()) ?  iMessageLen - i : writer.getAvailableLength();
-    IA20_LOG(true, "C: "<<iLength<<", "<<iMessageLen);
-    IA20_LOG(true, "Writing: "<<iLength<<",     "<<(void*)writer.getCursor());
-  //  IA20_LOG(true, "Writing: "<<iLength<<" bytes, to: "<<(void*)writer.getCursor());
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "C: "<<iLength<<", "<<iMessageLen);
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Writing: "<<iLength<<",     "<<(void*)writer.getCursor());
+  //  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Writing: "<<iLength<<" bytes, to: "<<(void*)writer.getCursor());
     memcpy(writer.getCursor(), ptr.get() + i ,iLength);
-    IA20_LOG(true, "Data: "<<MiscTools::BinarytoHex(writer.getCursor(), iLength));
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Data: "<<MiscTools::BinarytoHex(writer.getCursor(), iLength));
     writer.addData(iLength);
     i += iLength;
   }
@@ -170,7 +172,7 @@ void Listener::sendMessage(const String& strHex){
 
   ptrTask->iMessageId = ++iMessageId;
 
-  IA20_LOG(true, "Task set msg: "<<(void*)ptrTask->getMessage());
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Task set msg: "<<(void*)ptrTask->getMessage());
   
   
   ptrInterface->getRequests()->enque(ptrTask.release());

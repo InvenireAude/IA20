@@ -8,6 +8,8 @@
 #include "MockerThread.h"
 
 
+#include <ia20/iot/logger/LogLevel.h>
+
 namespace IA20 {
 namespace IOT {
 namespace Mocker {

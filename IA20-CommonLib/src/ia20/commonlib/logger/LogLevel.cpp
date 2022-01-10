@@ -29,7 +29,10 @@
 
 namespace IA20{
 
-LogLevelBase LogLevel::INSTANCE=LogLevelBase(IA20_LOG_LEVEL_COMMON_ENV);
+const char* LogLevelBase::CLevelEnv_GLOBAL("IA20_DBG_GLOBAL");
+const char* LogLevel::CLevelEnv_COMMONLIB("IA20_DBG_COMMONLIB");
+
+LogLevel LogLevel::INSTANCE=LogLevel();
 
 /*************************************************************************/
 LogLevelBase::LogLevelBase(const char *sEnvVarName,

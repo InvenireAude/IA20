@@ -8,6 +8,8 @@
 #include "MessageStore.h"
 
 
+#include <ia20/iot/logger/LogLevel.h>
+
 namespace IA20 {
 namespace IOT {
 
@@ -33,12 +35,12 @@ const Message* MessageStore::createMessage(
 
 	hmMessages[iNextHandle].reset(pMessage);
 
-	IA20_LOG(true, "New Message: "<<(void*)(long)(iNextHandle)<<", len: "<<iDataLength);
+	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "New Message: "<<(void*)(long)(iNextHandle)<<", len: "<<iDataLength);
 
-  	IA20_LOG(true, "Packet data length: "<<iDataLength);
+  	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Packet data length: "<<iDataLength);
   	int rc = reader.copy(pMessage->getDataPointer(), iDataLength); 
  
-  	IA20_LOG(true, "Data ["<<iDataLength<<":"<<rc<<"]"
+  	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Data ["<<iDataLength<<":"<<rc<<"]"
         <<MiscTools::BinarytoHex((char*)pMessage->getData(),iDataLength));
 
 	return hmMessages[iNextHandle++].get();
@@ -47,7 +49,7 @@ const Message* MessageStore::createMessage(
 const Message* MessageStore::lookup(Message::HandleType aHandle)const{
 	IA20_TRACER;
 
-	IA20_LOG(true, "Lookup Message: "<<(void*)(long)(aHandle));
+	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Lookup Message: "<<(void*)(long)(aHandle));
 
 	MessagesMap::const_iterator it = hmMessages.find(aHandle);
 
@@ -62,7 +64,7 @@ void MessageStore::dispose(const Message* pMessage){
 
 	Message::HandleType aHandle(pMessage->getHandle());
 
-	IA20_LOG(true, "Dispose Message: "<<(void*)(long)(aHandle));
+	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Dispose Message: "<<(void*)(long)(aHandle));
 
 	MessagesMap::iterator it = hmMessages.find(aHandle);
 

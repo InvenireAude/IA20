@@ -1,11 +1,11 @@
 /*
- * File: ItemNotFoundException.cpp
+ * File: ConfigException.cpp
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
  */
 
-#include "ItemNotFoundException.h"
+#include "ConfigException.h"
 
 
 #include <ia20/iot/logger/LogLevel.h>
@@ -14,22 +14,22 @@ namespace IA20 {
 namespace IOT {
 
 /*************************************************************************/
-ItemNotFoundException::ItemNotFoundException(){
+ConfigException::ConfigException(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-ItemNotFoundException::ItemNotFoundException(const String& strInfo):
+ConfigException::ConfigException(const String& strInfo):
   IOT::Exception(strInfo){
 	IA20_TRACER;
 }
 /*************************************************************************/
-ItemNotFoundException::~ItemNotFoundException() throw(){
+ConfigException::~ConfigException() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-const char* ItemNotFoundException::getName(){
+const char* ConfigException::getName(){
 	IA20_TRACER;
-	return "ItemNotFoundException";
+	return "ConfigException";
 }
 /*************************************************************************/
 }

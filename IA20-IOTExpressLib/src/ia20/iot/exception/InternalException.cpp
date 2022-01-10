@@ -1,11 +1,11 @@
 /*
- * File: ItemNotFoundException.cpp
+ * File: InternalException.cpp
  *
  * Copyright (C) 2021, Albert Krzymowski
  *
  */
 
-#include "ItemNotFoundException.h"
+#include "InternalException.h"
 
 
 #include <ia20/iot/logger/LogLevel.h>
@@ -14,22 +14,22 @@ namespace IA20 {
 namespace IOT {
 
 /*************************************************************************/
-ItemNotFoundException::ItemNotFoundException(){
+InternalException::InternalException(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-ItemNotFoundException::ItemNotFoundException(const String& strInfo):
+InternalException::InternalException(const String& strInfo):
   IOT::Exception(strInfo){
 	IA20_TRACER;
 }
 /*************************************************************************/
-ItemNotFoundException::~ItemNotFoundException() throw(){
+InternalException::~InternalException() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-const char* ItemNotFoundException::getName(){
+const char* InternalException::getName(){
 	IA20_TRACER;
-	return "ItemNotFoundException";
+	return "InternalException";
 }
 /*************************************************************************/
 }

@@ -8,6 +8,8 @@
 #include "TopicsStore.h"
 #include <ia20/iot/tools/WordsMap.h>
 
+#include <ia20/iot/logger/LogLevel.h>
+
 namespace IA20 {
 namespace IOT {
 
@@ -23,7 +25,7 @@ TopicsStore::~TopicsStore() throw(){
 	IA20_TRACER;
 
 	for(auto it : hmChildren){
-		IA20_LOG(true,"TopicStore dump:["<<
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"TopicStore dump:["<<
 			it.first.first<<","<<it.first.second<<"]="<<(void*)it.second);
 	}
 }
@@ -41,7 +43,7 @@ Topic *TopicsStore::getTopic(const Tools::StringRef& strTopic){
 	for(Tools::WordTokens::const_iterator it = tokens.begin(); 
 			it != tokens.end(); ++it){
 
-		IA20_LOG(true,"Subscription token: "<<(int)*it);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Subscription token: "<<(int)*it);
 
 		KeyType key(pCursor, *it);
 		
