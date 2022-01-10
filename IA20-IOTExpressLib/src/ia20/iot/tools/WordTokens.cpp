@@ -36,21 +36,20 @@ void WordTokens::read(const StringRef& strValue, WordsMap* pWordsMap){
 			++itStart;
 			itCursor = itStart;
 		}
-		
+
 		if(*itCursor){
 			++itCursor;
 		}
-		
-		if( (*itCursor == '/' || *itCursor == 0) && itCursor != itStart){
-			
+
+		if( (itCursor == strValue.end() || *itCursor == '/') && itCursor != itStart){
+
 			Tools::StringRef strToken(itStart, itCursor);
-			
 			WordsMap::WordIdType iWord = pWordsMap->lookup(strToken);
 			tValues[iSize++] = iWord;
 			itStart=itCursor;
 		}
 
-	}while(*itCursor != 0);
+	}while(itCursor != strValue.end());
 
 }
 /*************************************************************************/

@@ -43,12 +43,12 @@ TCMQTTServer::~TCMQTTServer() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-static String CMSgCONNECT_Req ("100C00044D5154540402003C0000");  
+static String CMSgCONNECT_Req ("100C00044D5154540402003C0000");
 static String CMSgSUBSCRIBE_Req("821B00010000042F6162630000042F78797A0000082F6162632F78797A00");
 
-//static String CMSgPUBLISH1_Req("300C00042F616263004142434446");      
-static String CMSgPUBLISH1_Req("321200082F6162632F78797A0001004142434446");            
-static String CMSgPUBLISH2_Req("321200082F6162632F78797A0002004142434446");            
+//static String CMSgPUBLISH1_Req("300C00042F616263004142434446");
+static String CMSgPUBLISH1_Req("321200082F6162632F78797A0001004142434446");
+static String CMSgPUBLISH2_Req("321200082F6162632F78797A0002004142434447");
 
 /*************************************************************************/
 void TCMQTTServer::caseBasic(){
@@ -67,7 +67,7 @@ void TCMQTTServer::caseBasic(){
 
     //for(int i=0; i<1; i++){
     //cerr<<i<<"\t"<<ts.getSample()<<endl;
-    
+
     env.ptrListener->sendMessage(CMSgCONNECT_Req);
     env.ptrEngine->serve();
     env.ptrListener->serve();
@@ -82,21 +82,31 @@ void TCMQTTServer::caseBasic(){
     env.ptrListener->serve();
     env.ptrListener->serve();
 
+    env.ptrListener->sendMessage(CMSgCONNECT_Req,1);
+    env.ptrEngine->serve();
+    env.ptrListener->serve();
+
+    env.ptrListener->sendMessage(CMSgSUBSCRIBE_Req,1);
+    env.ptrEngine->serve();
+    env.ptrListener->serve();
+
     env.ptrListener->sendMessage(CMSgPUBLISH2_Req);
     env.ptrEngine->serve();
     env.ptrListener->serve();
     env.ptrListener->serve();
     env.ptrListener->serve();
+    env.ptrListener->serve();
+
 
   //}
 
-  
+
   cerr<<ts.getSample()<<endl;
   cerr.flush();
 
   env.ptrListener->stop();
   env.ptrListener->join();
-  
+
 
 }
 /*************************************************************************/
@@ -109,10 +119,10 @@ void TCMQTTServer::TestEnv::reset(){
   //  ptrActivityStore.reset(new Mocker::ActivityStore(Tools::SPIN::TasksRing<ActivityStore::Task>::CreateInterface(50)));
   //  ptrActionsStore.reset(new Mocker::ActionsStore(Tools::SPIN::TasksRing<ActionsStore::Task>::CreateInterface(50)));
 
-  ptrListener.reset(new Mocker::Listener(Tools::SPIN::TasksRing<Listener::Task>::CreateInterface(50)));
-  
+  ptrListener.reset(new Mocker::Listener(Tools::SPIN::TasksRing<Listener::Task>::CreateInterface(50), 2));
+
   ptrEngine.reset(new Engine(ptrListener.get()));
-  
+
 
 
   // ptrActivityStore->start();

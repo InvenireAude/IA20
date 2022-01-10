@@ -25,9 +25,10 @@ class Topic {
 public:
 
 	//~Topic() throw();
-	
-	inline Topic(Tools::WordsMap::WordIdType iToken):
+
+	inline Topic(Tools::WordsMap::WordIdType iToken, Topic* pParent):
 	iToken(iToken),
+  pParent(pParent),
 	pFirst(NULL){
 		IA20_LOG(true,"New token: "<<(int)iToken);
 	};
@@ -45,10 +46,10 @@ public:
 	bool hasFirstSubscription()const{
 		return pFirst != NULL;
 	}
-	
+
 protected:
 	Tools::WordsMap::WordIdType iToken;
-
+  Topic* pParent;
 	Subscription* pFirst;
 };
 

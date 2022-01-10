@@ -28,7 +28,7 @@ public:
 	typedef uint32_t HandleType;
 
 	~Subscription() throw();
-	Subscription(HandleType aHandle, 
+	Subscription(HandleType aHandle,
 				 const Tools::StringRef& strTopic,
 				 Connection::HandleType aConnectionHandle);
 
@@ -48,7 +48,7 @@ public:
 	inline HandleType getHandle()const{
 		return aHandle;
 	}
-	
+
 protected:
 	String         strTopic;//TODO
 	Subscription*  pNext;

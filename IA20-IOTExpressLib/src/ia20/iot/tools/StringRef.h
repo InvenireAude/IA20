@@ -23,10 +23,10 @@ namespace Tools {
 class StringRef {
 public:
 
-	
+
 	class const_iterator{
 		public:
-			
+
 			const_iterator(const uint8_t* pCursor):pCursor(pCursor){};
 
 			inline bool operator==(const const_iterator& o)const{
@@ -41,7 +41,7 @@ public:
 				pCursor = o.pCursor;
 				return *this;
 			}
-	
+
 			const uint8_t operator*()const{
 				return *pCursor;
 			}
@@ -63,7 +63,7 @@ public:
 			iLength(itEnd.pCursor - itStart.pCursor){}
 
 	const_iterator begin()const{
-		return const_iterator(pData);	
+		return const_iterator(pData);
 	}
 
 	const_iterator end()const{
@@ -73,6 +73,11 @@ public:
 	operator String()const{
 		return String((const char*)pData, iLength);
 	}
+
+  friend std::ostream& operator<<(std::ostream& os, const StringRef& s){
+    os<<s.operator IA20::String();
+    return os;
+  }
 
 protected:
 	const uint8_t* pData;
