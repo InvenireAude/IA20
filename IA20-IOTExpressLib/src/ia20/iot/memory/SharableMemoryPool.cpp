@@ -26,7 +26,7 @@ SharableMemoryPool::SharableMemoryPool():
  pFreeSegments(0),
  mDeleter(this){
 	IA20_TRACER;
-  IA20_LOG(false,"SharableMemoryPool created");
+  IA20_LOG(true,"SharableMemoryPool created");
   stats.reset();
 }
 /*************************************************************************/
@@ -43,7 +43,7 @@ SharableMemoryPool::SegmentList* SharableMemoryPool::allocateSegment(){
   if(pFreeSegments){
     
     SegmentList *pResult = pFreeSegments;
-    IA20_LOG(false, "reused segment at: "<<(void*)pResult);
+    IA20_LOG(true, "reused segment at: "<<(void*)pResult);
 
     if(pResult->isSingle()){
       pFreeSegments = NULL;
@@ -56,17 +56,17 @@ SharableMemoryPool::SegmentList* SharableMemoryPool::allocateSegment(){
 
   //TODO provider class, temporary solution to get segmentsize rounded addressing ;)
   SegmentList *pResult = reinterpret_cast<SegmentList*>(new uint8_t[2*CSegmentSize]);
-  IA20_LOG(false, "New memory at: "<<(void*)pResult<<", to "<<(void*)((uint8_t*)pResult+2*CSegmentSize));
+  IA20_LOG(true, "New memory at: "<<(void*)pResult<<", to "<<(void*)((uint8_t*)pResult+2*CSegmentSize));
   pResult = GetSegmentAddress((uint8_t*)pResult+CSegmentSize);
 
-  IA20_LOG(false, "New segment at: "<<(void*)pResult);
+  IA20_LOG(true, "New segment at: "<<(void*)pResult);
   return new(pResult) SegmentList();
 }
 /*************************************************************************/
 void SharableMemoryPool::freeSegment(SharableMemoryPool::SegmentList* pSegment){
   IA20_TRACER;
 
-  IA20_LOG(false, "Free segment at: "<<(void*)pSegment);
+  IA20_LOG(true, "Free segment at: "<<(void*)pSegment);
   
   SegmentList *pNext = pSegment->getNext();
 
@@ -105,9 +105,9 @@ void *SharableMemoryPool::allocate(void* pAddress, uint32_t iMinSize, uint32_t i
 
   }
 
-  // IA20_LOG(false, "Memory 1: "<<(void*)pStart);
-  // IA20_LOG(false, "Memory 1: "<<(void*)pCursor);
-  // IA20_LOG(false, "Memory 1: "<<(void*)pLast);
+  // IA20_LOG(true, "Memory 1: "<<(void*)pStart);
+  // IA20_LOG(true, "Memory 1: "<<(void*)pCursor);
+  // IA20_LOG(true, "Memory 1: "<<(void*)pLast);
     
   if(!pCursor){
     
@@ -132,7 +132,7 @@ void *SharableMemoryPool::allocate(void* pAddress, uint32_t iMinSize, uint32_t i
   pCursor->iUsed += iSize;
   iBytesAllocated = iSize;
 
-  IA20_LOG(false, "Allocated "<<iSize<<" bytes at: "<<(void*)pResult);
+  IA20_LOG(true, "Allocated "<<iSize<<" bytes at: "<<(void*)pResult);
   
   stats.iNumAllocations++;
   
@@ -145,7 +145,7 @@ void SharableMemoryPool::free(void* pAddress){
   SegmentList *pCursor = GetSegmentAddress(pAddress);
   freeSegment(pCursor);
   
-  IA20_LOG(false, "Freed at: "<<(void*)pAddress<<", segment: "<<(void*)pCursor);
+  IA20_LOG(true, "Freed at: "<<(void*)pAddress<<", segment: "<<(void*)pCursor);
 }
 /*************************************************************************/
 std::ostream& operator<<(std::ostream& os, const SharableMemoryPool::Stats& s){

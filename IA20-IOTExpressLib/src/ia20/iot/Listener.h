@@ -116,18 +116,18 @@ public:
       return iContentUsageCount;
     }
 
-    void setReferenceId(uint32_t iReferenceId){
+    void setReferenceId(uint64_t iReferenceId){
       this->iReferenceId = iReferenceId;
     }
 
-    uint32_t getReferenceId()const{
+    uint64_t getReferenceId()const{
       return iReferenceId;
     }
 
   protected:
 
     Command iCommand;
-    uint32_t                              iReferenceId;
+    uint64_t                              iReferenceId;
 
     Connection::HandleType                aConnectionHandle;
     Message::HandleType                   aMessageHandle;

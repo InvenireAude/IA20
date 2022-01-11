@@ -31,7 +31,9 @@ public:
 	TasksRing(){};
 
   virtual void  enque(D*) = 0;
+  
   virtual D* deque() = 0;
+  virtual D* dequeNoWait() = 0;
 
   class Interface{
     public:

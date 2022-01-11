@@ -70,6 +70,32 @@ public:
     return pData;
    }
 
+  static inline bool hasFixedHeader(uint8_t* pData, uint32_t iLength){
+
+     if(iLength > 5)
+      return true;
+
+     if(iLength < 2)
+      return false;
+      
+     iLength--;
+     pData++;
+
+     uint8_t iByte;
+
+     do {
+
+       if(iLength-- == 0)
+        return false;
+        
+       iByte = *pData++;
+
+     }while ((iByte & 0x80) != 0);
+
+    return true;
+   }
+
+
 };
 /*************************************************************************/
 }

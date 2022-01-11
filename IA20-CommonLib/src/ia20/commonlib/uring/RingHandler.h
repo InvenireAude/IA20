@@ -36,6 +36,7 @@ public:
 	RingHandler();
 
   void handle();
+  void loop();
 
   void prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::Address& address, int flags);
   void prepareRead(EventHandler* pEventHandler, int fd, struct iovec* iovec, off_t iOffset);

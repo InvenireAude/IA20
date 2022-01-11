@@ -17,10 +17,6 @@
  */
 
 
-#include <ia20/uring/RingHandler.h>
-#include <ia20/uring/IO/TCP/AsyncServer.h>
-#include <ia20/uring/IO/ReadHandler.h>
-
 #include <ia20/commonlib/net/conn/tcp/Peer.h>
 
 
@@ -28,9 +24,7 @@
 #include <ia20/commonlib/net/conn/tcp/Client.h>
 #include <ia20/commonlib/net/conn/tcp/Server.h>
 #include <ia20/commonlib/net/conn/tcp/FileHandle.h>
-#include <ia20/uring/IO/ReadHandler.h>
-#include <ia20/uring/IO/WriteHandler.h>
-#include <ia20/uring/IO/ShutdownHandler.h>
+#include <ia20/commonlib/uring/uring.h>
 
 #include <unistd.h>
 #include <string.h>

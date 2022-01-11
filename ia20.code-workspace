@@ -13,6 +13,9 @@
       "path": "IA20-IOTExpressLib"
     },
     {
+      "path": "IA20-IOTExpressExe"
+    },
+    {
       "path": "IA20-CommonLib-Tests"
     },
     {
@@ -93,7 +96,8 @@
       "typeinfo": "cpp",
       "numbers": "cpp",
       "span": "cpp",
-      "semaphore": "cpp"
+      "semaphore": "cpp",
+      "bitset": "cpp"
     }
   }
 }

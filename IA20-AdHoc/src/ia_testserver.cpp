@@ -17,10 +17,6 @@
  */
 
 
-#include <ia20/uring/RingHandler.h>
-#include <ia20/uring/IO/TCP/AsyncServer.h>
-#include <ia20/uring/IO/ReadHandler.h>
-
 #include <ia20/commonlib/net/conn/tcp/Peer.h>
 
 
@@ -28,9 +24,7 @@
 #include <ia20/commonlib/net/conn/tcp/Client.h>
 #include <ia20/commonlib/net/conn/tcp/Server.h>
 #include <ia20/commonlib/net/conn/tcp/FileHandle.h>
-#include <ia20/uring/IO/ReadHandler.h>
-#include <ia20/uring/IO/WriteHandler.h>
-#include <ia20/uring/IO/ShutdownHandler.h>
+#include <ia20/commonlib/uring/uring.h>
 
 #include <unistd.h>
 #include <string.h>
@@ -62,8 +56,16 @@ class Server : public ReadHandler, public WriteHandler, public ShutdownHandler {
         WriteHandler::iovec.iov_base = malloc(4096);
         memcpy(WriteHandler::iovec.iov_base, CStrData.c_str(), WriteHandler::iovec.iov_len);
         strData.reserve(10000);
-        ReadHandler::iovec.iov_len = 180;
+          
+          ReadHandler::iovec.iov_base = malloc(4096);
+          ReadHandler::iovec.iov_len  = 4096;
+
       };
+
+    ~Server(){
+      free(WriteHandler::iovec.iov_base);
+      free(ReadHandler::iovec.iov_base);
+    }
 
   static const String CStrData;
 
@@ -157,7 +159,8 @@ int main(){
 
     Net::Conn::TCP::Peer peer("127.0.0.1", 55556);
 
-    std::unique_ptr<IO::TCP::AsyncServer> ptrAsyncServer(new IO::TCP::AsyncServer(peer, DefaultConnectionFactory::GetInstance()));
+    std::unique_ptr<IO::TCP::AsyncServer> ptrAsyncServer(new 
+    IO::TCP::AsyncServer(peer, Net::Conn::TCP::DefaultConnectionFactory::GetInstance()));
 
     std::unique_ptr<IO::TCP::AsyncServer::Acceptor>
          ptrAcceptor(new Acceptor(ptrAsyncServer.get(), ptrRingHandler.get()));

@@ -220,7 +220,7 @@ virtual void enque(D* pValue){
     sp.lock();
     if(iSize != iLength + 1){
       vValues[ (iHead + iLength++) % iSize ] = pValue;
-//      IA20_LOG(true, "Enque done: "<<(void*)this<<"\t"<<iHead<<", "<<iLength<<"]\t = "<<(void*)pValue);
+      IA20_LOG(true, "Enque done: "<<(void*)this<<"\t"<<iHead<<", "<<iLength<<"]\t = "<<(void*)pValue);
       sp.unlock();
       return;
     }
@@ -254,6 +254,38 @@ virtual D *deque(){
   }
 
   IA20_THROW(ItemNotFoundException("Deque timeout"));
+}
+
+/*************************************************************************/
+virtual D *dequeNoWait(){
+	IA20_TRACER;
+
+    //IA20_LOG(true, "Deque enter: "<<(void*)this);
+
+    sp.lock();
+    
+    if(iLength > 0){
+
+      D *pValue = vValues[ iHead ];
+
+      if(iHead < iSize - 1){
+        iHead++;
+      }else{
+        iHead = 0;
+      }
+      iLength--;
+        IA20_LOG(true, "Deque done: "<<(void*)this<<"["<<iHead<<","<<iLength<<"]\t = "<<(void*)pValue);
+      sp.unlock();
+      return pValue;
+    }
+
+    sp.unlock();
+  
+    //IA20_LOG(true, "Deque done: "<<(void*)this);
+
+    return nullptr;
+
+//  IA20_THROW(ItemNotFoundException("Deque timeout"));
 }
 
 /*************************************************************************/

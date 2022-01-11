@@ -22,9 +22,7 @@
 #include <ia20/commonlib/testcase/TestUnit.h>
 
 
-#include <ia20/uring/RingHandler.h>
-#include <ia20/uring/IO/TCP/AsyncServer.h>
-#include <ia20/uring/IO/ReadHandler.h>
+#include <ia20/commonlib/uring/uring.h>
 
 #include <ia20/commonlib/net/conn/tcp/Peer.h>
 

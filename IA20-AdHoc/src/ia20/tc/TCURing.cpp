@@ -23,8 +23,7 @@
 #include <ia20/commonlib/net/conn/tcp/Client.h>
 #include <ia20/commonlib/net/conn/tcp/Server.h>
 #include <ia20/commonlib/net/conn/tcp/FileHandle.h>
-#include <ia20/uring/IO/ReadHandler.h>
-#include <ia20/uring/IO/WriteHandler.h>
+#include <ia20/commonlib/uring/uring.h>
 
 #include <unistd.h>
 #include <string.h>
@@ -62,9 +61,19 @@ class Server : public ReadHandler, public WriteHandler {
       ptrFileHandle(pFileHandle){
         WriteHandler::iovec.iov_len  = CStrData.length();
         WriteHandler::iovec.iov_base = malloc(4096);
+
         memcpy(WriteHandler::iovec.iov_base, CStrData.c_str(), WriteHandler::iovec.iov_len);
+
+          ReadHandler::iovec.iov_base = malloc(4096);
+          ReadHandler::iovec.iov_len  = 4096;
+
       };
 
+    ~Server(){
+      free(WriteHandler::iovec.iov_base);
+      free(ReadHandler::iovec.iov_base);
+    }
+    
   static const String CStrData;
 
   protected:

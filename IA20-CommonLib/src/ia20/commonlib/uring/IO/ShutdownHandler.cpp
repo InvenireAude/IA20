@@ -1,43 +1,43 @@
 /*
- * File: CloseHandler.cpp
+ * File: ShutdownHandler.cpp
  *
  * Copyright (C) 2020, Invenire Aude, Albert Krzymowski
  *
  */
 
-#include "CloseHandler.h"
+#include "ShutdownHandler.h"
 
-#include <ia20/uring/URingException.h>
+#include <ia20/commonlib/uring/URingException.h>
 
 namespace IA20 {
 namespace URing {
 namespace IO {
 
 /*************************************************************************/
-CloseHandler::CloseHandler(RingHandler* pRingHandler, Net::Conn::TCP::FileHandle* pFileHandle):
+ShutdownHandler::ShutdownHandler(RingHandler* pRingHandler, Net::Conn::TCP::FileHandle* pFileHandle):
   EventHandler(pRingHandler),
   FileHandler(pFileHandle){
 	IA20_TRACER;
 }
 /*************************************************************************/
-CloseHandler::~CloseHandler() throw(){
+ShutdownHandler::~ShutdownHandler() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-void CloseHandler::prepare(){
+void ShutdownHandler::prepare(int how){
 	IA20_TRACER;
-   pRingHandler->prepareClose(this, pFileHandle->iFileDescriptor);
+   pRingHandler->prepareShutdown(this, pFileHandle->iFileDescriptor, how);
 }
 /*************************************************************************/
-void CloseHandler::handle(int iResult){
+void ShutdownHandler::handle(int iResult){
 	IA20_TRACER;
 
   IA20_LOG(LogLevel::INSTANCE.isSystem(), "handle: res="<<iResult);
 
   if(iResult < 0)
-    IA20_THROW(URingException("Failure in CloseHandler", -iResult));
+    IA20_THROW(URingException("Failure in ShutdownHandler", -iResult));
 
-  handleClose(iResult);
+  handleShutdown(iResult);
 }
 /*************************************************************************/
 }

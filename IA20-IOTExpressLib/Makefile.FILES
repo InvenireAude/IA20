@@ -1,4 +1,4 @@
-#Mon Jan 10 04:25:42 PM CET 2022
+#Tue Jan 11 02:46:59 PM CET 2022
 FILES+=ia20/iot
 FILES+=ia20/iot/Activity
 FILES+=ia20/iot/ActivityStore
@@ -25,6 +25,10 @@ FILES+=ia20/iot/mqtt/Message
 FILES+=ia20/iot/mqtt/VariableHeaderBuilder
 FILES+=ia20/iot/Subscription
 FILES+=ia20/iot/SubscriptionsStore
+FILES+=ia20/iot/tcp/Acceptor
+FILES+=ia20/iot/tcp/Context
+FILES+=ia20/iot/tcp/Listener
+FILES+=ia20/iot/tcp/Server
 FILES+=ia20/iot/tools/StringRef
 FILES+=ia20/iot/tools/WordsMap
 FILES+=ia20/iot/tools/WordTokens

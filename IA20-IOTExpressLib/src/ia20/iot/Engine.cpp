@@ -159,7 +159,7 @@ void Engine::addListener(Listener* pListener){
 
   builder.setType(MQTT::Message::MT_CONNACK);
   builder.setID(ctx.headerReader.getID());
-
+  builder.setLength(2);
   uint8_t buf2[100];
   uint8_t* pEnd = builder.build(buf2);
   IA20_LOG(true, "builder: "<<MiscTools::BinarytoHex(buf2, pEnd-buf2));
@@ -167,6 +167,7 @@ void Engine::addListener(Listener* pListener){
   Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
   Memory::StreamBufferList::Writer writer(sbl);
   writer.write(buf2,pEnd - buf2);
+  writer.write((uint8_t*)"\000\000",2);
   IA20_LOG(true, "builder: "<<(void*)sbl.getHead()<<", "<<MiscTools::BinarytoHex(sbl.getHead()+16, 2));
   ptrTask2->setMessage(sbl.getHead());
 
@@ -183,14 +184,14 @@ void Engine::addListener(Listener* pListener){
 
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Packet Identfier: "<<(int)iPacketIdentfier);
 
-      //TODO version check
-     uint32_t iPropertiesLen = MQTT::HeaderReader::DecodeVL(ctx.reader);
+//      TODO version check
+    uint32_t iPropertiesLen = MQTT::HeaderReader::DecodeVL(ctx.reader);
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "PropertiesLen: "<<(int)iPropertiesLen);
 
 
     while(ctx.reader.hasData()){
-       int iTopicLen = MQTT::HeaderReader::ReadTwoBytes(ctx.reader);
-      //int iTopicLen = MQTT::HeaderReader::DecodeVL(ctx.reader);
+      // int iTopicLen = MQTT::HeaderReader::ReadTwoBytes(ctx.reader);
+      int iTopicLen = MQTT::HeaderReader::DecodeVL(ctx.reader);
 
       IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Topic Len: "<<(int)iTopicLen);
       static uint8_t buf[64000]; //TODO more elegant way.
@@ -215,13 +216,15 @@ void Engine::addListener(Listener* pListener){
   builder.setType(MQTT::Message::MT_SUBACK);
 
   builder.setID(ctx.headerReader.getID());
-  builder.setLength(0);
+  builder.setLength(3);
 
   uint8_t buf2[100];
   uint8_t* pEnd = builder.build(buf2);
   Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
   Memory::StreamBufferList::Writer writer(sbl);
   writer.write(buf2,pEnd - buf2);
+  writer.write((uint8_t*)"\000",1);
+
   ptrTask2->setMessage(sbl.getHead());
 
   ld.pRingResponse->enque(ptrTask2.release());
@@ -236,7 +239,8 @@ void Engine::addListener(Listener* pListener){
    uint8_t iQoS = ctx.headerReader.getQoS();
    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Packet QoS: "<<(int)iQoS);
 
-   int iTopicLen = MQTT::HeaderReader::ReadTwoBytes(ctx.reader);
+   int iTopicLen = MQTT::HeaderReader::ReadTwoBytes(ctx.reader);  
+//  int iTopicLen = MQTT::HeaderReader::DecodeVL(ctx.reader);
 
    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Topic Len: "<<(int)iTopicLen);
 

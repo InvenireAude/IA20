@@ -1,43 +1,46 @@
 /*
- * File: ShutdownHandler.cpp
+ * File: ReadHandler.cpp
  *
  * Copyright (C) 2020, Invenire Aude, Albert Krzymowski
  *
  */
 
-#include "ShutdownHandler.h"
+#include "ReadHandler.h"
 
-#include <ia20/uring/URingException.h>
+#include <ia20/commonlib/uring/URingException.h>
 
 namespace IA20 {
 namespace URing {
 namespace IO {
 
 /*************************************************************************/
-ShutdownHandler::ShutdownHandler(RingHandler* pRingHandler, Net::Conn::TCP::FileHandle* pFileHandle):
+ReadHandler::ReadHandler(RingHandler* pRingHandler, Net::Conn::TCP::FileHandle* pFileHandle):
   EventHandler(pRingHandler),
-  FileHandler(pFileHandle){
+  FileHandler(pFileHandle),
+  iOffset(0){
 	IA20_TRACER;
+
 }
 /*************************************************************************/
-ShutdownHandler::~ShutdownHandler() throw(){
+ReadHandler::~ReadHandler() throw(){
 	IA20_TRACER;
+
 }
 /*************************************************************************/
-void ShutdownHandler::prepare(int how){
+void ReadHandler::prepare(){
 	IA20_TRACER;
-   pRingHandler->prepareShutdown(this, pFileHandle->iFileDescriptor, how);
+   pRingHandler->prepareRead(this, pFileHandle->iFileDescriptor, &iovec, 0);
 }
 /*************************************************************************/
-void ShutdownHandler::handle(int iResult){
+void ReadHandler::handle(int iResult){
 	IA20_TRACER;
 
   IA20_LOG(LogLevel::INSTANCE.isSystem(), "handle: res="<<iResult);
 
   if(iResult < 0)
-    IA20_THROW(URingException("Failure in ShutdownHandler", -iResult));
+    IA20_THROW(URingException("Failure in ReadHandler", -iResult));
 
-  handleShutdown(iResult);
+  handleRead(iResult);
 }
 /*************************************************************************/
 }

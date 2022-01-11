@@ -1,4 +1,4 @@
-#Wed Dec 15 05:26:25 PM CET 2021
+#Tue Jan 11 01:28:15 PM CET 2022
 FILES+=ia20/net/conn/mcast/Base
 FILES+=ia20/net/conn/mcast/EndPoint
 FILES+=ia20/net/conn/mcast/Receiver
@@ -21,16 +21,6 @@ FILES+=ia20/net/engine/raft/unix/Worker
 FILES+=ia20/tc/TCConnectionTCP
 FILES+=ia20/tc/TCRaftEngine
 FILES+=ia20/tc/TCURing
-FILES+=ia20/uring/BufferSet
-FILES+=ia20/uring/EventHandler
-FILES+=ia20/uring/IO/CloseHandler
-FILES+=ia20/uring/IO/FileHandler
-FILES+=ia20/uring/IO/ReadHandler
-FILES+=ia20/uring/IO/ShutdownHandler
-FILES+=ia20/uring/IO/TCP/AsyncServer
-FILES+=ia20/uring/IO/WriteHandler
-FILES+=ia20/uring/RingHandler
-FILES+=ia20/uring/URingException
 MAINFILES+=ia_raft_dumplog
 MAINFILES+=ia_testcases
 MAINFILES+=ia_testclient
