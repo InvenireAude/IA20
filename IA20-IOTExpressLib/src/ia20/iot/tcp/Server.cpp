@@ -68,6 +68,8 @@ void Server::handleRead(off_t iDataLen){
     iBufferDataLength += iDataLen;
 	
     while(iBufferDataLength > 0){
+
+       // IA20_LOG(true,"iBufferDataLength[read]: "<<iBufferDataLength<<" "<<ctx.iExpectingLength);
     
         if(ctx.iExpectingLength == 0){
 
@@ -81,6 +83,7 @@ void Server::handleRead(off_t iDataLen){
             }else{
                 IA20_LOG(true,"Wants more");
                 ReadHandler::iovec.iov_base = ptrInputBuffer.get() + iBufferDataLength;
+                break;
             }
 
         }
