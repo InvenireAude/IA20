@@ -38,7 +38,7 @@ public:
   static  SizeType CSegmentSize;
   static  SizeType CSegmentDataSize;
 
-  typedef int32_t OffsetType;
+  typedef int64_t  OffsetType;
   static  uint64_t CSegmentMask;
 
   
