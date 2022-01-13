@@ -14,6 +14,8 @@
 
 #include <ia20/commonlib/commonlib.h>
 #include <ia20/iot/tools/OffsetPtr.h>
+#include <ia20/iot/tools/StringRef.h>
+#include <ia20/iot/logger/LogLevel.h>
 
 #include <string.h>
 
@@ -93,7 +95,7 @@ public:
 			pData(pChunk->getDataStart()),
 			iConsumedBytes(0),
 			iDataLength(pChunk->iDataLength){
-				IA20_LOG(true, "Starting at: "<<(void*)pData<<", len: "<<iDataLength);
+				IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "Starting at: "<<(void*)pData<<", len: "<<iDataLength);
 			}
 
 		void getNext();
@@ -114,9 +116,12 @@ public:
 				iConsumedBytes += iStep;
 			}else if(iStep == iDataLength){
 				 getNext();
+				 iConsumedBytes += iStep;
 			}else{
 				IA20_THROW(InternalException("advance(iStep > iDataLenght)"));
 			}
+
+			IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "Consumed Bytes: "<<iConsumedBytes);
 		}
 
 		inline DataLengthType copy(uint8_t* pDst, DataLengthType iBytesToCopy = 10000){
@@ -145,6 +150,7 @@ public:
 
 			}
 
+			IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "Consumed Bytes: "<<iConsumedBytes);
 			return iBytesToCopy - iLeft;
 		}
 
@@ -154,7 +160,7 @@ public:
 
 		inline uint8_t readByte(){
 
-			IA20_LOG(true, "Reading at: "<<(void*)pData<<", v:"<<(int)*pData<<", len: "<<iDataLength);
+			IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "Reading at: "<<(void*)pData<<", v:"<<(int)*pData<<", len: "<<iDataLength);
 
 			if(!iDataLength){
 				getData();
@@ -165,6 +171,8 @@ public:
 
 			iDataLength--;
 			iConsumedBytes++;
+			IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "Consumed Bytes: "<<iConsumedBytes);
+
 			return *pData++;
 		}
 
@@ -214,7 +222,7 @@ public:
 				DataLengthType iChunkLen =
 					iNewDataLength <= iAvailableLength ? iNewDataLength : iAvailableLength;
 
-       			 IA20_LOG(true, "pCursor:"<<(void*)pCursor<<", "<<iChunkLen);
+       			 IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "pCursor:"<<(void*)pCursor<<", "<<iChunkLen);
 
 				memcpy(pCursor, pNewData, iChunkLen);
 				addData(iChunkLen);
@@ -245,6 +253,10 @@ public:
 				addData(2);
 		}
 
+		inline void write(const Tools::StringRef& strValue){
+			writeTwoBytes(strValue.getLength());
+			write(strValue.getData(), strValue.getLength());
+		}
 		protected:
 			Chunk *pChunk;
 			StreamBufferList& sbl;

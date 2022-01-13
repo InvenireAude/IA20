@@ -30,13 +30,26 @@ public MockerThread,
 public IOT::Listener {
 public:
 
+  struct ConnectionEntry {
+    std::list<String> lstWire;
+    Connection::HandleType aConnectionHandle;
+  };
+
+  typedef std::vector<ConnectionEntry> ConnectionTab;
+
+  const ConnectionTab getConnectionStates()const{
+    return tabConnections;
+  }
+
 	virtual ~Listener() throw();
 	Listener(std::unique_ptr<RingType::Interface>&& ptrInterface, int iMaxConnections = 1);
 
   void sendMessage(const String& strHex, int iConnectionId = 0);
 
-  void serve();
-
+  bool serve(bool bWait);
+  void serveUntilEmptyQueue();
+  
+  void dump(std::ostream& os);
 protected:
 
   void run();
@@ -52,15 +65,9 @@ protected:
 
   ContentMap hmContent;
 
-  struct ConnectionEntry {
-
-    StringStream ssWire;
-    Connection::HandleType aConnectionHandle;
-
-  };
 
 
-  typedef std::vector<ConnectionEntry> ConnectionTab;
+
 
   ConnectionTab  tabConnections;
 
@@ -76,3 +83,4 @@ protected:
 }
 
 #endif /* _IA20_IOT_Mocker_Listener_H_ */
+

@@ -38,7 +38,8 @@ public:
 	TCMQTTServer(TestSuite* pTestSuite);
 	virtual ~TCMQTTServer()  throw ();
 
-	void caseBasic();
+	void caseBasicv31();
+	void caseBasicv5();
 
 protected:
 
@@ -52,7 +53,11 @@ protected:
     std::unique_ptr<IOT::Engine> ptrEngine;
 
     void reset();
+
+
   };
+
+    void caseBasicImpl(const std::initializer_list<std::pair<int, String> >& lstArgs);
 
   struct TestEnv env;
 

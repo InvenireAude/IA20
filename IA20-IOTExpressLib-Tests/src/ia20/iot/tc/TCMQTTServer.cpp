@@ -34,7 +34,8 @@ TCMQTTServer::TCMQTTServer(TestSuite* pTestSuite):
   TestUnit<TCMQTTServer>(this, "MQTTServer", pTestSuite){
 	IA20_TRACER;
 
-  addCase("caseBasic", &::IA20::TC::TCMQTTServer::caseBasic);
+  addCase("caseBasicv31", &::IA20::TC::TCMQTTServer::caseBasicv31);
+  addCase("caseBasicv5",  &::IA20::TC::TCMQTTServer::caseBasicv5);
 
   pTestSuite->addTestUnit(this);
 }
@@ -44,10 +45,23 @@ TCMQTTServer::~TCMQTTServer() throw(){
 }
 /*************************************************************************/
 
-static String CMSgCONNECT_Req ("100C00044D5154540402003C0000");
-static String CMSgSUBSCRIBE_Req("821B000100042F6162630000042F78797A0000082F6162632F78797A00");
-static String CMSgPUBLISH1_Req("321200082F6162632F78797A00014142434446");
-static String CMSgPUBLISH2_Req("321200082F6162632F78797A00024142434447");
+std::initializer_list< std::pair<int, String> > CaseMQv31{
+    { 0, "100C00044D5154540402003C0000" },
+    { 0, "821B000100042F6162630000042F78797A0000082F6162632F78797A00" },
+    { 0, "321100082F6162632F78797A00014142434446" },
+    { 1, "100C00044D5154540402003C0000" },
+    { 1, "821B000100042F6162630000042F78797A0000082F6162632F78797A00" },    
+    { 0, "321100082F6162632F78797A00024142434447" }
+};
+
+std::initializer_list< std::pair<int, String> > CaseMQv5{
+    { 0, "101000044D5154540502003C032100140000" },
+    { 0, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },
+    { 0, "321200082F6162632F78797A0001004142434446" },
+    { 1, "101000044D5154540502003C032100140000" },
+    { 1, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },    
+    { 0, "321200082F6162632F78797A0002004142434447" }
+};
 
 // static String CMSgCONNECT_Req ("101000044D5154540502003C032100140000");
 // static String CMSgSUBSCRIBE_Req("821C00010000042F6162630000042F78797A0000082F6162632F78797A00");
@@ -55,64 +69,85 @@ static String CMSgPUBLISH2_Req("321200082F6162632F78797A00024142434447");
 // static String CMSgPUBLISH2_Req("321200082F6162632F78797A0002004142434447");                                
                               //321100082F6162632F78797A0001  4142434446
 /*************************************************************************/
-void TCMQTTServer::caseBasic(){
+ void TCMQTTServer::caseBasicImpl(const std::initializer_list<std::pair<int, String> >& lstArgs){
+
+  env.reset(); // TODO compare results
 
 	IA20::TimeSample ts(true);
 
-  env.reset();
-
-    cpu_set_t cpuset;
-    CPU_ZERO(&cpuset);
-    CPU_SET(0, &cpuset);
-    int rc1 = pthread_setaffinity_np(pthread_self(),sizeof(cpu_set_t), &cpuset);
-
-    //nv.ptrListener->start();
-    //String strTest(CMSgCONNECT_Req);
-
-    //for(int i=0; i<1; i++){
-    //cerr<<i<<"\t"<<ts.getSample()<<endl;
-
-    env.ptrListener->sendMessage(CMSgCONNECT_Req);
+   for(const auto& s: lstArgs){
+    env.ptrListener->sendMessage(s.second, s.first);
     env.ptrEngine->serve();
-    env.ptrListener->serve();
+    env.ptrListener->serveUntilEmptyQueue();
+   }
 
-    env.ptrListener->sendMessage(CMSgSUBSCRIBE_Req);
-    env.ptrEngine->serve();
-    env.ptrListener->serve();
-
-    env.ptrListener->sendMessage(CMSgPUBLISH1_Req);
-    env.ptrEngine->serve();
-    env.ptrListener->serve();
-    env.ptrListener->serve();
-    env.ptrListener->serve();
-
-    env.ptrListener->sendMessage(CMSgCONNECT_Req,1);
-    env.ptrEngine->serve();
-    env.ptrListener->serve();
-
-    env.ptrListener->sendMessage(CMSgSUBSCRIBE_Req,1);
-    env.ptrEngine->serve();
-    env.ptrListener->serve();
-
-    env.ptrListener->sendMessage(CMSgPUBLISH2_Req);
-    env.ptrEngine->serve();
-    env.ptrListener->serve();
-    env.ptrListener->serve();
-    env.ptrListener->serve();
-    env.ptrListener->serve();
-
-
-  //}
-
-
-  cerr<<ts.getSample()<<endl;
-  cerr.flush();
-
-  env.ptrListener->stop();
-  env.ptrListener->join();
-
-
+   env.ptrListener->dump(std::cerr); // TODO compare results
+   env.ptrListener->getConnectionStates(); // TODO compare results
+ }
+/*************************************************************************/
+void TCMQTTServer::caseBasicv31(){
+  IA20_LOG(true,"caseBasicv31");
+  caseBasicImpl(CaseMQv31);
 }
+/*************************************************************************/
+void TCMQTTServer::caseBasicv5(){
+  IA20_LOG(true,"caseBasicv5");
+  caseBasicImpl(CaseMQv5);
+}
+/*************************************************************************/
+// void TCMQTTServer::caseBasic(){
+
+// 	IA20::TimeSample ts(true);
+
+//   env.reset();
+
+//     cpu_set_t cpuset;
+//     CPU_ZERO(&cpuset);
+//     CPU_SET(0, &cpuset);
+//     int rc1 = pthread_setaffinity_np(pthread_self(),sizeof(cpu_set_t), &cpuset);
+
+//     //nv.ptrListener->start();
+//     //String strTest(CMSgCONNECT_Req);
+
+//     //for(int i=0; i<1; i++){
+//     //cerr<<i<<"\t"<<ts.getSample()<<endl;
+
+//     env.ptrListener->sendMessage(CMSgCONNECT_Req);
+//     env.ptrEngine->serve();
+//     env.ptrListener->serveUntilEmptyQueue();
+
+//     env.ptrListener->sendMessage(CMSgSUBSCRIBE_Req);
+//     env.ptrEngine->serve();
+//     env.ptrListener->serveUntilEmptyQueue();
+
+//     env.ptrListener->sendMessage(CMSgPUBLISH1_Req);
+//     env.ptrEngine->serve();
+//     env.ptrListener->serveUntilEmptyQueue();
+
+//     env.ptrListener->sendMessage(CMSgCONNECT_Req,1);
+//     env.ptrEngine->serve();
+//     env.ptrListener->serveUntilEmptyQueue();
+
+//     env.ptrListener->sendMessage(CMSgSUBSCRIBE_Req,1);
+//     env.ptrEngine->serve();
+//     env.ptrListener->serveUntilEmptyQueue();
+
+//     env.ptrListener->sendMessage(CMSgPUBLISH2_Req);
+//     env.ptrEngine->serve();
+//     env.ptrListener->serveUntilEmptyQueue();
+ 
+
+//   //}
+
+
+//   cerr<<ts.getSample()<<endl;
+//   cerr.flush();
+
+//   env.ptrListener->stop();
+//   env.ptrListener->join();
+
+
+// }
 /*************************************************************************/
 void TCMQTTServer::TestEnv::reset(){
 

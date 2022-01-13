@@ -27,7 +27,7 @@ public:
 	virtual ~MessageStore() throw();
 	MessageStore();
 
-  const Message* createMessage(Memory::StreamBufferList::Reader& reader , uint32_t iDataLength);
+  const Message* createMessage(Memory::StreamBufferList::Reader& reader , uint32_t iDataLength, uint8_t iQoS);
   const Message* lookup(Message::HandleType aHandle)const;
   void           dispose(const Message* pMessage);
 
@@ -38,7 +38,7 @@ protected:
 
   struct Deleter { 
     void operator() (Message* p) {
-      	IA20_LOG(true, "!!!: "<<"free pMessage: "<<(void*)p);
+      	IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "!!!: "<<"free pMessage: "<<(void*)p);
         std::free(p);
     }
   };

@@ -53,6 +53,10 @@ public:
         return  Tools::StringRef((const uint8_t *)utfClientId, strnlen((const char*)utfClientId, 2*CMaxClientIdLen) );
     }
 
+    inline uint16_t getNextId(){
+        return iNextId++;
+    }
+    
 protected:
 
     unsigned int iListener;
@@ -60,6 +64,8 @@ protected:
 
     wchar_t utfClientId[2 * CMaxClientIdLen + 1];
     MQTT::Message::VersionType iMQTTVersion;
+
+    uint16_t iNextId;
 };
 /*************************************************************************/
 }

@@ -130,11 +130,11 @@ void TCBasicMQTT::caseFixedHeaderBuild(){
   
   testFixedHeaderBuilder(MQTT::Message::Type::MT_PUBLISH, 
                          MQTT::Message::Flag::MF_NONE, 2,
-                         99999, 99, "349F8D066300");
+                         99999, 99, "349F8D060063");
 
   testFixedHeaderBuilder(MQTT::Message::Type::MT_SUBSCRIBE, 
                          MQTT::Message::Flag::MF_NONE, 0,
-                         666, 99, "809A056300");
+                         666, 99, "809A050063");
 
   testFixedHeaderBuilder(MQTT::Message::Type::MT_PINGREQ, 
                          MQTT::Message::Flag::MF_NONE, 0,

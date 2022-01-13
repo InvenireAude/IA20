@@ -11,6 +11,7 @@
 #define _IA20_IOT_Memory_FixedObjectsPool_H_
 
 #include <ia20/commonlib/commonlib.h>
+#include <ia20/iot/logger/LogLevel.h>
 
 namespace IA20 {
 namespace IOT {
@@ -82,7 +83,7 @@ public:
 	static C* IdxToPonter(int32_t iIdx){	
 		if(iIdx < 0 || iIdx >= CSize)
 			return NULL;	
-		IA20_LOG(true, "IdxToPonter: "<<iIdx<<" "<<(TheInstance.tEntries + iIdx));
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "IdxToPonter: "<<iIdx<<" "<<(TheInstance.tEntries + iIdx));
 		return TheInstance.tEntries + iIdx;
 	}
 

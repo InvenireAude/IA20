@@ -25,13 +25,13 @@ MessageStore::~MessageStore() throw(){
 
 /*************************************************************************/
 const Message* MessageStore::createMessage(
-		Memory::StreamBufferList::Reader& reader, uint32_t iDataLength){
+		Memory::StreamBufferList::Reader& reader, uint32_t iDataLength, uint8_t iQoS){
 	IA20_TRACER;
 
 	size_t iSize = Message::ComputeRequiredMemory(iDataLength);
 	
 	Message *pMessage = reinterpret_cast<Message*>(
-		new(std::aligned_alloc(alignof(Message), iSize))Message(iNextHandle, iDataLength));
+		new(std::aligned_alloc(alignof(Message), iSize))Message(iNextHandle, iDataLength, iQoS));
 
 	hmMessages[iNextHandle].reset(pMessage);
 

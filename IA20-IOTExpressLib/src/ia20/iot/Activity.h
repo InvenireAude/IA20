@@ -12,7 +12,8 @@
 
 #include <ia20/commonlib/commonlib.h>
 
-#include "Connection.h"
+#include "Subscription.h"
+#include "Subscription.h"
 #include "MessageStore.h"
 
 namespace IA20 {
@@ -27,15 +28,15 @@ class Activity {
 
 
     Activity(int iListenerId,
-             Connection::HandleType aConnectionHandle,
-             Message::HandleType    aMessageHandle):
-        aConnectionHandle(aConnectionHandle),
+             Subscription::HandleType   sSubscriptionHandle,
+             Message::HandleType        aMessageHandle):
+        aSubscriptionHandle(sSubscriptionHandle),
         aMessageHandle(aMessageHandle),
         iListenerId(iListenerId){}
 
 
-      inline Connection::HandleType getConnectionHandle()const{
-        return aConnectionHandle;
+      inline Subscription::HandleType getSubscriptionHandle()const{
+        return aSubscriptionHandle;
       };
       
       inline Message::HandleType getMessageHandle()const{
@@ -48,8 +49,8 @@ class Activity {
 
     protected:
      
-     Connection::HandleType   aConnectionHandle;
-     Message::HandleType      aMessageHandle;
+     Subscription::HandleType   aSubscriptionHandle;
+     Message::HandleType        aMessageHandle;
     int iListenerId;
   };
 /*************************************************************************/

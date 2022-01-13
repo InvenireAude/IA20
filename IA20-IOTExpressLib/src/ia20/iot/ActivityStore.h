@@ -14,7 +14,7 @@
 #include <ia20/iot/memory/FixedObjectsPool.h>
 
 
-#include "Connection.h"
+#include "Subscription.h"
 #include "Activity.h"
 #include "MessageStore.h"
 
@@ -44,17 +44,17 @@ public:
 
   ActivityStore(IndexType iSize = 1000);
 
-   inline void createActivity(Connection::HandleType  mConnectionHandle,
-                              Message::HandleType     mMessageHandle){
+   inline void createActivity(Subscription::HandleType  mSubscriptionHandle,
+                              Message::HandleType       mMessageHandle){
       
         if(iNumActivites == iSize)
             IA20_THROW(ItemNotFoundException("iNumActivities == iSize"));
         
-        IA20_LOG(true, "New Activity ["<<iHead<<"], Sub: "
-          <<(void*)(long)mConnectionHandle<<":"
+        IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "New Activity ["<<iHead<<"], Sub: "
+          <<(void*)(long)mSubscriptionHandle<<":"
           <<(void*)(long)mMessageHandle);
 
-        Activity* pActivity = ActivityPool::New(0, mConnectionHandle, mMessageHandle);
+        Activity* pActivity = ActivityPool::New(0, mSubscriptionHandle, mMessageHandle);
         tActivites[iHead++] = pActivity;
 
         if(iHead == iSize){

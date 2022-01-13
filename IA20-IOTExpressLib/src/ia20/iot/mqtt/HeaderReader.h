@@ -72,8 +72,7 @@ public:
 	uint32_t getRemainingLength(const IOT::Memory::StreamBufferList::Reader& reader){
 		return iLength + (pAfterVL - pData) - reader.getConsumedBytes();
 	};
-
-
+	
 	uint32_t getTotalLength(){
 		return iLength + (pAfterVL - pData);
 	};

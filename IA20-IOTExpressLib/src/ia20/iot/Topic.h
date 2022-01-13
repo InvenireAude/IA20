@@ -13,6 +13,8 @@
 #include <ia20/commonlib/commonlib.h>
 #include <ia20/iot/tools/WordsMap.h>
 
+#include <ia20/iot/logger/LogLevel.h>
+
 namespace IA20 {
 namespace IOT {
 class Subscription;
@@ -30,7 +32,7 @@ public:
 	iToken(iToken),
   pParent(pParent),
 	pFirst(NULL){
-		IA20_LOG(true,"New token: "<<(int)iToken);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo,"New token: "<<(int)iToken);
 	};
 
 	inline Tools::WordsMap::WordIdType getToken()const{

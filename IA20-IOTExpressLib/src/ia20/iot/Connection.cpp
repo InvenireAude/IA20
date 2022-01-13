@@ -19,6 +19,7 @@ Connection::Connection(
     HandleType   aHandle,
 	wchar_t* utfClientId):
 	iListener(iListener),
+	iNextId(0),
 	IdentifiedByHandle(aHandle){	
 	IA20_TRACER;
 

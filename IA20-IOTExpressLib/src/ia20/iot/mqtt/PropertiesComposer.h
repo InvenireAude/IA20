@@ -58,7 +58,6 @@ public:
 			writer.writeByte(e.iProperty);
 
 			if(e.bIsString){
-				IA20_LOG(true, "ivalue"<<e.iDataLenght);
 				writer.writeTwoBytes(e.iDataLenght);
 			}
 
@@ -75,7 +74,6 @@ public:
 			if(tabEntries[i].bIsString){
 				iLength += 2;
 			}
-			IA20_LOG(true, "ivalue"<<iLength);
 		}
 			
 		return iLength + 1;

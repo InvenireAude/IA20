@@ -183,7 +183,7 @@ void Engine::addListener(Listener* pListener){
   writer.writeByte(0);
   propertiesComposer.build(writer);
 
-  IA20_LOG(true, "builder: "<<propertiesComposer.computeLength()<<" "<<(void*)sbl.getHead()<<", "<<MiscTools::BinarytoHex(sbl.getHead()+16, propertiesComposer.computeLength()));
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "builder: "<<propertiesComposer.computeLength()<<" "<<(void*)sbl.getHead()<<", "<<MiscTools::BinarytoHex(sbl.getHead()+16, propertiesComposer.computeLength()));
   ptrTask2->setMessage(sbl.getHead());
 
   ld.pRingResponse->enque(ptrTask2.release());
@@ -258,7 +258,7 @@ void Engine::addListener(Listener* pListener){
 
    uint8_t iQoS = ctx.headerReader.getQoS();
    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Packet QoS: "<<(int)iQoS);
-
+   
    int iTopicLen =  MQTT::HeaderReader::ReadTwoBytes(ctx.reader);
 
    static uint8_t buf[64000]; //TODO more elegant way.
@@ -284,11 +284,9 @@ void Engine::addListener(Listener* pListener){
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "PropertiesLen: "<<(int)iPropertiesLen);
   }
   
-  uint32_t iDataLen = ctx.headerReader.getTotalLength();
+  uint32_t iDataLen = ctx.headerReader.getTotalLength() - ctx.reader.getConsumedBytes();
 
-  Memory::StreamBufferList::Reader reader(ctx.sbl);
-
-  const Message* pMessage = ptrMessageStore->createMessage(reader, iDataLen);
+  const Message* pMessage = ptrMessageStore->createMessage(ctx.reader, iDataLen, ctx.headerReader.getQoS());
 
 	Tools::WordTokens tokens;
 	tokens.read(strTopic, ptrTopicsStore->getWordsMap());
@@ -307,9 +305,8 @@ void Engine::addListener(Listener* pListener){
     Subscription* pSubscription = pCurrent->getFirstSubscription();
 
     while(pSubscription){
-       Connection *pConnection = ptrConnectionsStore->get(pSubscription->getConnectionHandle());
 
-       ptrActivityStore->createActivity(pSubscription->getConnectionHandle(), pMessage->getHandle());
+       ptrActivityStore->createActivity(pSubscription->getHandle(), pMessage->getHandle());
 
        tabListners[pConnection->getListenerIdx()].tmp.iCounter++;
 
@@ -367,13 +364,11 @@ void Engine::addListener(Listener* pListener){
 void Engine::handleActivities(){
    IA20_TRACER;
 
-    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "handleActivities0");
 
    while(ptrActivityStore->hasActivities()){
      Activity* pActivity = ptrActivityStore->back();
 
-    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "handleActivities");
-
+     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "** handleActivities loop **");
 
      ListenerDetails& ld(tabListners[0]);
 
@@ -382,8 +377,33 @@ void Engine::handleActivities(){
         Listener::Task(Listener::Task::CA_SendShared), ld.pMemoryPool->getDeleter());
 
       ptrTask->iMessageId = 20000000;
-      ptrTask->setConnectionHandle(pActivity->getConnectionHandle());
+
+      Subscription* pSubsciption = ptrSubscriptionsStore->lookup(pActivity->getSubscriptionHandle());
+      Connection*   pConnection  = ptrConnectionsStore->get(pSubsciption->getConnectionHandle());
+      const Message* pMessage     = ptrMessageStore->lookup(pActivity->getMessageHandle());
+
+      ptrTask->setConnectionHandle(pConnection->getHandle());
       ptrTask->setMessageHandle(pActivity->getMessageHandle());
+
+      MQTT::FixedHeaderBuilder builder;
+      Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask.get());
+      Memory::StreamBufferList::Writer writer(sbl);
+      MQTT::PropertiesComposer propertiesComposer;
+
+      builder.setType(MQTT::Message::MT_PUBLISH);
+      builder.setID(pConnection->getNextId());
+      builder.setFlags((MQTT::Message::Flag)0, pMessage->getQoS());
+      Tools::StringRef strTopic(pSubsciption->getTopic());
+
+      builder.setLength(pMessage->getDataLength() + 2 + (2 + strTopic.getLength()) + propertiesComposer.computeLength());
+      builder.build(writer);
+      writer.write(strTopic);
+      writer.writeTwoBytes(pConnection->getNextId()); //TODO how it works ??
+      propertiesComposer.build(writer);
+
+      IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "publish: "<<propertiesComposer.computeLength()<<" "<<(void*)sbl.getHead()<<", "<<MiscTools::BinarytoHex(sbl.getHead()+16, propertiesComposer.computeLength()));
+      ptrTask->setMessage(sbl.getHead());
+
 
       // IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "serve 1:  "<<(void*)(long)ptrTask->getMessageHandle());
       // IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "server 2:  "<<(void*)(long)ptrTask->getConnectionHandle());

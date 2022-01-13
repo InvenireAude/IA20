@@ -39,15 +39,21 @@ public:
       return iDataLength;
     }
 
-    inline Message(HandleType iHandle, uint32_t iDataLength):
+    inline Message(HandleType iHandle, uint32_t iDataLength, uint8_t iQoS):
         iHandle(iHandle),
-        iDataLength(iDataLength){};
+        iDataLength(iDataLength),
+        iQoS(iQoS){};
 
+    inline uint8_t getQoS()const{
+      return iQoS;
+    }
+    
     protected:
 
     HandleType iHandle;
     uint32_t   iDataLength;
-  
+    uint8_t iQoS;
+
     inline uint8_t* getDataPointer(){
       return reinterpret_cast<uint8_t*>(const_cast<Message*>(this+1));
     }

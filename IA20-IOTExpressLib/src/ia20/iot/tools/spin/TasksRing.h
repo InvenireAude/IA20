@@ -13,6 +13,8 @@
 #include <ia20/commonlib/commonlib.h>
 #include <ia20/commonlib/sys/Signal.h>
 
+#include <ia20/iot/logger/LogLevel.h>
+
 #include "../TasksRing.h"
 
 
@@ -220,7 +222,7 @@ virtual void enque(D* pValue){
     sp.lock();
     if(iSize != iLength + 1){
       vValues[ (iHead + iLength++) % iSize ] = pValue;
-      IA20_LOG(true, "Enque done: "<<(void*)this<<"\t"<<iHead<<", "<<iLength<<"]\t = "<<(void*)pValue);
+      IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo, "Enque done: "<<(void*)this<<"\t"<<iHead<<", "<<iLength<<"]\t = "<<(void*)pValue);
       sp.unlock();
       return;
     }
@@ -246,7 +248,7 @@ virtual D *deque(){
         iHead = 0;
       }
       iLength--;
-//      IA20_LOG(true, "Deque done: "<<(void*)this<<"["<<iHead<<","<<iLength<<"]\t = "<<(void*)pValue);
+//      IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetail, "Deque done: "<<(void*)this<<"["<<iHead<<","<<iLength<<"]\t = "<<(void*)pValue);
       sp.unlock();
       return pValue;
     }
@@ -260,7 +262,7 @@ virtual D *deque(){
 virtual D *dequeNoWait(){
 	IA20_TRACER;
 
-    //IA20_LOG(true, "Deque enter: "<<(void*)this);
+    //IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetail, "Deque enter: "<<(void*)this);
 
     sp.lock();
     
@@ -274,14 +276,14 @@ virtual D *dequeNoWait(){
         iHead = 0;
       }
       iLength--;
-        IA20_LOG(true, "Deque done: "<<(void*)this<<"["<<iHead<<","<<iLength<<"]\t = "<<(void*)pValue);
+        IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo, "Deque done: "<<(void*)this<<"["<<iHead<<","<<iLength<<"]\t = "<<(void*)pValue);
       sp.unlock();
       return pValue;
     }
 
     sp.unlock();
   
-    //IA20_LOG(true, "Deque done: "<<(void*)this);
+    //IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetail, "Deque done: "<<(void*)this);
 
     return nullptr;
 

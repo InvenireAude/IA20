@@ -33,7 +33,6 @@ public:
 				 Connection::HandleType aConnectionHandle);
 
 	inline void setNext(Subscription* pNext){
-		IA20_LOG(true,"Next: "<<strTopic<<" => "<<(pNext ? pNext->strTopic : "null"));
 		this->pNext = pNext;
 	}
 
@@ -49,6 +48,9 @@ public:
 		return aHandle;
 	}
 
+	Tools::StringRef getTopic()const{
+		return Tools::StringRef((const uint8_t*)strTopic.c_str(), strTopic.length());
+	}
 protected:
 	String         strTopic;//TODO
 	Subscription*  pNext;
