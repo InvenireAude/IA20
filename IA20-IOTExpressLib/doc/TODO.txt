@@ -1,0 +1,12 @@
+
+
+Development plan:
+
+ *) v3.1 v5 - version support/connection property
+   - clientId
+ 
+ *) ContentWriter 
+
+ *) pending task queue TCP::Listener
+
+  

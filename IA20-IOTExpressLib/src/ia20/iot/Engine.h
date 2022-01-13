@@ -15,6 +15,7 @@
 
 #include <ia20/iot/mqtt/HeaderReader.h>
 #include <ia20/iot/mqtt/FixedHeaderBuilder.h>
+#include <ia20/iot/mqtt/ContentComposer.h>
 
 #include "Listener.h"
 #include "ActivityStore.h"
@@ -79,7 +80,6 @@ protected:
     Memory::StreamBufferList sbl;
     Memory::StreamBufferList::Reader reader;
     MQTT::HeaderReader headerReader;
-
   };
 
   void handleConnect(Engine::ListenerDetails& ld, Context& ctx);
@@ -94,7 +94,6 @@ protected:
   std::unique_ptr<SubscriptionsStore> ptrSubscriptionsStore;
   std::unique_ptr<MessageStore>       ptrMessageStore;
   std::unique_ptr<ActivityStore>      ptrActivityStore;
-
 };
 
 /*************************************************************************/

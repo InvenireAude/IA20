@@ -74,6 +74,14 @@ public:
 		return String((const char*)pData, iLength);
 	}
 
+	inline int getLength()const{
+		return iLength;
+	}
+
+	inline const uint8_t* getData()const{
+		return pData;
+	}
+
   friend std::ostream& operator<<(std::ostream& os, const StringRef& s){
     os<<s.operator IA20::String();
     return os;

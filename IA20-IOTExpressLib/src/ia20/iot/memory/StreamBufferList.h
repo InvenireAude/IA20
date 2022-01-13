@@ -193,6 +193,8 @@ public:
 
 		inline void addData(DataLengthType iNewDataLength){
 			pChunk->iDataLength += iNewDataLength;
+			iAvailableLength    -= iNewDataLength; // TODO remove this redundant value
+			pCursor             += iNewDataLength;
 		}
 
 		inline DataLengthType getAvailableLength()const{
@@ -212,15 +214,36 @@ public:
 				DataLengthType iChunkLen =
 					iNewDataLength <= iAvailableLength ? iNewDataLength : iAvailableLength;
 
-        IA20_LOG(true, "pCursor:"<<(void*)pCursor<<", "<<iChunkLen);
+       			 IA20_LOG(true, "pCursor:"<<(void*)pCursor<<", "<<iChunkLen);
 
 				memcpy(pCursor, pNewData, iChunkLen);
 				addData(iChunkLen);
-				iNewDataLength -= iChunkLen;
 				pNewData       += iChunkLen;
+				iNewDataLength -= iChunkLen;
 			}
+		}
 
-		};
+		inline void writeByte(const uint8_t iValue){
+
+				if(iAvailableLength == 0){
+					next(sizeof(Chunk));
+				}
+				
+				*pCursor = iValue;
+				addData(1);
+		}
+
+		inline void writeTwoBytes(const uint16_t iValue){
+
+				if(iAvailableLength <= 1){
+					next(sizeof(Chunk));
+				}
+				
+				*pCursor       = 0xff  & (iValue >> 8);
+				*(pCursor + 1) = 0xff & iValue;
+
+				addData(2);
+		}
 
 		protected:
 			Chunk *pChunk;

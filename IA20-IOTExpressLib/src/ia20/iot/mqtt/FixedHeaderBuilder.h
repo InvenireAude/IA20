@@ -13,6 +13,7 @@
 #include <ia20/commonlib/commonlib.h>
 #include "Message.h"
 #include <ia20/iot/tools/MQTT.h>
+#include <ia20/iot/memory/StreamBufferList.h>
 
 namespace IA20 {
 namespace IOT {
@@ -64,6 +65,12 @@ public:
 		   }
 
 		return pCursor;
+	}
+
+	inline void build(Memory::StreamBufferList::Writer& writer){
+		uint8_t buf[16];
+		uint8_t* pCursor = build(buf);
+		writer.write(buf, pCursor - buf);	
 	}
 
 protected:

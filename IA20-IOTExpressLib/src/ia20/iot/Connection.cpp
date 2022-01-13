@@ -22,7 +22,12 @@ Connection::Connection(
 	IdentifiedByHandle(aHandle){	
 	IA20_TRACER;
 
-	wcsncpy(this->utfClientId, utfClientId, CMaxClientIdLen);
+	if(utfClientId){
+		wcsncpy(this->utfClientId, utfClientId, CMaxClientIdLen);
+	}else{
+		static uint64_t iID = 0; //TODO lib gen uid
+		sprintf((char*)this->utfClientId, "auto-%036lX", iID++);
+	}
 }
 // /*************************************************************************/
 // Connection::~Connection() throw(){

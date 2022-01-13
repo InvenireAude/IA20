@@ -1,4 +1,4 @@
-#Tue Jan 11 02:46:59 PM CET 2022
+#Wed Jan 12 11:05:20 PM CET 2022
 FILES+=ia20/iot
 FILES+=ia20/iot/Activity
 FILES+=ia20/iot/ActivityStore
@@ -19,9 +19,11 @@ FILES+=ia20/iot/MessageStore
 FILES+=ia20/iot/mocker/ActivityStore
 FILES+=ia20/iot/mocker/Listener
 FILES+=ia20/iot/mocker/MockerThread
+FILES+=ia20/iot/mqtt/ContentComposer
 FILES+=ia20/iot/mqtt/FixedHeaderBuilder
 FILES+=ia20/iot/mqtt/HeaderReader
 FILES+=ia20/iot/mqtt/Message
+FILES+=ia20/iot/mqtt/PropertiesComposer
 FILES+=ia20/iot/mqtt/VariableHeaderBuilder
 FILES+=ia20/iot/Subscription
 FILES+=ia20/iot/SubscriptionsStore

@@ -51,6 +51,14 @@ public:
     MT_AUTH        = 15
   };
 
+  enum VersionType : uint8_t {
+
+    MV_MQTTv3  = 0x03,
+    MV_MQTTv31 = 0x04,
+    MV_MQTTv5  = 0x05
+
+  };
+
 //protected:
   // Type      iType;
   // uint8_t  *pPayload;
