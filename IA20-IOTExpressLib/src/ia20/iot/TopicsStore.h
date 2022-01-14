@@ -32,17 +32,18 @@ public:
 	virtual ~TopicsStore() throw();
 	TopicsStore();
 
-	Topic *getTopic(const Tools::StringRef& strTopic);
+	Topic *getOrCreateTopic(const Tools::StringRef& strTopic);
 	
 	Topic *getRoot()const{
 		return pRootTopic;
 	}
 
-	Topic* lookup(Topic* pParent, Tools::WordsMap::WordIdType iWordId)const;
+	bool lookup(const Tools::StringRef& strTopic, Topic* &refPtrResult)const;
 
 	Tools::WordsMap* getWordsMap()const{
 		return ptrWordsMap.get();
 	}
+	
 	
 protected:
 

@@ -95,14 +95,12 @@ void testFixedHeaderBuilder(
   MQTT::Message::Flag iFlags,
   uint8_t       iQoS,
   uint32_t iLength,
-  uint16_t iID,
   const String& strExpected){
 
   MQTT::FixedHeaderBuilder builder;
 
   builder.setType(iType);
   builder.setFlags(iFlags,iQoS);
-  builder.setID(iID);
   builder.setLength(iLength);
 
   uint8_t buf[MQTT::FixedHeaderBuilder::CMaxLen];
@@ -122,31 +120,30 @@ void TCBasicMQTT::caseFixedHeaderBuild(){
   
   testFixedHeaderBuilder(MQTT::Message::Type::MT_CONNECT, 
                          MQTT::Message::Flag::MF_NONE, 0,
-                         4, 10, "1004");
+                         4, "1004");
 
   testFixedHeaderBuilder(MQTT::Message::Type::MT_PUBLISH, 
                          MQTT::Message::Flag::MF_NONE, 0,
-                         99999, 99, "309F8D06");
+                         99999, "309F8D06");
   
   testFixedHeaderBuilder(MQTT::Message::Type::MT_PUBLISH, 
                          MQTT::Message::Flag::MF_NONE, 2,
-                         99999, 99, "349F8D060063");
+                         99999, "349F8D06");
 
   testFixedHeaderBuilder(MQTT::Message::Type::MT_SUBSCRIBE, 
                          MQTT::Message::Flag::MF_NONE, 0,
-                         666, 99, "809A050063");
+                         666, "809A05");
 
   testFixedHeaderBuilder(MQTT::Message::Type::MT_PINGREQ, 
                          MQTT::Message::Flag::MF_NONE, 0,
-                         666, 99, "C09A05");
+                         666, "C09A05");
 }
 /*************************************************************************/
 void testFixedHeaderReader(
   MQTT::Message::Type iType,
   MQTT::Message::Flag iFlags,
-  uint8_t       iQoS,
+  uint8_t iQoS,
   uint32_t iLength,
-  uint16_t iID,
   const String& strWireData){
   
   uint8_t buf[MQTT::FixedHeaderBuilder::CMaxLen];
@@ -168,13 +165,7 @@ void testFixedHeaderReader(
         <<iQoS<<", got:"<<hr.getQoS()<<" in: "<<strWireData);
 
 
-	if( iType >= MQTT::Message::MT_PUBACK && iType <= MQTT::Message::MT_UNSUBACK ||
-			iType == MQTT::Message::MT_PUBLISH && iQoS >= 1){
 	
-  if(hr.getID() != iID)
-    IA20_THROW(BadUsageException("Bad FixedHeader bulid, expected QOS: ")
-        <<iID<<", got:"<<hr.getID()<<" in: "<<strWireData);
-      }
 
 }
 /*************************************************************************/
@@ -182,23 +173,23 @@ void TCBasicMQTT::caseFixedHeaderReader(){
   
   testFixedHeaderReader(MQTT::Message::Type::MT_CONNECT, 
                          MQTT::Message::Flag::MF_NONE, 0,
-                         4, 10, "1004");
+                         4, "1004");
 
   testFixedHeaderReader(MQTT::Message::Type::MT_PUBLISH, 
                          MQTT::Message::Flag::MF_NONE, 0,
-                         99999, 99, "309F8D06");
+                         99999, "309F8D06");
   
   testFixedHeaderReader(MQTT::Message::Type::MT_PUBLISH, 
                          MQTT::Message::Flag::MF_NONE, 2,
-                         99999, 99, "349F8D066300");
+                         99999, "349F8D06");
 
   testFixedHeaderReader(MQTT::Message::Type::MT_SUBSCRIBE, 
                          MQTT::Message::Flag::MF_NONE, 0,
-                         666, 99, "809A056300");
+                         666, "809A056300");
 
   testFixedHeaderReader(MQTT::Message::Type::MT_PINGREQ, 
                          MQTT::Message::Flag::MF_NONE, 0,
-                         666, 99, "C09A05");
+                         666, "C09A05");
 }
 /*************************************************************************/
 }

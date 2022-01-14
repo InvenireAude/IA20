@@ -30,7 +30,7 @@ TopicsStore::~TopicsStore() throw(){
 	}
 }
 /*************************************************************************/
-Topic *TopicsStore::getTopic(const Tools::StringRef& strTopic){
+Topic *TopicsStore::getOrCreateTopic(const Tools::StringRef& strTopic){
 	IA20_TRACER;
 
 	Tools::WordTokens tokens;
@@ -62,18 +62,36 @@ Topic *TopicsStore::getTopic(const Tools::StringRef& strTopic){
 	return pCursor;
 }
 /*************************************************************************/
-Topic* TopicsStore::lookup(Topic* pParent, Tools::WordsMap::WordIdType iWordId)const{
-	IA20_TRACER;
+bool TopicsStore::lookup(const Tools::StringRef& strTopic, Topic* &refPtrResult)const{
 
-	KeyType key(pParent, iWordId);
+	  Tools::WordTokens tokens;
+	  tokens.read(strTopic, ptrWordsMap.get());
 
-	ChildMap::const_iterator it = hmChildren.find(key);
+	  Topic* pCursor = pRootTopic;
 
-	if(it == hmChildren.end())
-		IA20_THROW(ItemNotFoundException("Topic: [")<<(int)pParent->getToken()<<","<<(int)iWordId<<"]");
+	  for(Tools::WordTokens::const_iterator it = tokens.begin(); 
+        	pCursor && it != tokens.end(); ++it){
 
-	return it->second;
+		KeyType key(pCursor, *it);
+
+		ChildMap::const_iterator itNext = hmChildren.find(key);
+
+		if(itNext == hmChildren.end()){
+		  pCursor = nullptr;
+		}else{
+		  pCursor = itNext->second;
+		}
+
+	  }
+
+	if(pCursor){
+		refPtrResult = pCursor;
+		return true;
+	}
+
+	return false;
 }
+
 /*************************************************************************/
 }
 }

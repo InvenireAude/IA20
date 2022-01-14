@@ -42,10 +42,6 @@ public:
 		this->iFlags = (Message::Flag)f;
 	}
 	
-	inline void setID(uint16_t iID){
-		this->iID = iID;
-	}
-
 	inline void setLength(uint32_t iLength){
 		this->iLength = iLength;
 	}
@@ -54,16 +50,6 @@ public:
 		
 		*pCursor++  = (0xf0 & (iType << 4)) | (0x0f & iFlags);
 		pCursor     = Tools::MQTT::encodeVL(pCursor, iLength);
-		//TODO QoS
-		// TODO why is this not sent by mosquitto ???
-		if( iType >= Message::MT_PUBACK && iType <= Message::MT_UNSUBACK ||
-			iType == Message::MT_PUBLISH && getQoS() >= 1){
-			
-			*pCursor++  = (iID >> 8) & 0xff;
-			*pCursor++  = iID & 0xff;
-
-		   }
-
 		return pCursor;
 	}
 

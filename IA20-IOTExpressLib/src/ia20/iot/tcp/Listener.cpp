@@ -102,8 +102,9 @@ void Listener::run(){
      			case Task::CA_SendDirect :
 					{
 						ConnectionHandleMap::iterator it = hmConnectionHandle.find(ptrTask->getConnectionHandle());
-						if(it != hmConnectionHandle.end()){
+						if(it == hmConnectionHandle.end()){
 							IA20_LOG(true,"Connection missing for  handle: "<<(int)ptrTask->getConnectionHandle());
+							return;
 						}
 
 						IA20_LOG(true, "Connection at: "<<(void*)it->second);
@@ -148,8 +149,9 @@ void Listener::run(){
         IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Messagee Handle:   "<<(void*)(long)ptrTask->getMessageHandle());
 
 		ConnectionHandleMap::iterator it = hmConnectionHandle.find(ptrTask->getConnectionHandle());
-		if(it != hmConnectionHandle.end()){
+		if(it == hmConnectionHandle.end()){
 			IA20_LOG(true,"Connection missing for  handle: "<<(void*)ptrTask->getConnectionHandle());
+			return;
 		}
 
 		IA20_LOG(true, "Connection at: "<<(void*)it->second);

@@ -36,7 +36,9 @@ TCMQTTServer::TCMQTTServer(TestSuite* pTestSuite):
 
   addCase("caseBasicv31", &::IA20::TC::TCMQTTServer::caseBasicv31);
   addCase("caseBasicv5",  &::IA20::TC::TCMQTTServer::caseBasicv5);
+  addCase("caseBasicv31QoS1",  &::IA20::TC::TCMQTTServer::caseBasicv31QoS1);
   addCase("caseBasicv5QoS1",  &::IA20::TC::TCMQTTServer::caseBasicv5QoS1);
+  
 
   pTestSuite->addTestUnit(this);
 }
@@ -64,16 +66,28 @@ std::initializer_list< std::pair<int, String> > CaseMQv5{
     { 0, "301200082F6162632F78797A0002004142434447" }
 };
 
+std::initializer_list< std::pair<int, String> > CaseMQv31QoS1{
+    { 0, "100C00044D5154540402003C0000" },
+    { 0, "821B000100042F6162630000042F78797A0000082F6162632F78797A00" },
+    { 0, "321100082F6162632F78797A00014142434446" },
+    { 0, "4003000100" },
+    { 1, "100C00044D5154540402003C0000" },
+    { 1, "821B000100042F6162630000042F78797A0000082F6162632F78797A00" },    
+    { 0, "321100082F6162632F78797A00024142434447" },
+    { 0, "4003000200" },
+    { 1, "4003000200" },
+};
+
 std::initializer_list< std::pair<int, String> > CaseMQv5QoS1{
     { 0, "101000044D5154540502003C032100140000" },
     { 0, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },
     { 0, "321200082F6162632F78797A0001004142434446" },
-    { 0, "40030001" },
+    { 0, "4003000100" },
     { 1, "101000044D5154540502003C032100140000" },
     { 1, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },    
     { 0, "321200082F6162632F78797A0002004142434447" },
-    { 0, "40030002" },
-    { 1, "40030002" }
+    { 0, "4003000200" },
+    { 1, "4003000200" }
 };
 
 // static String CMSgCONNECT_Req ("101000044D5154540502003C032100140000");
@@ -106,6 +120,11 @@ void TCMQTTServer::caseBasicv31(){
 void TCMQTTServer::caseBasicv5(){
   IA20_LOG(true,"caseBasicv5");
   caseBasicImpl(CaseMQv5);
+}
+/*************************************************************************/
+void TCMQTTServer::caseBasicv31QoS1(){
+  IA20_LOG(true,"caseBasicv31QoS1");
+  caseBasicImpl(CaseMQv31QoS1);
 }
 /*************************************************************************/
 void TCMQTTServer::caseBasicv5QoS1(){

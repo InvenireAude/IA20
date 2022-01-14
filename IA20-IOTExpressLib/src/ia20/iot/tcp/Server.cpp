@@ -154,11 +154,19 @@ void Server::publishMessage(Memory::SharableMemoryPool::unique_ptr<IOT::Listener
     
     this->aConnectionHandle = ptrTask->getConnectionHandle();
 
-    Memory::StreamBufferList sbl(pListener->getContentPayload(ptrTask->getMessageHandle()));
-    Memory::StreamBufferList::Reader reader(sbl);
+    uint8_t *pMessage = ptrTask->getMessage();
+    Memory::StreamBufferList sbl(pMessage);
+    Memory::StreamBufferList::Writer writer(sbl);
+
+    Memory::StreamBufferList sbl2(pListener->getContentPayload(ptrTask->getMessageHandle()));
+    Memory::StreamBufferList::Reader reader2(sbl2);
+
+    writer.write(reader2.getData(), reader2.getLength());
     
-    WriteHandler::iovec.iov_base = reader.getData();
-    WriteHandler::iovec.iov_len  = reader.getLength();
+    Memory::StreamBufferList::Reader reader3(sbl);
+
+    WriteHandler::iovec.iov_base = reader3.getData();
+    WriteHandler::iovec.iov_len  = reader3.getLength();
 
     IA20_LOG(true, "Sending Data: "
         <<MiscTools::BinarytoHex(WriteHandler::iovec.iov_base, WriteHandler::iovec.iov_len));

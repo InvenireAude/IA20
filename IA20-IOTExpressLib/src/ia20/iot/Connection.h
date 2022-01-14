@@ -70,6 +70,10 @@ public:
         IA20_LOG(true, "Packet Identifier (remove): ["<<(int)getHandle()<<"]"<<(int)iPacketId);        
     }
 
+    inline uint8_t getMaxQoS()const{
+        return 1; // TODO client policy
+    }
+
 
 protected:
 

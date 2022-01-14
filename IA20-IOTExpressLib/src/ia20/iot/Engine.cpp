@@ -157,40 +157,44 @@ void Engine::addListener(Listener* pListener){
         ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
             Listener::Task(Listener::Task::CA_SendDirect, *ctx.ptrTask), ld.pMemoryPool->getDeleter());
 
-  ptrTask2->setConnectionHandle(pConnection->getHandle());
-  ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 10000000;
+    ptrTask2->setConnectionHandle(pConnection->getHandle());
+    ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 10000000;
 
-  static const uint8_t* CResponse = (const uint8_t*)"\000\000";
+    MQTT::FixedHeaderBuilder builder;
 
-  MQTT::FixedHeaderBuilder builder;
+    Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
+    Memory::StreamBufferList::Writer writer(sbl);
+    MQTT::PropertiesComposer propertiesComposer;
 
-  Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
-  Memory::StreamBufferList::Writer writer(sbl);
-  MQTT::PropertiesComposer propertiesComposer;
-
-  builder.setType(MQTT::Message::MT_CONNACK);
-  builder.setID(ctx.headerReader.getID());
+    builder.setType(MQTT::Message::MT_CONNACK);
   
-  uint16_t iProp22Value = MQTT::hostToNet(0x000A);
-  uint16_t iProp21Value = MQTT::hostToNet(0x0014);
+    if(iProtoVersion >= MQTT::Message::MV_MQTTv5){
 
-  propertiesComposer.add(0x21,(const uint8_t*)&iProp21Value, 2);
-  propertiesComposer.add(0x22,(const uint8_t*)&iProp22Value, 2);
-  
-  const Tools::StringRef strClientId(pConnection->getClientId());
+      uint16_t iProp22Value = MQTT::hostToNet(0x000A);
+      uint16_t iProp21Value = MQTT::hostToNet(0x0014);
+      propertiesComposer.add(0x21,(const uint8_t*)&iProp21Value, 2);
+      propertiesComposer.add(0x22,(const uint8_t*)&iProp22Value, 2);
+      const Tools::StringRef strClientId(pConnection->getClientId());
+      propertiesComposer.add(0x12, strClientId);
+      builder.setLength(2 + propertiesComposer.computeLength());
+    
+    }else{
+      builder.setLength(2);
+    }
 
-  propertiesComposer.add(0x12, strClientId);
+    builder.build(writer);
+    
+    writer.writeByte(0);
+    writer.writeByte(0);
+    
+    if(iProtoVersion >= MQTT::Message::MV_MQTTv5){
+      propertiesComposer.build(writer);
+    }
 
-  builder.setLength(2 + propertiesComposer.computeLength());
-  builder.build(writer);
-  writer.writeByte(0);
-  writer.writeByte(0);
-  propertiesComposer.build(writer);
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "builder: "<<propertiesComposer.computeLength()<<" "<<(void*)sbl.getHead()<<", "<<MiscTools::BinarytoHex(sbl.getHead()+16, propertiesComposer.computeLength()));
+    ptrTask2->setMessage(sbl.getHead());
 
-  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "builder: "<<propertiesComposer.computeLength()<<" "<<(void*)sbl.getHead()<<", "<<MiscTools::BinarytoHex(sbl.getHead()+16, propertiesComposer.computeLength()));
-  ptrTask2->setMessage(sbl.getHead());
-
-  ld.pRingResponse->enque(ptrTask2.release());
+    ld.pRingResponse->enque(ptrTask2.release());
 
  }
 /*************************************************************************/
@@ -206,7 +210,7 @@ void Engine::addListener(Listener* pListener){
     Connection* pConnection = ptrConnectionsStore->get(ctx.ptrTask->getConnectionHandle());
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "MQTT version: "<<(int)pConnection->getMQTTVersion());
 
-    if(pConnection->getMQTTVersion() >= 5){
+    if(pConnection->getMQTTVersion() >= MQTT::Message::MV_MQTTv5){
       uint32_t iPropertiesLen = MQTT::HeaderReader::DecodeVL(ctx.reader);
       IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "PropertiesLen: "<<(int)iPropertiesLen);
     }
@@ -238,16 +242,32 @@ void Engine::addListener(Listener* pListener){
 
   builder.setType(MQTT::Message::MT_SUBACK);
 
-  builder.setID(ctx.headerReader.getID());
-  builder.setLength(6);
-
   uint8_t buf2[100];
   uint8_t* pEnd = builder.build(buf2);
   Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
   Memory::StreamBufferList::Writer writer(sbl);
-  writer.write(buf2,pEnd - buf2);
-  writer.write((uint8_t*)"\000",1);
-  writer.write((uint8_t*)"\000\000\000",3);
+  MQTT::PropertiesComposer propertiesComposer;
+
+  if(pConnection->getMQTTVersion() >= MQTT::Message::MV_MQTTv5){
+      builder.setLength(3 + propertiesComposer.computeLength());    
+  }else{
+      builder.setLength(3);
+  }
+
+  builder.build(writer);
+
+  writer.writeTwoBytes(iPacketIdentfier);    
+
+  if(pConnection->getMQTTVersion() >= MQTT::Message::MV_MQTTv5){
+    propertiesComposer.build(writer);
+  }
+  uint8_t iQoS = ctx.headerReader.getQoS();
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Packet QoS: "<<(int)iQoS);
+   
+  if(iQoS >= pConnection->getMaxQoS())
+    iQoS = pConnection->getMaxQoS();
+
+  writer.writeByte(iQoS);
 
   ptrTask2->setMessage(sbl.getHead());
 
@@ -272,7 +292,7 @@ void Engine::addListener(Listener* pListener){
 
   Tools::StringRef strTopic(buf,iTopicLen);
 
-  int iPacketIdentfier = 666;
+  uint16_t iPacketIdentfier = 0xffff;
 
   if(iQoS >= 1){
    iPacketIdentfier = MQTT::HeaderReader::ReadTwoBytes(ctx.reader);
@@ -283,7 +303,7 @@ void Engine::addListener(Listener* pListener){
   Connection* pConnection = ptrConnectionsStore->get(ctx.ptrTask->getConnectionHandle());
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "MQTT version: "<<(int)pConnection->getMQTTVersion());
 
-  if(pConnection->getMQTTVersion() >= 5){
+  if(pConnection->getMQTTVersion() >= MQTT::Message::MV_MQTTv5){
     uint32_t iPropertiesLen = MQTT::HeaderReader::DecodeVL(ctx.reader);
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "PropertiesLen: "<<(int)iPropertiesLen);
   }
@@ -292,21 +312,16 @@ void Engine::addListener(Listener* pListener){
 
   const Message* pMessage = ptrMessageStore->createMessage(ctx.reader, iDataLen, ctx.headerReader.getQoS());
 
-	Tools::WordTokens tokens;
-	tokens.read(strTopic, ptrTopicsStore->getWordsMap());
+  Topic* pTopic = nullptr;
 
-  Topic* pCurrent = ptrTopicsStore->getRoot();
+  if(ptrTopicsStore->lookup(strTopic, pTopic)){
 
-	for(Tools::WordTokens::const_iterator it = tokens.begin(); it != tokens.end(); ++it){
-		pCurrent = ptrTopicsStore->lookup(pCurrent, *it);
-	}
+    for(auto& l : tabListners){
+      l.tmp.iCounter = 0;
+    }
 
-  for(auto& l : tabListners){
-    l.tmp.iCounter = 0;
-  }
-
-  if(pCurrent->hasFirstSubscription()){
-    Subscription* pSubscription = pCurrent->getFirstSubscription();
+  if(pTopic->hasFirstSubscription()){
+    Subscription* pSubscription = pTopic->getFirstSubscription();
 
     while(pSubscription){
 
@@ -320,28 +335,32 @@ void Engine::addListener(Listener* pListener){
     }
 
   for(auto& l : tabListners)
-    if(l.tmp.iCounter > 0){
+      if(l.tmp.iCounter > 0){
 
-      Memory::SharableMemoryPool::unique_ptr<Listener::Task>
-          ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
-              Listener::Task(Listener::Task::CA_SetContent), ld.pMemoryPool->getDeleter());
+        Memory::SharableMemoryPool::unique_ptr<Listener::Task>
+            ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
+                Listener::Task(Listener::Task::CA_SetContent), ld.pMemoryPool->getDeleter());
 
-      uint8_t *pData2 = (uint8_t *)ld.pMemoryPool->allocate(ptrTask2.get(),120);
+        uint8_t *pData2 = (uint8_t *)ld.pMemoryPool->allocate(ptrTask2.get(),120);
 
-      Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
-      Memory::StreamBufferList::Writer writer(sbl);
+        Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
+        Memory::StreamBufferList::Writer writer(sbl);
 
-      IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Write, set_content: "<<(int)pMessage->getDataLength());
+        IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Write, set_content: "<<(int)pMessage->getDataLength());
 
-      writer.write(pMessage->getData(), pMessage->getDataLength());
-      ptrTask2->setMessage(sbl.getHead());
-      ptrTask2->setMessageHandle(pMessage->getHandle());
-      ptrTask2->setContentUsageCount(l.tmp.iCounter);
-      ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 90000000;
-      l.pRingResponse->enque(ptrTask2.release());
+        writer.write(pMessage->getData(), pMessage->getDataLength());
+        ptrTask2->setMessage(sbl.getHead());
+        ptrTask2->setMessageHandle(pMessage->getHandle());
+        ptrTask2->setContentUsageCount(l.tmp.iCounter);
+        ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 90000000;
+        l.pRingResponse->enque(ptrTask2.release());
+      }
+
     }
-
   }
+
+  if(iQoS == 0)
+    return;
 
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Create a reply");
 
@@ -357,10 +376,24 @@ void Engine::addListener(Listener* pListener){
   builder.setType(MQTT::Message::MT_PUBACK);
   Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
   Memory::StreamBufferList::Writer writer(sbl);
+  MQTT::PropertiesComposer propertiesComposer;
+
+  if(pConnection->getMQTTVersion() >= MQTT::Message::MV_MQTTv5){
+      builder.setLength(2 + propertiesComposer.computeLength());    
+  }else{
+      builder.setLength(2);
+  }
+
   builder.build(writer);
   writer.writeTwoBytes(iPacketIdentfier);
+
+  if(pConnection->getMQTTVersion() >= MQTT::Message::MV_MQTTv5){
+    propertiesComposer.build(writer);
+  }
+
   ptrTask2->setMessage(sbl.getHead());
   ld.pRingResponse->enque(ptrTask2.release());
+
  }
  /*************************************************************************/
  void Engine::handlePubAck(Engine::ListenerDetails& ld, Context& ctx){
@@ -374,8 +407,14 @@ void Engine::addListener(Listener* pListener){
    Connection* pConnection = ptrConnectionsStore->get(ctx.ptrTask->getConnectionHandle());
    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "MQTT version: "<<(int)pConnection->getMQTTVersion());
 
-   pConnection->removeOutputActivity(iPacketIdentfier);
+    if(ctx.reader.hasData()){
+      uint16_t iReason = ctx.reader.readByte();
+      IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " Reason: "<<(int)iReason);
+    }
 
+    pConnection->removeOutputActivity(iPacketIdentfier);
+  
+  // TODO handle reason  and properties
   // if(pConnection->getMQTTVersion() >= 5){
   //   uint32_t iPropertiesLen = MQTT::HeaderReader::DecodeVL(ctx.reader);
   //   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "PropertiesLen: "<<(int)iPropertiesLen);
