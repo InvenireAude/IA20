@@ -38,62 +38,50 @@ protected:
 
 public:
 
-  typedef Memory::FixedObjectsPool<Activity, 1000> ActivityPool;
-
 	virtual ~ActivityStore() throw();
 
   ActivityStore(IndexType iSize = 1000);
 
-   inline void createActivity(Subscription::HandleType  mSubscriptionHandle,
-                              Message::HandleType       mMessageHandle){
-      
-        if(iNumActivites == iSize)
-            IA20_THROW(ItemNotFoundException("iNumActivities == iSize"));
-        
-        IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "New Activity ["<<iHead<<"], Sub: "
-          <<(void*)(long)mSubscriptionHandle<<":"
-          <<(void*)(long)mMessageHandle);
-
-        Activity* pActivity = ActivityPool::New(0, mSubscriptionHandle, mMessageHandle);
-        tActivites[iHead++] = pActivity;
-
-        if(iHead == iSize){
-          iHead = 0;
-        }
-
-        iNumActivites++;
-      }
+   void createActivity( Subscription::HandleType  mSubscriptionHandle,
+                        Message::HandleType       mMessageHandle,
+                        uint8_t      iQoS);
 
     inline Activity* back()const{
       
-      if(iNumActivites == 0)
+      if(lstPendingActivities.empty())
         IA20_THROW(ItemNotFoundException("iNumActivities == 0"));
 
-      return tActivites[(iHead - iNumActivites + iSize) % iSize];
+      return lstPendingActivities.back();
 
     }
 
     inline void next(){
-
-       if(iNumActivites == 0)
-         IA20_THROW(ItemNotFoundException("iNumActivities == 0"));
-
-       ActivityPool::Free(tActivites[(iHead - iNumActivites + iSize) % iSize]);
-       
-       iNumActivites--;
+        lstPendingActivities.pop_back();
     }
 
     inline bool hasActivities()const{
-      return iNumActivites > 0;
+      return !lstPendingActivities.empty();
+    }
+
+
+    inline void dispose(Activity *pActivity){
+      //TODO ?? remove from pending list ??
+      new (pActivity)Activity();
     }
 
 protected:
 
-  Activity** tActivites;
+  Activity* tActivites;
 
-  IndexType iSize;
   IndexType iHead;
+  IndexType iSize;
+
+  typedef std::list<Activity*> ActivityList;
+  ActivityList         lstPendingActivities;
+
   IndexType iNumActivites;
+  
+  Activity::SequenceType  iNextSequence;
 
 };
 

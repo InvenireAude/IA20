@@ -30,7 +30,8 @@ public:
 	~Subscription() throw();
 	Subscription(HandleType aHandle,
 				 const Tools::StringRef& strTopic,
-				 Connection::HandleType aConnectionHandle);
+				 Connection::HandleType aConnectionHandle,
+				 uint8_t iOptions);
 
 	inline void setNext(Subscription* pNext){
 		this->pNext = pNext;
@@ -51,11 +52,16 @@ public:
 	Tools::StringRef getTopic()const{
 		return Tools::StringRef((const uint8_t*)strTopic.c_str(), strTopic.length());
 	}
+
+	inline uint8_t getQoS()const{
+		return MQTT::Message::SubscriptionOptionsToQoS(iOptions);
+	}
+
 protected:
 	String         strTopic;//TODO
 	Subscription*  pNext;
 	HandleType     aHandle;
-
+	uint8_t        iOptions;
 	Connection::HandleType aConnectionHandle;
 };
 

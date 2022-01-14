@@ -59,6 +59,10 @@ public:
 
   };
 
+  inline static uint8_t SubscriptionOptionsToQoS(uint8_t iOptions){
+    return 0x3 & iOptions;
+  }
+
 //protected:
   // Type      iType;
   // uint8_t  *pPayload;

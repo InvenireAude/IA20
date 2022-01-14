@@ -26,13 +26,28 @@ namespace IOT {
 class Activity {
     public:
 
+    typedef uint32_t SequenceType;
+    
+    enum State : uint8_t {
+      ST_None        = 0,
+      ST_SendPending  = 1,
+      ST_AckPending   = 2
+    };
 
-    Activity(int iListenerId,
+    Activity():
+      iSequence(0),
+      iState(ST_None){};
+
+    Activity(SequenceType iSequence,
+             State        iState,
              Subscription::HandleType   sSubscriptionHandle,
-             Message::HandleType        aMessageHandle):
+             Message::HandleType        aMessageHandle,
+             uint8_t      iQoS):
+        iSequence(iSequence),
+        iState(iState),
         aSubscriptionHandle(sSubscriptionHandle),
         aMessageHandle(aMessageHandle),
-        iListenerId(iListenerId){}
+        iQoS(iQoS){}
 
 
       inline Subscription::HandleType getSubscriptionHandle()const{
@@ -42,16 +57,24 @@ class Activity {
       inline Message::HandleType getMessageHandle()const{
         return aMessageHandle;
       };
-      
-      inline int getListenerId()const{
-        return iListenerId;
-      };
 
+      bool isEmpty(){
+        return iState = ST_None;
+      }
+
+  
+      inline uint8_t getQoS()const{
+        return iQoS;
+      }
+      
     protected:
-     
+
+     SequenceType iSequence;
+     State        iState;
+     uint8_t      iQoS;
      Subscription::HandleType   aSubscriptionHandle;
      Message::HandleType        aMessageHandle;
-    int iListenerId;
+    
   };
 /*************************************************************************/
 }

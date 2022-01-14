@@ -19,8 +19,9 @@ Connection::Connection(
     HandleType   aHandle,
 	wchar_t* utfClientId):
 	iListener(iListener),
-	iNextId(0),
-	IdentifiedByHandle(aHandle){	
+	IdentifiedByHandle(aHandle),
+	tabOutputActivies(CMaxActivitesPerConnection),
+	tabInputActivies(CMaxActivitesPerConnection){	
 	IA20_TRACER;
 
 	if(utfClientId){
@@ -29,11 +30,12 @@ Connection::Connection(
 		static uint64_t iID = 0; //TODO lib gen uid
 		sprintf((char*)this->utfClientId, "auto-%036lX", iID++);
 	}
+
 }
-// /*************************************************************************/
-// Connection::~Connection() throw(){
-// 	IA20_TRACER;
-// }
+/*************************************************************************/
+Connection::~Connection() throw(){
+	IA20_TRACER;
+}
 /*************************************************************************/
 }
 }

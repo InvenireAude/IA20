@@ -2,12 +2,17 @@
 
 Development plan:
 
+ *) use "Packet Identifier" as specified - 
+ table per connection (actions).
+
  *) v3.1 v5 - version support/connection property
    - clientId
  
- *) ContentWriter 
+ *) ContentWriter ???
 
  *) pending task queue TCP::Listener
+ *) try to fit shared message part to available space in SLB
 
  *) more listeners in Engine (handle activity)
+
   

@@ -14,6 +14,7 @@
 #include <ia20/iot/mqtt/Message.h>
 #include <ia20/iot/tools/IdentifiedByHandle.h>
 #include <ia20/iot/tools/StringRef.h>
+#include <ia20/iot/memory/FixedObjectsTable.h>
 
 #include <string.h>
 
@@ -21,6 +22,8 @@
 
 namespace IA20 {
 namespace IOT {
+
+class Activity;
 
 /*************************************************************************/
 /** The Connection class.
@@ -30,7 +33,9 @@ class Connection :
     public Tools::IdentifiedByHandle {
 public:
 
+    typedef uint16_t PacketIdentifierType;
 
+    ~Connection();
 	Connection(unsigned int iListener, 
                HandleType   aHandle,
                wchar_t*     utfClientId);
@@ -53,10 +58,19 @@ public:
         return  Tools::StringRef((const uint8_t *)utfClientId, strnlen((const char*)utfClientId, 2*CMaxClientIdLen) );
     }
 
-    inline uint16_t getNextId(){
-        return iNextId++;
-    }
     
+    PacketIdentifierType addOutputActivity(Activity* pActivity){
+        Activity** pEntry = tabOutputActivies.allocate(pActivity);
+        IA20_LOG(true, "Packet Identifier (add):    ["<<(int)getHandle()<<"]"<<(int)tabOutputActivies.pointerToIdx(pEntry) + 1);
+        return tabOutputActivies.pointerToIdx(pEntry) + 1;
+    }
+
+    void removeOutputActivity(PacketIdentifierType iPacketId){
+        tabOutputActivies.free(iPacketId - 1);
+        IA20_LOG(true, "Packet Identifier (remove): ["<<(int)getHandle()<<"]"<<(int)iPacketId);        
+    }
+
+
 protected:
 
     unsigned int iListener;
@@ -65,7 +79,12 @@ protected:
     wchar_t utfClientId[2 * CMaxClientIdLen + 1];
     MQTT::Message::VersionType iMQTTVersion;
 
-    uint16_t iNextId;
+    static const int CMaxActivitesPerConnection = 10;
+
+    typedef Memory::FixedObjectsTable<Activity*> ActivityTable;
+    
+    ActivityTable tabInputActivies;
+    ActivityTable tabOutputActivies;
 };
 /*************************************************************************/
 }

@@ -39,7 +39,7 @@ void SubscriptionsStore::addSubscription(Connection::HandleType aConnectionHandl
 	
 	SubscriptionsStore::SubscriptionList *pList = getList(aConnectionHandle);
 
-	std::unique_ptr<Subscription> ptrSubscription(new Subscription(iNextHandle, strTopic, aConnectionHandle));
+	std::unique_ptr<Subscription> ptrSubscription(new Subscription(iNextHandle, strTopic, aConnectionHandle, iOptions));
 	
 	pTopicsStore->getTopic(strTopic)->addSubscription(ptrSubscription.get());
 
