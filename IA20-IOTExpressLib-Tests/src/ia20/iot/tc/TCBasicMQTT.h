@@ -41,7 +41,7 @@ public:
 
 	void caseLengthConverter();
 	void caseFixedHeaderBuild();
-  void caseFixedHeaderReader();
+    void caseFixedHeaderReader();
 
 protected:
 

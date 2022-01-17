@@ -29,5 +29,18 @@ void Topic::addSubscription(Subscription* pSubscription){
 	pFirst = pSubscription;
 }
 /*************************************************************************/
+void Topic::iterate(Callback* pCallback){
+		
+		if(hasFirstSubscription()){ //TODO iterator please
+			
+			Subscription *pSubscription = getFirstSubscription();
+
+			while(pSubscription){
+				pCallback->onSubscription(pSubscription);		
+				pSubscription  = pSubscription->getNext();
+			}
+		}
+	}
+/*************************************************************************/
 }
 }

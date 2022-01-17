@@ -63,6 +63,13 @@ public:
 		return aRetainedMessageHandle;
 	}
 	
+	class Callback {
+		public:
+		virtual void onSubscription(const Subscription* pSubscription)=0;
+	};
+
+	void iterate(Callback* pCallback);
+
 protected:
 	Tools::WordsMap::WordIdType iToken;
   	Topic* pParent;

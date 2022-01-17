@@ -43,7 +43,9 @@ public:
 	Tools::WordsMap* getWordsMap()const{
 		return ptrWordsMap.get();
 	}
-	
+
+	void iterate(const Tools::StringRef& strTopic, 
+				 Topic::Callback* pCallback);
 	
 protected:
 

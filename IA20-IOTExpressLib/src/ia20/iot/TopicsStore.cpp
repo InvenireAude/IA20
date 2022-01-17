@@ -6,8 +6,9 @@
  */
 
 #include "TopicsStore.h"
-#include <ia20/iot/tools/WordsMap.h>
+#include "Subscription.h"
 
+#include <ia20/iot/tools/WordsMap.h>
 #include <ia20/iot/logger/LogLevel.h>
 
 namespace IA20 {
@@ -62,7 +63,8 @@ Topic *TopicsStore::getOrCreateTopic(const Tools::StringRef& strTopic){
 	return pCursor;
 }
 /*************************************************************************/
-bool TopicsStore::lookup(const Tools::StringRef& strTopic, Topic* &refPtrResult)const{
+void TopicsStore::iterate(const Tools::StringRef& strTopic, 
+						  Topic::Callback*        pCallback){
 
 	  Tools::WordTokens tokens;
 	  tokens.read(strTopic, ptrWordsMap.get());
@@ -72,8 +74,15 @@ bool TopicsStore::lookup(const Tools::StringRef& strTopic, Topic* &refPtrResult)
 	  for(Tools::WordTokens::const_iterator it = tokens.begin(); 
         	pCursor && it != tokens.end(); ++it){
 
-		KeyType key(pCursor, *it);
+		KeyType keyHash(pCursor,  Tools::WordsMap::CHash);
 
+		ChildMap::const_iterator itNextHash = hmChildren.find(keyHash);
+
+		if(itNextHash != hmChildren.end()){
+			itNextHash->second->iterate(pCallback);
+		}
+
+		KeyType key(pCursor, *it);
 		ChildMap::const_iterator itNext = hmChildren.find(key);
 
 		if(itNext == hmChildren.end()){
@@ -85,13 +94,9 @@ bool TopicsStore::lookup(const Tools::StringRef& strTopic, Topic* &refPtrResult)
 	  }
 
 	if(pCursor){
-		refPtrResult = pCursor;
-		return true;
+		pCursor->iterate(pCallback);
 	}
-
-	return false;
 }
-
 /*************************************************************************/
 }
 }

@@ -57,6 +57,7 @@ public:
 		friend class StringRef;
 	};
 
+	StringRef(const String& strValue):pData((uint8_t*)strValue.c_str()), iLength(strValue.length()){}
 	StringRef(const uint8_t* pData, int iLength):pData(pData),iLength(iLength){}
 	StringRef(const_iterator itStart, const_iterator itEnd):
 			pData(itStart.pCursor),

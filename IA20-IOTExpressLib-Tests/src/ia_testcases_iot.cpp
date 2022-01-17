@@ -19,6 +19,7 @@
 
 #include "ia20/iot/tc/TCBasic.h"
 #include "ia20/iot/tc/TCBasicMQTT.h"
+#include "ia20/iot/tc/TCSubscriptions.h"
 #include "ia20/iot/tc/TCMQTTServer.h"
 
 int main(int argc, char* argv[]) {
@@ -34,9 +35,10 @@ int main(int argc, char* argv[]) {
 	    std::unique_ptr<TestSuite> ptrSuite(new TestSuite());
         ptrSuite->setVerbose();
 
-        TC::TCBasic        tcBasic(ptrSuite.get());
-   		TC::TCBasicMQTT    tcBasicMQTT(ptrSuite.get());
-		TC::TCMQTTServer   tcMQTTServer(ptrSuite.get());
+      //  TC::TCBasic         tcBasic(ptrSuite.get());
+   //		TC::TCBasicMQTT     tcBasicMQTT(ptrSuite.get());
+   		TC::TCSubscriptions tcTCSubscriptions(ptrSuite.get());
+	//	TC::TCMQTTServer    tcMQTTServer(ptrSuite.get());
 
 		ptrSuite->run(argc == 1 ? "" : argv[1]);
 		ptrSuite->printResults(std::cout);

@@ -47,8 +47,7 @@ class SubscriptionsStore {
 public:
 
 	virtual ~SubscriptionsStore() throw();
-	SubscriptionsStore(ConnectionsStore* pConnectionsStore);
-
+	SubscriptionsStore(ConnectionsStore* pConnectionsStore = 0); //TODO why this ConnectionStore
 
 	Subscription* addSubscription(Connection::HandleType aHandle, 
 	                     		  Topic* pTopic,
