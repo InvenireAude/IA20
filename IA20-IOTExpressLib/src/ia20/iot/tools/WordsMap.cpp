@@ -39,7 +39,7 @@ WordsMap::WordIdType WordsMap::lookup(const Tools::StringRef& strValue){
 	}else{
 		WordIdType iWord = hmValues.size();
 		hmValues[strValue] = iWord;
-		IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo||true, "New token: ["<<(String)strValue<<"]="<<iWord);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "New token: ["<<(String)strValue<<"]="<<iWord);
 		return iWord;
 	}
 
