@@ -21,8 +21,9 @@ RingHandler::RingHandler(){
   struct io_uring_params params;
 
   bzero(&params, sizeof(params));
-  params.flags |= IORING_SETUP_SQPOLL;
-  params.sq_thread_idle = 10000;
+  //params.flags |= IORING_SETUP_IOPOLL;
+ // params.flags |= IORING_SETUP_SQPOLL;
+ // params.sq_thread_idle = 10000;
 
 
   int iResult = io_uring_queue_init_params(CDefaultSize, &ring, &params);
@@ -148,20 +149,21 @@ void RingHandler::prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::
 
    _submit_and_check(&ring);
 
-  //  while(iResult == -62){ // wait is not a cancellation point
+   //while(iResult == -62){ // wait is not a cancellation point
       Thread::Cancellation tc(true);
       __kernel_timespec ts = { 1L , 0L };
-       //iResult = io_uring_wait_cqe(&ring, &cqe);
+    //  iResult = io_uring_wait_cqe(&ring, &cqe);
       //iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
       //usleep(1000000);
-      iResult = 1;
+      // iResult = 1;
 
-      for(int i=0; i<10 && iResult !=0; i++)
+     for(int i=0; i<1000000 && iResult !=0; i++)
         iResult = io_uring_wait_cqe_nr(&ring, &cqe, 0);
 
-      //if(iResult != 0){
-       // iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
-    //  }
+      // if(iResult != 0){
+      //   iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
+      // }
+  //}
 // =======
 //       //usleep(1);
 //       iResult = 1;

@@ -36,9 +36,10 @@ ActivityStore::~ActivityStore() throw(){
 		delete[] tActivites;
 }
 /*************************************************************************/
-void ActivityStore::createActivity( Subscription::HandleType  mSubscriptionHandle,
-                              		Message::HandleType       mMessageHandle,
-									uint8_t      iQoS){
+Activity* ActivityStore::createActivity( Subscription::HandleType  mSubscriptionHandle,
+                              		     Message::HandleType       mMessageHandle,
+										 Listener::Task::Command   iCommand,
+									     uint8_t                   iQoS){
       
 	if(iNumActivites == iSize)
 		IA20_THROW(ItemNotFoundException("iNumActivities == iSize")<<(int)iNumActivites<<" "<<(int)iSize);
@@ -58,6 +59,7 @@ void ActivityStore::createActivity( Subscription::HandleType  mSubscriptionHandl
 							 Activity::ST_SendPending, 							 
 							 mSubscriptionHandle, 
 							 mMessageHandle,
+							 iCommand,
 							 iQoS);
 
 	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "New Activity ["<<iHead<<"], Sub: "
@@ -67,6 +69,8 @@ void ActivityStore::createActivity( Subscription::HandleType  mSubscriptionHandl
 	lstPendingActivities.push_front(pActivity);
 
 	iNumActivites++;
+
+	return pActivity;
 }
 /*************************************************************************/
 }

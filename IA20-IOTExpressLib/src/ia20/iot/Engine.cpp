@@ -39,7 +39,7 @@ Engine::Engine(Listener*  pListener){
   ptrConnectionsStore.reset(new ConnectionsStore());
   ptrTopicsStore.reset(new TopicsStore());
   ptrSubscriptionsStore.reset(
-    new SubscriptionsStore(ptrConnectionsStore.get(), ptrTopicsStore.get()));
+    new SubscriptionsStore(ptrConnectionsStore.get()));
 
   ptrMessageStore.reset(new MessageStore());
 
@@ -201,14 +201,20 @@ void Engine::addListener(Listener* pListener){
  void Engine::handleSubscribe(Engine::ListenerDetails& ld, Context& ctx){
    IA20_TRACER;
 
-    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Server SUBSCRIBE, len: "<<ctx.headerReader.getLength());
+   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Server SUBSCRIBE, len: "<<ctx.headerReader.getLength());
 
+   uint8_t iQoS = ctx.headerReader.getQoS();
+   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Packet QoS: "<<(int)iQoS);
+   
     int iPacketIdentfier = MQTT::HeaderReader::ReadTwoBytes(ctx.reader);
-
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Packet Identfier: "<<(int)iPacketIdentfier);
 
     Connection* pConnection = ptrConnectionsStore->get(ctx.ptrTask->getConnectionHandle());
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "MQTT version: "<<(int)pConnection->getMQTTVersion());
+
+   if(iQoS >= pConnection->getMaxQoS()){
+      iQoS = pConnection->getMaxQoS();
+   }
 
     if(pConnection->getMQTTVersion() >= MQTT::Message::MV_MQTTv5){
       uint32_t iPropertiesLen = MQTT::HeaderReader::DecodeVL(ctx.reader);
@@ -227,12 +233,26 @@ void Engine::addListener(Listener* pListener){
       IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Topic ["<<iTopicLen<<":"<<rc<<"]"<<String((char*)buf,iTopicLen)<<"("<<(int)iOptions<<")");
 
       Tools::StringRef strTopic(buf,iTopicLen);
-      ptrSubscriptionsStore->addSubscription(ctx.ptrTask->getConnectionHandle(), strTopic, iOptions);
+      Topic* pTopic = ptrTopicsStore->getOrCreateTopic(strTopic);
+      Subscription *pSubscription = ptrSubscriptionsStore->addSubscription(ctx.ptrTask->getConnectionHandle(), pTopic, strTopic, iOptions);
+
+      if(pTopic->hasRetained()){
+          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Topic has retained: "<<(void*)(long)pTopic->getRetained());
+
+          Activity* pActivity = ptrActivityStore->createActivity(pSubscription->getHandle(), 
+                                                                  pTopic->getRetained(),
+                                                                  Listener::Task::CA_SendDirect,
+                                                                  std::max(ctx.headerReader.getQoS(),pSubscription->getQoS()));
+          
+          Message *pMessage = ptrMessageStore->lookup(pTopic->getRetained());
+          buildAndSendRetained(&ld, pSubscription, pConnection, pMessage, pActivity);
+
+      }
     }
 
-    Memory::SharableMemoryPool::unique_ptr<Listener::Task>
-    ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
-        Listener::Task(Listener::Task::CA_SendDirect), ld.pMemoryPool->getDeleter());
+  Memory::SharableMemoryPool::unique_ptr<Listener::Task>
+  ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
+      Listener::Task(Listener::Task::CA_SendDirect), ld.pMemoryPool->getDeleter());
 
 
   ptrTask2->setConnectionHandle(ctx.ptrTask->getConnectionHandle());
@@ -261,12 +281,7 @@ void Engine::addListener(Listener* pListener){
   if(pConnection->getMQTTVersion() >= MQTT::Message::MV_MQTTv5){
     propertiesComposer.build(writer);
   }
-  uint8_t iQoS = ctx.headerReader.getQoS();
-  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Packet QoS: "<<(int)iQoS);
-   
-  if(iQoS >= pConnection->getMaxQoS())
-    iQoS = pConnection->getMaxQoS();
-
+ 
   writer.writeByte(iQoS);
 
   ptrTask2->setMessage(sbl.getHead());
@@ -310,27 +325,39 @@ void Engine::addListener(Listener* pListener){
   
   uint32_t iDataLen = ctx.headerReader.getTotalLength() - ctx.reader.getConsumedBytes();
 
-  const Message* pMessage = ptrMessageStore->createMessage(ctx.reader, iDataLen, ctx.headerReader.getQoS());
+  Message* pMessage = ptrMessageStore->createMessage(ctx.reader, iDataLen, ctx.headerReader.getQoS());
 
-  Topic* pTopic = nullptr;
+  Topic*pTopic = ptrTopicsStore->getOrCreateTopic(strTopic);
 
-  if(ptrTopicsStore->lookup(strTopic, pTopic)){
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Retain message ???");
+
+    if( ctx.headerReader.testFlag(MQTT::Message::MF_RETAIN) ){
+      IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Retain message");
+      if(pTopic->hasRetained()){
+        Message* pOldRetained = ptrMessageStore->lookup(pTopic->getRetained());
+        pOldRetained->setRetentionFlag(false);
+        ptrMessageStore->disposeIfUnused(pOldRetained);
+      }
+      pTopic->setRetained(pMessage->getHandle());
+    }
 
     for(auto& l : tabListners){
       l.tmp.iCounter = 0;
     }
 
   if(pTopic->hasFirstSubscription()){
+
     Subscription* pSubscription = pTopic->getFirstSubscription();
 
     while(pSubscription){
 
        ptrActivityStore->createActivity( pSubscription->getHandle(), 
                                          pMessage->getHandle(),
-                                         std::max(ctx.headerReader.getQoS(), pSubscription->getQoS()));
+                                         Listener::Task::CA_SendShared,
+                                         std::max(ctx.headerReader.getQoS(),pSubscription->getQoS()));
 
        tabListners[pConnection->getListenerIdx()].tmp.iCounter++;
-
+       pMessage->incUsageCount();
        pSubscription = pSubscription->getNext();
     }
 
@@ -357,10 +384,11 @@ void Engine::addListener(Listener* pListener){
       }
 
     }
-  }
 
-  if(iQoS == 0)
+  if(iQoS == 0){
+  //  ptrMessageStore->dispose(pMessage);
     return;
+  }
 
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Create a reply");
 
@@ -431,23 +459,45 @@ void Engine::handleActivities(){
 
      IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "** handleActivities loop **");
 
-     ListenerDetails& ld(tabListners[0]);
-
-     Memory::SharableMemoryPool::unique_ptr<Listener::Task>
-      ptrTask(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
-        Listener::Task(Listener::Task::CA_SendShared), ld.pMemoryPool->getDeleter());
-
-      ptrTask->iMessageId = 20000000;
+      ListenerDetails& ld(tabListners[0]);
 
       Subscription* pSubsciption = ptrSubscriptionsStore->lookup(pActivity->getSubscriptionHandle());
       Connection*   pConnection  = ptrConnectionsStore->get(pSubsciption->getConnectionHandle());
-      const Message* pMessage    = ptrMessageStore->lookup(pActivity->getMessageHandle());
+      Message*      pMessage     = ptrMessageStore->lookup(pActivity->getMessageHandle());
+
+      buildAndSendShared(&ld, pSubsciption, pConnection, pMessage, pActivity);
+
+      ptrActivityStore->next();
+      
+      if(pActivity->getQoS() == 0){
+        ptrActivityStore->dispose(pActivity);
+        ptrMessageStore->decUsageAndDespose(pMessage);
+      }
+   }
+
+}
+/*************************************************************************/
+void Engine::buildAndSendShared(ListenerDetails* pListenerDetails,
+                                Subscription*    pSubsciption,
+                                Connection*      pConnection,
+                                Message*         pMessage,
+                                Activity*        pActivity){
+   IA20_TRACER;
+   
+ 
+     Listener::Task::Command iCommand = pActivity->getCommand();
+
+     Memory::SharableMemoryPool::unique_ptr<Listener::Task>
+      ptrTask(new (pListenerDetails->pMemoryPool->allocate<Listener::Task>(NULL))
+        Listener::Task(iCommand), pListenerDetails->pMemoryPool->getDeleter());
+
+      ptrTask->iMessageId = 20000000;
 
       ptrTask->setConnectionHandle(pConnection->getHandle());
-      ptrTask->setMessageHandle(pActivity->getMessageHandle());
+      ptrTask->setMessageHandle(pMessage->getHandle());
 
       MQTT::FixedHeaderBuilder builder;
-      Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask.get());
+      Memory::StreamBufferList sbl(pListenerDetails->pMemoryPool, ptrTask.get());
       Memory::StreamBufferList::Writer writer(sbl);
       MQTT::PropertiesComposer propertiesComposer;
 
@@ -462,20 +512,60 @@ void Engine::handleActivities(){
       writer.writeTwoBytes(pConnection->addOutputActivity(pActivity)); 
       propertiesComposer.build(writer);
 
+      if(iCommand == Listener::Task::CA_SendDirect){
+        writer.write(pMessage->getData(), pMessage->getDataLength());
+      }
+
       IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "publish: "<<propertiesComposer.computeLength()<<" "<<(void*)sbl.getHead()<<", "<<MiscTools::BinarytoHex(sbl.getHead()+16, propertiesComposer.computeLength()));
       ptrTask->setMessage(sbl.getHead());
 
-
       // IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "serve 1:  "<<(void*)(long)ptrTask->getMessageHandle());
       // IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "server 2:  "<<(void*)(long)ptrTask->getConnectionHandle());
-
       // IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "HEX:  "<<(void*)ptrTask.get()<<" "<<MiscTools::BinarytoHex((void*)ptrTask.get(), sizeof(Listener::Task)));
 
+      pListenerDetails->pRingResponse->enque(ptrTask.release());    
 
-      ld.pRingResponse->enque(ptrTask.release());    
-      ptrActivityStore->next();
-      ptrActivityStore->dispose(pActivity);
-   }
+}
+/*************************************************************************/
+void Engine::buildAndSendRetained(ListenerDetails* pListenerDetails,
+                                  Subscription*    pSubsciption,
+                                  Connection*      pConnection,
+                                  Message*         pMessage,
+                                  Activity*        pActivity){
+   IA20_TRACER;
+   
+ 
+    //  Memory::SharableMemoryPool::unique_ptr<Listener::Task>
+    //   ptrTask(new (pListenerDetails->pMemoryPool->allocate<Listener::Task>(NULL))
+    //     Listener::Task(Listener::Task::CA_SendDirect), pListenerDetails->pMemoryPool->getDeleter());
+
+    //   ptrTask->iMessageId = 20000000;
+
+    //   ptrTask->setConnectionHandle(pConnection->getHandle());
+    //   ptrTask->setMessageHandle(pMessage->getHandle());
+
+    //   MQTT::FixedHeaderBuilder builder;
+    //   Memory::StreamBufferList sbl(pListenerDetails->pMemoryPool, ptrTask.get());
+    //   Memory::StreamBufferList::Writer writer(sbl);
+    //   MQTT::PropertiesComposer propertiesComposer;
+
+    //   builder.setType(MQTT::Message::MT_PUBLISH);
+    //  // builder.setID(pConnection->getNextId());
+    //   builder.setFlags((MQTT::Message::Flag)0, pMessage->getQoS());
+    //   Tools::StringRef strTopic(pSubsciption->getTopic());
+
+    //   builder.setLength(pMessage->getDataLength() + 2 + (2 + strTopic.getLength()) + propertiesComposer.computeLength());
+    //   builder.build(writer);
+    //   writer.write(strTopic);
+    //   writer.writeTwoBytes(pConnection->addOutputActivity(pActivity)); 
+    //   propertiesComposer.build(writer);
+
+    //   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "publish on subscribe: "<<propertiesComposer.computeLength()<<" "<<(void*)sbl.getHead()<<", "<<MiscTools::BinarytoHex(sbl.getHead()+16, propertiesComposer.computeLength()));
+    //   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "data: "<<MiscTools::BinarytoHex(sbl.getHead()+16, (pMessage->getDataLength() + 2 + (2 + strTopic.getLength()) + propertiesComposer.computeLength())));
+    //   ptrTask->setMessage(sbl.getHead());
+
+  
+    //   pListenerDetails->pRingResponse->enque(ptrTask.release());    
 
 }
 /*************************************************************************/

@@ -2,17 +2,22 @@
 
 Development plan:
 
+ *) pending task queue TCP::Listener, impove task memory reuse: try to fit shared message part to available space in SLB
+--
+
  *) use "Packet Identifier" as specified - 
- table per connection (actions).
-
- *) v3.1 v5 - version support/connection property
-   - clientId
+ table per connection (actions)
+  - inputs (waits for QoS)
+  - outputs - reconnects
  
- *) ContentWriter ???
+ *) ContentWriter(s) - refactor engine class 
 
- *) pending task queue TCP::Listener
- *) try to fit shared message part to available space in SLB
+ *) storeage
 
  *) more listeners in Engine (handle activity)
+ 
+ *) client API
 
-  
+ *) configuration ??
+ *) stats ??
+ *) dumps

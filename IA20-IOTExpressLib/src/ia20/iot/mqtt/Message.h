@@ -28,8 +28,8 @@ public:
   };
 
   enum Flag : uint8_t {
-    MF_NONE = 0,
-    MF_1    = 1,
+    MF_NONE    = 0,
+    MF_RETAIN  = 1
   };
 
   enum Type : uint8_t {

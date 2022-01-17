@@ -21,15 +21,23 @@ namespace IOT {
 /** The MessageStore class.
  *
  */
+class Topic;
 class MessageStore {
 public:
 
 	virtual ~MessageStore() throw();
 	MessageStore();
 
-  const Message* createMessage(Memory::StreamBufferList::Reader& reader , uint32_t iDataLength, uint8_t iQoS);
-  const Message* lookup(Message::HandleType aHandle)const;
-  void           dispose(const Message* pMessage);
+  Message* createMessage(Memory::StreamBufferList::Reader& reader , 
+                         uint32_t iDataLength, 
+                         uint8_t iQoS,
+                         Topic *pRetaintionTopic = NULL);
+  Message* lookup(Message::HandleType aHandle)const;
+  void     dispose(Message* pMessage);
+
+  void     decUsageAndDespose(Message* pMessage);
+
+  void     disposeIfUnused(Message* pMessage);
 
 protected:
 

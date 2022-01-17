@@ -32,6 +32,7 @@ namespace Tools {
 class ConnectionsStore;
 class TopicsStore;
 class ActivityStore;
+class Topic;
 
 class SubscriptionsStore {
 
@@ -46,12 +47,13 @@ class SubscriptionsStore {
 public:
 
 	virtual ~SubscriptionsStore() throw();
-	SubscriptionsStore(ConnectionsStore* pConnectionsStore, TopicsStore* pTopicsStore);
+	SubscriptionsStore(ConnectionsStore* pConnectionsStore);
 
 
-	void addSubscription(Connection::HandleType aHandle, 
-						 const Tools::StringRef& strTopic, 
-						 uint8_t iOptions);
+	Subscription* addSubscription(Connection::HandleType aHandle, 
+	                     		  Topic* pTopic,
+						 		  const Tools::StringRef& strTopic, 
+						 		  uint8_t iOptions);
 
 	SubscriptionList* getList(Connection::HandleType aHandle);
 
@@ -60,7 +62,6 @@ public:
 protected:
 
 	ConnectionsStore* pConnectionsStore;
-	TopicsStore*      pTopicsStore;
 	
 	SubscriptionsMap  hmSubscriptions;
 	ConnectionSubsMap hmConnectionSubs;

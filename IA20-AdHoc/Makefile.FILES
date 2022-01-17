@@ -1,4 +1,4 @@
-#Tue Jan 11 01:28:15 PM CET 2022
+#Sat Jan 15 08:42:46 AM CET 2022
 FILES+=ia20/net/conn/mcast/Base
 FILES+=ia20/net/conn/mcast/EndPoint
 FILES+=ia20/net/conn/mcast/Receiver
@@ -24,5 +24,6 @@ FILES+=ia20/tc/TCURing
 MAINFILES+=ia_raft_dumplog
 MAINFILES+=ia_testcases
 MAINFILES+=ia_testclient
+MAINFILES+=ia_testpipe
 MAINFILES+=ia_test_raft
 MAINFILES+=ia_testserver

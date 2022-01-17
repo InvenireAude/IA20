@@ -6,7 +6,8 @@
  */
 
 #include "MessageStore.h"
-
+#include "Message.h"
+#include "Topic.h"
 
 #include <ia20/iot/logger/LogLevel.h>
 
@@ -24,8 +25,11 @@ MessageStore::~MessageStore() throw(){
 }
 
 /*************************************************************************/
-const Message* MessageStore::createMessage(
-		Memory::StreamBufferList::Reader& reader, uint32_t iDataLength, uint8_t iQoS){
+Message* MessageStore::createMessage(
+		Memory::StreamBufferList::Reader& reader, 
+		uint32_t iDataLength, 
+		uint8_t iQoS,
+		Topic *pRetaintionTopic){
 	IA20_TRACER;
 
 	size_t iSize = Message::ComputeRequiredMemory(iDataLength);
@@ -43,10 +47,15 @@ const Message* MessageStore::createMessage(
   	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Data ["<<iDataLength<<":"<<rc<<"]"
         <<MiscTools::BinarytoHex((char*)pMessage->getData(),iDataLength));
 
+	if(pRetaintionTopic){
+		pRetaintionTopic->setRetained(iNextHandle);
+		//TODO store full topic name for recovery.
+	}
+
 	return hmMessages[iNextHandle++].get();
 }
 /*************************************************************************/
-const Message* MessageStore::lookup(Message::HandleType aHandle)const{
+Message* MessageStore::lookup(Message::HandleType aHandle)const{
 	IA20_TRACER;
 
 	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Lookup Message: "<<(void*)(long)(aHandle));
@@ -59,7 +68,7 @@ const Message* MessageStore::lookup(Message::HandleType aHandle)const{
 	return it->second.get();
 }
 /*************************************************************************/
-void MessageStore::dispose(const Message* pMessage){
+void MessageStore::dispose(Message* pMessage){
 	IA20_TRACER;
 
 	Message::HandleType aHandle(pMessage->getHandle());
@@ -72,6 +81,27 @@ void MessageStore::dispose(const Message* pMessage){
 		IA20_THROW(ItemNotFoundException("Message not found [erase]: handle=")<<(void*)(long)aHandle);
 
 	hmMessages.erase(it);
+}
+/*************************************************************************/
+void MessageStore::decUsageAndDespose(Message* pMessage){
+	IA20_TRACER;
+
+	if(pMessage->getRetentionFlag())
+		return;
+
+	uint32_t iUsageCount = pMessage->decUsageCount();
+
+	if(iUsageCount == 0)
+		dispose(pMessage);
+}
+/*************************************************************************/
+void MessageStore::disposeIfUnused(Message* pMessage){
+
+	if(pMessage->getRetentionFlag())
+		return;
+
+	if(pMessage->getUsageCount() == 0)
+		dispose(pMessage);
 }
 /*************************************************************************/
 

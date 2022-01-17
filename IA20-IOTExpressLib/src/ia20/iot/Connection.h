@@ -58,11 +58,14 @@ public:
         return  Tools::StringRef((const uint8_t *)utfClientId, strnlen((const char*)utfClientId, 2*CMaxClientIdLen) );
     }
 
-    
     PacketIdentifierType addOutputActivity(Activity* pActivity){
         Activity** pEntry = tabOutputActivies.allocate(pActivity);
         IA20_LOG(true, "Packet Identifier (add):    ["<<(int)getHandle()<<"]"<<(int)tabOutputActivies.pointerToIdx(pEntry) + 1);
         return tabOutputActivies.pointerToIdx(pEntry) + 1;
+    }
+
+    Activity* getOutputActivity(PacketIdentifierType iPacketId){
+        return *tabOutputActivies.idxToPonter(iPacketId);
     }
 
     void removeOutputActivity(PacketIdentifierType iPacketId){

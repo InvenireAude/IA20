@@ -40,8 +40,9 @@ public:
 
 	void caseBasicv31();
 	void caseBasicv5();
-  void caseBasicv5QoS1();
   void caseBasicv31QoS1();
+  void caseBasicv5QoS1();
+  void caseBasicv5QoS1Retain();
 
 protected:
 

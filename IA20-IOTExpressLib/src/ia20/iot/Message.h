@@ -20,6 +20,7 @@ namespace IOT {
  *
  */
 class MessageStore;
+class Topic;
 
 class Message {
 public:
@@ -30,6 +31,7 @@ public:
     }
 
     typedef uint32_t HandleType;
+    static const uint32_t CNullHandle = 0xffffffff;
 
     inline HandleType getHandle()const{
       return iHandle;
@@ -39,23 +41,47 @@ public:
       return iDataLength;
     }
 
-    inline Message(HandleType iHandle, uint32_t iDataLength, uint8_t iQoS):
+    inline Message(HandleType iHandle, 
+                   uint32_t iDataLength, 
+                   uint8_t iQoS):
         iHandle(iHandle),
         iDataLength(iDataLength),
-        iQoS(iQoS){};
+        iQoS(iQoS){}
 
     inline uint8_t getQoS()const{
       return iQoS;
     }
     
+    inline bool getRetentionFlag()const{
+      return bRetentionFlag;
+    }
+
+    inline void setRetentionFlag(bool bRetentionFlag){
+      this->bRetentionFlag = bRetentionFlag;
+    }
+
+    inline void incUsageCount(){
+      iUsageCount++;
+    }
+
+    inline uint32_t decUsageCount(){
+      return iUsageCount--;
+    }
+
+    inline uint32_t getUsageCount()const{
+      return iUsageCount;
+    }
+
     protected:
 
     HandleType iHandle;
     uint32_t   iDataLength;
-    uint8_t iQoS;
+    uint32_t   iUsageCount;
+    uint8_t    iQoS;
+    bool       bRetentionFlag;
 
     inline uint8_t* getDataPointer(){
-      return reinterpret_cast<uint8_t*>(const_cast<Message*>(this+1));
+      return reinterpret_cast<uint8_t*>(const_cast<Message*>(this + 1));
     }
 
     static const size_t CAlignedSize;

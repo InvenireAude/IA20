@@ -142,8 +142,13 @@ bool Listener::serve(bool bWait){
         Memory::StreamBufferList::Reader reader2(sbl);
         int rc = reader2.copy(buf, 5000);
         //IA20_LOG(true, "rc "<<rc);
-        hmConnectionHandles[ptrTask->getConnectionHandle()]->lstWire.push_back("OUTPUT2: "+MiscTools::BinarytoHex(buf,rc));
 
+        if(hmContent.find(ptrTask->getMessageHandle()) == hmContent.end()){
+          IA20_LOG(true, "Content not found: "<<(void*)ptrTask->getMessageHandle());
+          return false;
+        }
+
+        hmConnectionHandles[ptrTask->getConnectionHandle()]->lstWire.push_back("OUTPUT2: "+MiscTools::BinarytoHex(buf,rc));
         Memory::StreamBufferList sbl3(hmContent[ptrTask->getMessageHandle()].pPayLoad);
         Memory::StreamBufferList::Reader reader3(sbl3);
          rc = reader3.copy(buf, 5000);

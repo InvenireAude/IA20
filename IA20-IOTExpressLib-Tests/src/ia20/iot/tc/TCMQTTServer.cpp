@@ -34,12 +34,12 @@ TCMQTTServer::TCMQTTServer(TestSuite* pTestSuite):
   TestUnit<TCMQTTServer>(this, "MQTTServer", pTestSuite){
 	IA20_TRACER;
 
-  addCase("caseBasicv31", &::IA20::TC::TCMQTTServer::caseBasicv31);
-  addCase("caseBasicv5",  &::IA20::TC::TCMQTTServer::caseBasicv5);
-  addCase("caseBasicv31QoS1",  &::IA20::TC::TCMQTTServer::caseBasicv31QoS1);
-  addCase("caseBasicv5QoS1",  &::IA20::TC::TCMQTTServer::caseBasicv5QoS1);
+  addCase("caseBasicv31",           &::IA20::TC::TCMQTTServer::caseBasicv31);
+  addCase("caseBasicv5",            &::IA20::TC::TCMQTTServer::caseBasicv5);
+  addCase("caseBasicv31QoS1",       &::IA20::TC::TCMQTTServer::caseBasicv31QoS1);
+  addCase("caseBasicv5QoS1",        &::IA20::TC::TCMQTTServer::caseBasicv5QoS1);
+  addCase("caseBasicv5QoS1Retain",  &::IA20::TC::TCMQTTServer::caseBasicv5QoS1Retain);
   
-
   pTestSuite->addTestUnit(this);
 }
 /*************************************************************************/
@@ -90,6 +90,18 @@ std::initializer_list< std::pair<int, String> > CaseMQv5QoS1{
     { 1, "4003000200" }
 };
 
+std::initializer_list< std::pair<int, String> > CaseMQv5QoS1Retain{
+    { 0, "101000044D5154540502003C032100140000" },
+    { 0, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },
+    { 0, "331200082F6162632F78797A0001004142434446" },
+    { 0, "4003000100" },
+    { 1, "101000044D5154540502003C032100140000" },
+    { 1, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },    
+    { 0, "321200082F6162632F78797A0002004142434447" },
+    { 0, "4003000200" },
+    { 1, "4003000200" }
+};
+
 // static String CMSgCONNECT_Req ("101000044D5154540502003C032100140000");
 // static String CMSgSUBSCRIBE_Req("821C00010000042F6162630000042F78797A0000082F6162632F78797A00");
 // static String CMSgPUBLISH1_Req("321200082F6162632F78797A0001004142434446");
@@ -130,6 +142,11 @@ void TCMQTTServer::caseBasicv31QoS1(){
 void TCMQTTServer::caseBasicv5QoS1(){
   IA20_LOG(true,"caseBasicv5QoS1");
   caseBasicImpl(CaseMQv5QoS1);
+}
+/*************************************************************************/
+void TCMQTTServer::caseBasicv5QoS1Retain(){
+  IA20_LOG(true,"caseBasicv5QoS1Retain");
+  caseBasicImpl(CaseMQv5QoS1Retain);
 }
 /*************************************************************************/
 // void TCMQTTServer::caseBasic(){

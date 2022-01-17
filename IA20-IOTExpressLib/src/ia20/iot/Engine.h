@@ -88,7 +88,19 @@ protected:
   void handlePubAck(Engine::ListenerDetails& ld, Context& ctx);
 
   void handleActivities();
-  
+
+  void buildAndSendShared(ListenerDetails* pListenerDetails,
+                         Subscription*    pSubsciption,
+                         Connection*      pConnection,
+                         Message*         pMessage,
+                         Activity*        pActivity);
+
+  void buildAndSendRetained(ListenerDetails* pListenerDetails,
+                            Subscription*    pSubsciption,
+                            Connection*      pConnection,
+                            Message*         pMessage,
+                            Activity*        pActivity);
+
   uint8_t buf[1024];
   std::unique_ptr<ConnectionsStore>   ptrConnectionsStore;
   std::unique_ptr<TopicsStore>        ptrTopicsStore;

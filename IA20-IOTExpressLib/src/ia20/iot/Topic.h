@@ -14,6 +14,7 @@
 #include <ia20/iot/tools/WordsMap.h>
 
 #include <ia20/iot/logger/LogLevel.h>
+#include "Message.h"
 
 namespace IA20 {
 namespace IOT {
@@ -30,7 +31,8 @@ public:
 
 	inline Topic(Tools::WordsMap::WordIdType iToken, Topic* pParent):
 	iToken(iToken),
-  pParent(pParent),
+    pParent(pParent),
+    aRetainedMessageHandle(Message::CNullHandle),
 	pFirst(NULL){
 		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo,"New token: "<<(int)iToken);
 	};
@@ -41,18 +43,31 @@ public:
 
 	void addSubscription(Subscription* pSubscription);
 
-	Subscription* getFirstSubscription()const{
+	inline Subscription* getFirstSubscription()const{
 		return pFirst;
 	}
 
-	bool hasFirstSubscription()const{
+	inline bool hasFirstSubscription()const{
 		return pFirst != NULL;
 	}
 
+	inline void setRetained(Message::HandleType aRetainedMessageHandle = Message::CNullHandle){
+		this->aRetainedMessageHandle = aRetainedMessageHandle;
+	}
+
+	inline bool hasRetained()const{
+		return aRetainedMessageHandle != Message::CNullHandle;
+	}
+
+	inline Message::HandleType getRetained()const{
+		return aRetainedMessageHandle;
+	}
+	
 protected:
 	Tools::WordsMap::WordIdType iToken;
-  Topic* pParent;
+  	Topic* pParent;
 	Subscription* pFirst;
+	Message::HandleType aRetainedMessageHandle;
 };
 
 /*************************************************************************/

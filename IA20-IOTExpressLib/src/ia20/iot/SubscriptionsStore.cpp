@@ -20,10 +20,8 @@ namespace IA20 {
 namespace IOT {
 
 /*************************************************************************/
-SubscriptionsStore::SubscriptionsStore(ConnectionsStore* pConnectionsStore, 
-									  TopicsStore*      pTopicsStore):
-	pConnectionsStore(pConnectionsStore),
-	pTopicsStore(pTopicsStore),
+SubscriptionsStore::SubscriptionsStore(ConnectionsStore* pConnectionsStore):
+	pConnectionsStore(pConnectionsStore),	
 	iNextHandle(0){
 	IA20_TRACER;
 }
@@ -32,20 +30,25 @@ SubscriptionsStore::~SubscriptionsStore() throw(){
 	IA20_TRACER;
 }
 /*************************************************************************/
-void SubscriptionsStore::addSubscription(Connection::HandleType aConnectionHandle, 
-										const Tools::StringRef& strTopic,  
-										uint8_t iOptions){
+Subscription* SubscriptionsStore::addSubscription(Connection::HandleType aConnectionHandle, 
+										 Topic* pTopic,
+										 const Tools::StringRef& strTopic,  
+										 uint8_t iOptions){
 	IA20_TRACER;
 	
 	SubscriptionsStore::SubscriptionList *pList = getList(aConnectionHandle);
 
 	std::unique_ptr<Subscription> ptrSubscription(new Subscription(iNextHandle, strTopic, aConnectionHandle, iOptions));
 	
-	pTopicsStore->getOrCreateTopic(strTopic)->addSubscription(ptrSubscription.get());
+	pTopic->addSubscription(ptrSubscription.get());
 
 	pList->push_back(ptrSubscription.get());
 
+	Subscription *pResult = ptrSubscription.get();
+
 	hmSubscriptions[iNextHandle++] = std::move(ptrSubscription);
+
+	return pResult;
 }
 /*************************************************************************/
 SubscriptionsStore::SubscriptionList* SubscriptionsStore::getList(Connection::HandleType aHandle){
