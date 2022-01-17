@@ -37,6 +37,7 @@ TCSubscriptions::TCSubscriptions(TestSuite* pTestSuite):
   addCase("caseSimple", &::IA20::TC::TCSubscriptions::caseSimple);
   addCase("caseHash01", &::IA20::TC::TCSubscriptions::caseHash01);
   addCase("caseHash02", &::IA20::TC::TCSubscriptions::caseHash02);
+  addCase("casePlus01", &::IA20::TC::TCSubscriptions::casePlus01);
 
   pTestSuite->addTestUnit(this);
 }
@@ -80,6 +81,19 @@ std::list< std::pair<int, String> > ResultSetHash02{
     { 0, "/abc/xyz" },
     { 1, "/#" },
     { 1, "/abc/xyz" }
+};
+/*************************************************************************/
+std::initializer_list< std::pair<int, String> > SetPlus01{
+    { 0, "/abc" },
+    { 0, "/+/xyz" },
+    { 0, "/opr/xyz" },
+    { 1, "/abc/+" },
+    { 1, "/abc/def" },
+    { 2, "/abc/+/ghj" },
+};
+std::list< std::pair<int, String> > ResultSetPlus01{
+    { 0, "/+/xyz" },
+    { 1, "/abc/+" },
 };
 /*************************************************************************/
 class Callback : public Topic::Callback{
@@ -135,6 +149,10 @@ void TCSubscriptions::caseHash01(){
 /*************************************************************************/
 void TCSubscriptions::caseHash02(){
   checkSubscriptions(SetHash02, "/abc/xyz", ResultSetHash02);
+}
+/*************************************************************************/
+void TCSubscriptions::casePlus01(){
+  checkSubscriptions(SetPlus01, "/abc/xyz", ResultSetPlus01);
 }
 /*************************************************************************/
 void TCSubscriptions::TestEnv::reset(){

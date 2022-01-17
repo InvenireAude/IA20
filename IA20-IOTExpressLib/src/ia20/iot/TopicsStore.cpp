@@ -16,7 +16,7 @@ namespace IOT {
 
 /*************************************************************************/
 TopicsStore::TopicsStore():
-	hmChildren(1000),
+	hmChild(1000),
 	ptrWordsMap(new Tools::WordsMap()){
 	IA20_TRACER;
 	pRootTopic = TopicPool::New(Tools::WordsMap::CRoot, nullptr);
@@ -25,7 +25,7 @@ TopicsStore::TopicsStore():
 TopicsStore::~TopicsStore() throw(){
 	IA20_TRACER;
 
-	for(auto it : hmChildren){
+	for(auto it : hmChild){
 		IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"TopicStore dump:["<<
 			it.first.first<<","<<it.first.second<<"]="<<(void*)it.second);
 	}
@@ -48,11 +48,15 @@ Topic *TopicsStore::getOrCreateTopic(const Tools::StringRef& strTopic){
 
 		KeyType key(pCursor, *it);
 
-		ChildMap::iterator itNext = hmChildren.find(key);
+		ChildMap::iterator itNext = hmChild.find(key);
 
-		if(itNext == hmChildren.end()){
+		if(itNext == hmChild.end()){
 			pCursor = TopicPool::New(*it, pCursor);
-			hmChildren[key] = pCursor;
+
+			if(*it != Tools::WordsMap::CHash && *it != Tools::WordsMap::CPlus)
+				hmChildren[key.first].push_back(pCursor);
+			
+			hmChild[key] = pCursor;
 		}else{
 			pCursor = itNext->second;
 		}
@@ -69,32 +73,52 @@ void TopicsStore::iterate(const Tools::StringRef& strTopic,
 	  Tools::WordTokens tokens;
 	  tokens.read(strTopic, ptrWordsMap.get());
 
-	  Topic* pCursor = pRootTopic;
+	  std::list<Topic*> lstCursors;
+	  lstCursors.push_back(pRootTopic);
+
+	  //TODO this std::list is overkill, temporary hacks
+	  // note, we prepend pointers in the same list during the loop
+      // consider array, traverse backward from n -> 0
+	  // appends will be read on the next iteration
+	  // delete by null or swap with the n-th - better.
 
 	  for(Tools::WordTokens::const_iterator it = tokens.begin(); 
-        	pCursor && it != tokens.end(); ++it){
+        	!lstCursors.empty() && it != tokens.end(); ++it){
 
-		KeyType keyHash(pCursor,  Tools::WordsMap::CHash);
 
-		ChildMap::const_iterator itNextHash = hmChildren.find(keyHash);
+		for(std::list<Topic*>::iterator itCursor = lstCursors.begin();
+			itCursor != lstCursors.end();){
 
-		if(itNextHash != hmChildren.end()){
-			itNextHash->second->iterate(pCallback);
-		}
+			KeyType keyHash(*itCursor,  Tools::WordsMap::CHash);
 
-		KeyType key(pCursor, *it);
-		ChildMap::const_iterator itNext = hmChildren.find(key);
+			ChildMap::const_iterator itNextHash = hmChild.find(keyHash);
+			if(itNextHash != hmChild.end()){
+				itNextHash->second->iterate(pCallback);
+			}
 
-		if(itNext == hmChildren.end()){
-		  pCursor = nullptr;
-		}else{
-		  pCursor = itNext->second;
+			KeyType keyPlus(*itCursor,  Tools::WordsMap::CPlus);
+
+			ChildMap::const_iterator itNextPlus = hmChild.find(keyPlus);
+			if(itNextPlus != hmChild.end()){
+				lstCursors.push_front(itNextPlus->second);
+			}
+
+			KeyType key(*itCursor, *it);
+			ChildMap::const_iterator itNext = hmChild.find(key);
+
+			if(itNext == hmChild.end()){
+		  		itCursor = lstCursors.erase(itCursor);
+			}else{
+			  	*itCursor = itNext->second;
+				itCursor++;
+			}
 		}
 
 	  }
 
-	if(pCursor){
-		pCursor->iterate(pCallback);
+	for(std::list<Topic*>::iterator itCursor = lstCursors.begin();
+			itCursor != lstCursors.end(); itCursor++){
+		(*itCursor)->iterate(pCallback);
 	}
 }
 /*************************************************************************/

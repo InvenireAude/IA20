@@ -43,6 +43,7 @@ public:
 	void caseSimple();
 	void caseHash01();
 	void caseHash02();
+	void casePlus01();
 
 protected:
 

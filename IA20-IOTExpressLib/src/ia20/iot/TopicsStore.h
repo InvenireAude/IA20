@@ -59,8 +59,10 @@ protected:
 	};
 
 	typedef std::unordered_map<KeyType, Topic*, Hash> ChildMap;
+	typedef std::unordered_map<Topic*,  std::list<Topic*> > ChildrenMap;
 
-	ChildMap hmChildren;
+	ChildMap    hmChild;
+	ChildrenMap hmChildren;
 
 	Topic* pRootTopic;
 
