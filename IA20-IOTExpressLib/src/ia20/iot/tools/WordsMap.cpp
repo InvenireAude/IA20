@@ -22,6 +22,10 @@ WordsMap::WordsMap(){
 	hmValues["#"] = 1;
 	hmValues["+"] = 2;
 
+	hmNames[0] = "";
+	hmNames[1] = "#";
+	hmNames[2] = "+";
+
 }
 /*************************************************************************/
 WordsMap::~WordsMap() throw(){
@@ -39,6 +43,7 @@ WordsMap::WordIdType WordsMap::lookup(const Tools::StringRef& strValue){
 	}else{
 		WordIdType iWord = hmValues.size();
 		hmValues[strValue] = iWord;
+		hmNames[iWord]     = String(strValue);
 		IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "New token: ["<<(String)strValue<<"]="<<iWord);
 		return iWord;
 	}

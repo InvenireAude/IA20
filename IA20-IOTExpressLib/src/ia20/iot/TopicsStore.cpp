@@ -11,6 +11,8 @@
 #include <ia20/iot/tools/WordsMap.h>
 #include <ia20/iot/logger/LogLevel.h>
 
+#include <stack>
+
 namespace IA20 {
 namespace IOT {
 
@@ -19,7 +21,7 @@ TopicsStore::TopicsStore():
 	hmChild(1000),
 	ptrWordsMap(new Tools::WordsMap()){
 	IA20_TRACER;
-	pRootTopic = TopicPool::New(Tools::WordsMap::CRoot, nullptr);
+	pRootTopic = TopicPool::New(Tools::WordsMap::CRoot, nullptr , "");
 }
 /*************************************************************************/
 TopicsStore::~TopicsStore() throw(){
@@ -51,10 +53,11 @@ Topic *TopicsStore::getOrCreateTopic(const Tools::StringRef& strTopic){
 		ChildMap::iterator itNext = hmChild.find(key);
 
 		if(itNext == hmChild.end()){
-			pCursor = TopicPool::New(*it, pCursor);
+			pCursor = TopicPool::New(*it, pCursor, ptrWordsMap->getName(*it));
 
-			if(*it != Tools::WordsMap::CHash && *it != Tools::WordsMap::CPlus)
+			if(*it != Tools::WordsMap::CHash && *it != Tools::WordsMap::CPlus){
 				hmChildren[key.first].push_back(pCursor);
+			}
 			
 			hmChild[key] = pCursor;
 		}else{
@@ -62,8 +65,7 @@ Topic *TopicsStore::getOrCreateTopic(const Tools::StringRef& strTopic){
 		}
 	}
 
-  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Get Topic "<<strTopic<<" = "<<(void*)pCursor);
-
+  	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Get Topic: "<<strTopic<<" = "<<(void*)pCursor);
 	return pCursor;
 }
 /*************************************************************************/
@@ -121,6 +123,123 @@ void TopicsStore::iterate(const Tools::StringRef& strTopic,
 		(*itCursor)->iterate(pCallback);
 	}
 }
+
+/*************************************************************************/
+void TopicsStore::RetainedWorker::iterateAll(Topic* pCursor){
+
+ 	for(const auto& c: pTopicsStore->hmChildren[pCursor]){
+		iterateAll(c);
+	}
+
+	if(pCursor && pCursor->hasRetained()){
+		pCallback->onTopic(pCursor);
+	}
+}
+/*************************************************************************/													
+void TopicsStore::RetainedWorker::iterateRetained(Tools::WordTokens::const_iterator it,
+								  				  Topic* pCursor){
+						
+	  while(pCursor && it != tokens.end()){
+
+		  	if(*it == Tools::WordsMap::CPlus){
+				  ++it;
+				  for(const auto& c: pTopicsStore->hmChildren[pCursor]){
+					  iterateRetained(it, c);
+				  }
+				return;
+
+			}else if(*it == Tools::WordsMap::CHash){				  
+				  for(const auto& c: pTopicsStore->hmChildren[pCursor]){
+					  iterateAll(c);
+				  }
+				return;
+			}else{
+
+				KeyType key(pCursor, *it);
+				ChildMap::const_iterator itNext = pTopicsStore->hmChild.find(key);
+
+				if(itNext == pTopicsStore->hmChild.end()){
+					pCursor = nullptr;
+				}else{
+					pCursor = itNext->second;						
+				}
+			}
+		++it;
+	  }
+
+	if(pCursor && pCursor->hasRetained()){
+		pCallback->onTopic(pCursor);
+	}
+
+}
+/*************************************************************************/
+void TopicsStore::RetainedWorker::iterateRetained(){
+	iterateRetained(tokens.begin(), pTopicsStore->pRootTopic);
+}
+/*************************************************************************/
+void TopicsStore::iterateRetained(const Tools::StringRef& strTopic, 
+						  		 Topic::RetainCallback*   pCallback){
+
+	
+
+	RetainedWorker worker(strTopic, this, pCallback);
+	worker.iterateRetained();
+}
 /*************************************************************************/
 }
 }
+/*
+*/
+
+
+
+/*
+void TopicsStore::iterateRetained(const Tools::StringRef& strTopic, 
+						  		 Topic::RetainCallback*   pCallback){
+
+ 	  IA20_LOG(true, "What ?: \t"<<strTopic);
+
+	  Tools::WordTokens tokens;
+	  tokens.read(strTopic, ptrWordsMap.get());
+
+ 	  std::list<Topic*> lstCursors;
+	  lstCursors.push_back(pRootTopic);
+
+	 for(Tools::WordTokens::const_iterator it = tokens.begin(); 
+        	!lstCursors.empty() && it != tokens.end(); ++it){
+			
+		IA20_LOG(true, "====" );
+
+		for(std::list<Topic*>::iterator itCursor = lstCursors.begin();
+			itCursor != lstCursors.end();){
+
+		 	IA20_LOG(true, "i: "<<(int)(*it)<<" "<<(*itCursor)->getName());
+
+		  	if(*it == Tools::WordsMap::CPlus){
+				  for(const auto& c: hmChildren[*itCursor]){
+					  lstCursors.push_back(c);
+				  }
+			}else{
+
+				KeyType key(*itCursor, *it);
+				ChildMap::const_iterator itNext = hmChild.find(key);
+
+				if(itNext == hmChild.end()){
+					itCursor = lstCursors.erase(itCursor);
+				}else{
+					*itCursor = itNext->second;
+					itCursor++;
+				}
+			}
+
+		} 
+	  }
+
+	for(std::list<Topic*>::iterator itCursor = lstCursors.begin();
+			itCursor != lstCursors.end(); itCursor++)
+		if(*itCursor && (*itCursor)->hasRetained()){
+			pCallback->onTopic(*itCursor);
+		}
+		
+
+}*/

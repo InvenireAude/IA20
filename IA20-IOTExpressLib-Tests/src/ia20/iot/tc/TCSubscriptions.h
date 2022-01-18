@@ -45,6 +45,10 @@ public:
 	void caseHash02();
 	void casePlus01();
 
+	void caseRetained01();
+	void caseRetained02();
+  void caseRetained03();
+
 protected:
 
   struct TestEnv {
@@ -58,6 +62,11 @@ protected:
   struct TestEnv env;
 
   void checkSubscriptions(
+    const std::list< std::pair<int, String> >& lstSetup,
+    const String& strPubTopic,
+    const std::list< std::pair<int, String> >& lstResult);
+
+  void checkRetained(
     const std::list< std::pair<int, String> >& lstSetup,
     const String& strPubTopic,
     const std::list< std::pair<int, String> >& lstResult);

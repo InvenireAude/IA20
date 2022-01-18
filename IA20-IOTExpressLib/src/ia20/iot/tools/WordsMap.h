@@ -34,7 +34,13 @@ public:
 
 	WordIdType lookup(const Tools::StringRef& strValue);
 
+	inline const String& getName(WordIdType iValue)const{
+		NamesMap::const_iterator it = hmNames.find(iValue);
+		if(it == hmNames.end())
+			IA20_THROW(ItemNotFoundException("WordId: ")<<(long)iValue);
 
+		return it->second;
+	};
 	static const WordIdType CRoot = 0;
 	static const WordIdType CHash = 1;
 	static const WordIdType CPlus = 2;
@@ -44,6 +50,10 @@ protected:
 
 	typedef std::map<String, WordIdType> ValuesMap;
 	ValuesMap hmValues;
+
+	typedef std::map<WordIdType, String> NamesMap;
+	NamesMap hmNames;
+
 };
 
 /*************************************************************************/

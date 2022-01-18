@@ -29,12 +29,16 @@ public:
 
 	//~Topic() throw();
 
-	inline Topic(Tools::WordsMap::WordIdType iToken, Topic* pParent):
+	inline Topic(Tools::WordsMap::WordIdType iToken, Topic* pParent, const String& strTokenName):
 	iToken(iToken),
     pParent(pParent),
     aRetainedMessageHandle(Message::CNullHandle),
 	pFirst(NULL){
-		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo,"New token: "<<(int)iToken);
+		if(pParent){
+			strName = pParent->getName() + "/";
+		}
+		strName += strTokenName;
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo,"New token: "<<(int)iToken<<", name: "<<strName);
 	};
 
 	inline Tools::WordsMap::WordIdType getToken()const{
@@ -68,13 +72,28 @@ public:
 		virtual void onSubscription(const Subscription* pSubscription)=0;
 	};
 
+	class RetainCallback {
+		public:
+		virtual void onTopic(const Topic* pTopic)=0;
+	};
+
 	void iterate(Callback* pCallback);
+
+	inline Topic* getParent()const{
+		return pParent;
+	}
+
+	inline const String& getName()const{
+		return strName;
+	}
 
 protected:
 	Tools::WordsMap::WordIdType iToken;
   	Topic* pParent;
 	Subscription* pFirst;
 	Message::HandleType aRetainedMessageHandle;
+
+	String strName;//TODO
 };
 
 /*************************************************************************/

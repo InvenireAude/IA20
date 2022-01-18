@@ -97,7 +97,9 @@
       "numbers": "cpp",
       "span": "cpp",
       "semaphore": "cpp",
-      "bitset": "cpp"
+      "bitset": "cpp",
+      "future": "cpp",
+      "variant": "cpp"
     }
   }
 }

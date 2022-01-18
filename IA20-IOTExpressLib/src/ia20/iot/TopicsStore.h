@@ -46,6 +46,10 @@ public:
 
 	void iterate(const Tools::StringRef& strTopic, 
 				 Topic::Callback* pCallback);
+
+	void iterateRetained(const Tools::StringRef& strTopic, 
+				 		 Topic::RetainCallback* pCallback);
+
 	
 protected:
 
@@ -67,6 +71,33 @@ protected:
 	Topic* pRootTopic;
 
 	std::unique_ptr<Tools::WordsMap> ptrWordsMap;
+
+
+	class RetainedWorker {
+		
+		public:
+
+		inline RetainedWorker(const Tools::StringRef& strTopic, 
+		                      TopicsStore*  pTopicsStore,
+							  Topic::RetainCallback*   pCallback):
+			pCallback(pCallback),
+			pTopicsStore(pTopicsStore){
+				tokens.read(strTopic, pTopicsStore->getWordsMap());
+		}
+
+		void iterateAll(Topic* pCursor);
+
+		void iterateRetained(Tools::WordTokens::const_iterator it,
+							 Topic* pCursor);
+
+		void iterateRetained();
+
+		protected:
+
+		Tools::WordTokens        tokens;
+		TopicsStore*             pTopicsStore;
+		Topic::RetainCallback*   pCallback;
+	};
 };
 /*************************************************************************/
 }
