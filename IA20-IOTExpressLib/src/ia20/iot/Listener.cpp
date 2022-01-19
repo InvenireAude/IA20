@@ -9,20 +9,24 @@
 
 
 #include <ia20/iot/logger/LogLevel.h>
+#include <ia20/iot/tools/sys/TaskPort.h>
 
 namespace IA20 {
 namespace IOT {
 
 /*************************************************************************/
-Listener::Listener(std::unique_ptr<RingType::Interface>&& ptrInterface,
-				Memory::SharableMemoryPool* pMemoryPool):
-ptrInterface(std::move(ptrInterface)),
-pMemoryPool(pMemoryPool){
+Listener::Listener(int fdIn, int fdOut):
+	fdIn(fdIn), fdOut(fdOut){
 	IA20_TRACER;
 }
 /*************************************************************************/
 Listener::~Listener() throw(){
 	IA20_TRACER;
+}
+/*************************************************************************/
+void Listener::setupPort(){
+	ptrRingHandler.reset(new URing::RingHandler);
+    ptrPort = Tools::SYS::TaskPort<Listener::Task*>::Create(1000, ptrRingHandler.get(), fdIn, fdOut);
 }
 /*************************************************************************/
 }

@@ -24,18 +24,15 @@
 #include "Topic.h"
 
 #include <ia20/iot/logger/LogLevel.h>
+#include <ia20/iot/tools/sys/TaskPort.h>
 
 namespace IA20 {
 namespace IOT {
 
 /*************************************************************************/
-Engine::Engine(Listener*  pListener){
+Engine::Engine(){
 
   IA20_TRACER;
-
-  IA20_CHECK_IF_NULL(pListener);
-
-  addListener(pListener);
 
   ptrConnectionsStore.reset(new ConnectionsStore());
   ptrTopicsStore.reset(new TopicsStore());
@@ -46,6 +43,9 @@ Engine::Engine(Listener*  pListener){
 
   ptrActivityStore.reset(new ActivityStore());
 
+  ptrRingHandler.reset(new URing::RingHandler);
+
+  tabListners.resize(1);
 }
 /*************************************************************************/
 Engine::~Engine() throw(){
@@ -55,7 +55,7 @@ Engine::~Engine() throw(){
 void Engine::serve(){
   IA20_TRACER;
 
-  for(auto it : tabListners){
+  for(auto& it : tabListners){
     serveLister(it);
   }
 
@@ -81,43 +81,51 @@ void Engine::serveLister(Engine::ListenerDetails& ld){
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " **** Serve Listener ****");
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " ************************");
 
-  Context ctx(ld.pRingRequest->deque(), ld.pMemoryPool->getDeleter());
+  ld.ptrServerPort->schedule();
+  ptrRingHandler->handle();
 
-  switch (ctx.headerReader.getType()){
+  Listener::Task *pTask;
+  while(ld.ptrServerPort->dequeue(pTask)){
 
-    case MQTT::Message::MT_PUBLISH:
-      handlePublish(ld, ctx);
-    break;
+    Context ctx(pTask, ld.pMemoryPool->getDeleter());
 
-    case MQTT::Message::MT_PUBACK:
-      handlePubAck(ld, ctx);
-    break;
+    switch (ctx.headerReader.getType()){
 
-    case MQTT::Message::MT_SUBSCRIBE:
-      handleSubscribe(ld, ctx);
-    break;
-
-    case MQTT::Message::MT_CONNECT:
-      handleConnect(ld, ctx);
-    break;
-
-    default:
+      case MQTT::Message::MT_PUBLISH:
+        handlePublish(ld, ctx);
       break;
+
+      case MQTT::Message::MT_PUBACK:
+        handlePubAck(ld, ctx);
+      break;
+
+      case MQTT::Message::MT_SUBSCRIBE:
+        handleSubscribe(ld, ctx);
+      break;
+
+      case MQTT::Message::MT_CONNECT:
+        handleConnect(ld, ctx);
+      break;
+
+      default:
+        break;
+    }
+
   }
 
+  ld.ptrServerPort->flush();
+  ptrRingHandler->handle();
 
 }
 /*************************************************************************/
-void Engine::addListener(Listener* pListener){
+void Engine::addListener(Listener* pListener, int fdIn, int fdOut){
 
-  ListenerDetails ld;
-  ld.iIdx = tabListners.size();
-  ld.pListener = pListener;
-  ld.pRingRequest  = pListener->getInterface()->getRequests();
-  ld.pRingResponse = pListener->getInterface()->getResponses();
-  ld.pMemoryPool = pListener->getMemoryPool();
+  tabListners[0].iIdx = 0;
+  tabListners[0].pListener = pListener;
+  tabListners[0].ptrServerPort  = Tools::SYS::TaskPort<Listener::Task*>::Create(1000, ptrRingHandler.get(), fdIn, fdOut);
+  tabListners[0].pMemoryPool = pListener->getMemoryPool();
 
-  tabListners.push_back(ld);
+
 }
 /*************************************************************************/
  void Engine::handleConnect(Engine::ListenerDetails& ld, Context& ctx){
@@ -195,7 +203,7 @@ void Engine::addListener(Listener* pListener){
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "builder: "<<propertiesComposer.computeLength()<<" "<<(void*)sbl.getHead()<<", "<<MiscTools::BinarytoHex(sbl.getHead()+16, propertiesComposer.computeLength()));
     ptrTask2->setMessage(sbl.getHead());
 
-    ld.pRingResponse->enque(ptrTask2.release());
+    ld.ptrServerPort->enqueue(ptrTask2.release()); //TODO pass pointer l-ref - memory leak on errors
 
  }
 /*************************************************************************/
@@ -296,7 +304,7 @@ void Engine::RetainedPublisher::onTopic(const Topic* pTopic){
 
   ptrTask2->setMessage(sbl.getHead());
 
-  ld.pRingResponse->enque(ptrTask2.release());
+  ld.ptrServerPort->enqueue(ptrTask2.release());
 
  }
 
@@ -310,6 +318,9 @@ void Engine::Publisher::onSubscription(const Subscription* pSubscription){
                                     pMessage->getHandle(),
                                     Listener::Task::CA_SendShared,
                                     std::max(iQoS, pConnection->getMaxQoS()));
+
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "getListenerIdx: "<<(int)pConnection->getListenerIdx());
+
   pEngine->tabListners[pConnection->getListenerIdx()].tmp.iCounter++;
   pMessage->incUsageCount();
 
@@ -376,6 +387,8 @@ void Engine::Publisher::onSubscription(const Subscription* pSubscription){
   Publisher publisher(this, pTopic->getNameHandle(), pMessage, ctx.headerReader.getQoS());
   ptrTopicsStore->iterate(strTopic, &publisher);
 
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "counter: "<<(int)tabListners[0].tmp.iCounter);
+
   for(auto& l : tabListners)
       if(l.tmp.iCounter > 0){
 
@@ -395,7 +408,7 @@ void Engine::Publisher::onSubscription(const Subscription* pSubscription){
         ptrTask2->setMessageHandle(pMessage->getHandle());
         ptrTask2->setContentUsageCount(l.tmp.iCounter);
         ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 90000000;
-        l.pRingResponse->enque(ptrTask2.release());
+        l.ptrServerPort->enqueue(ptrTask2.release());
       }
 
 
@@ -434,7 +447,7 @@ void Engine::Publisher::onSubscription(const Subscription* pSubscription){
   }
 
   ptrTask2->setMessage(sbl.getHead());
-  ld.pRingResponse->enque(ptrTask2.release());
+  ld.ptrServerPort->enqueue(ptrTask2.release());
 
  }
  /*************************************************************************/
@@ -545,7 +558,7 @@ void Engine::buildAndSendShared(ListenerDetails* pListenerDetails,
       // IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "server 2:  "<<(void*)(long)ptrTask->getConnectionHandle());
       // IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "HEX:  "<<(void*)ptrTask.get()<<" "<<MiscTools::BinarytoHex((void*)ptrTask.get(), sizeof(Listener::Task)));
 
-      pListenerDetails->pRingResponse->enque(ptrTask.release());    
+      pListenerDetails->ptrServerPort->enqueue(ptrTask.release());    
 
 }
 /*************************************************************************/
@@ -587,7 +600,7 @@ void Engine::buildAndSendRetained(ListenerDetails* pListenerDetails,
     //   ptrTask->setMessage(sbl.getHead());
 
   
-    //   pListenerDetails->pRingResponse->enque(ptrTask.release());    
+    //   pListenerDetails->ptrServerPort->enqueue(ptrTask.release());    
 
 }
 /*************************************************************************/

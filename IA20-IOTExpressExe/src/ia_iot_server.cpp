@@ -1,8 +1,11 @@
 
 #include <ia20/commonlib/commonlib.h>
 #include <ia20/iot/tcp/Listener.h>
-#include <ia20/iot/tools/spin/TasksRing.h>
+#include <ia20/iot/tools/sys/TaskPort.h>
 #include <ia20/iot/Engine.h>
+
+#include <fcntl.h>
+#include <unistd.h>
 
 using namespace IA20;
 using namespace IA20::IOT;
@@ -12,12 +15,21 @@ int main(){
 
 	SYS::Signal::ThreadRegistration tr;
 
-    unique_ptr<TCP::Listener> ptrListener(new TCP::Listener(
-            IA20::IOT::Tools::SPIN::TasksRing<Listener::Task>::CreateInterface(50), 1000));
+    int fdRequests[2];
+   int fdResponses[2];
 
-    ptrListener->start();
+   int flags = 0 | O_NONBLOCK;
 
-    unique_ptr<Engine> ptrEngine(new Engine(ptrListener.get()));
+   pipe2(fdRequests,  flags);
+   pipe2(fdResponses,  flags);
+
+   unique_ptr<TCP::Listener> ptrListener(new TCP::Listener(fdResponses[0], fdRequests[1], 1000));
+
+   unique_ptr<Engine> ptrEngine(new Engine());
+
+   ptrEngine->addListener(ptrListener.get(), fdRequests[0], fdResponses[1]);
+
+   ptrListener->start();
 
     try{
     

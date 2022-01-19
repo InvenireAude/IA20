@@ -11,7 +11,9 @@
 #define _IA20_IOT_Listener_H_
 
 #include <ia20/commonlib/commonlib.h>
-#include <ia20/iot/tools/TasksRing.h>
+#include <ia20/commonlib/uring/uring.h>
+
+#include <ia20/iot/tools/TaskPort.h>
 #include <ia20/iot/tools/OffsetPtr.h>
 #include <ia20/iot/tools/IdentifiedByHandle.h>
 
@@ -124,6 +126,7 @@ public:
       return iReferenceId;
     }
 
+
   protected:
 
     Command iCommand;
@@ -137,26 +140,34 @@ public:
   };
 
 
-  typedef IA20::IOT::Tools::TasksRing<Task> RingType;
+
+   typedef IA20::IOT::Tools::TaskPort<Task*> PortType;
+
+    PortType* getPort()const{
+      return ptrPort.get();
+    }
+
 
 	virtual ~Listener() throw();
 
-  Listener(std::unique_ptr<RingType::Interface>&& ptrInterface,
-           Memory::SharableMemoryPool* pMemoryPool);
+  Listener(int fdIn, int fdOut);
 
-  inline RingType::Interface* getInterface()const{
-    return ptrInterface.get();
-  }
+  virtual Memory::SharableMemoryPool *getMemoryPool()const = 0;
 
-  inline Memory::SharableMemoryPool *getMemoryPool()const{
-    return pMemoryPool;
+  URing::RingHandler* getRingHandler()const{
+    return ptrRingHandler.get();
   }
 
 protected:
 
-  std::unique_ptr<RingType::Interface> ptrInterface;
+  int fdIn;
+  int fdOut;
 
-  Memory::SharableMemoryPool* pMemoryPool;
+  std::unique_ptr<PortType> 				  ptrPort;
+  std::unique_ptr<URing::RingHandler> 		  ptrRingHandler;
+
+  void setupPort();
+
 };
 /*************************************************************************/
 }

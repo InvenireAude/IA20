@@ -42,7 +42,7 @@ public:
   }
 
 	virtual ~Listener() throw();
-	Listener(std::unique_ptr<RingType::Interface>&& ptrInterface, int iMaxConnections = 1);
+	Listener(int fdIn, int fdOut, int iMaxConnections = 1);
 
   void sendMessage(const String& strHex, int iConnectionId = 0);
 
@@ -50,6 +50,11 @@ public:
   void serveUntilEmptyQueue();
   
   void dump(std::ostream& os);
+
+    virtual Memory::SharableMemoryPool *getMemoryPool()const{
+    return ptrMemoryPoolHolder.get();
+  }
+
 protected:
 
   void run();
@@ -65,16 +70,13 @@ protected:
 
   ContentMap hmContent;
 
-
-
-
-
   ConnectionTab  tabConnections;
 
   typedef std::map<Connection::HandleType, ConnectionEntry*> ConnectionHandleMap;
 
   ConnectionHandleMap hmConnectionHandles;
 
+  int fdIn, fdOut;
 };
 
 /*************************************************************************/

@@ -22,19 +22,18 @@ namespace IOT {
 namespace Mocker {
 
 /*************************************************************************/
-Listener::Listener(std::unique_ptr<RingType::Interface>&& ptrInterface, int iMaxConnections):
-  IOT::Listener(std::move(ptrInterface), NULL),
+Listener::Listener(int fdIn, int fdOut, int iMaxConnections):
+  IOT::Listener(fdIn, fdOut),
   tabConnections(iMaxConnections),
   ptrMemoryPoolHolder(new Memory::SharableMemoryPool){
 	IA20_TRACER;
 
-  pMemoryPool = ptrMemoryPoolHolder.get();
-
   for(auto& c: tabConnections){
     c.aConnectionHandle = 0x999999;
   }
-}
 
+  setupPort();
+}
 /*************************************************************************/
 Listener::~Listener() throw(){
 	IA20_TRACER;
@@ -57,13 +56,17 @@ bool Listener::serve(bool bWait){
 
   static int icount = 0;
 
+  Task* pTask;
+  bool  bGotIt;
 
-  Memory::SharableMemoryPool::unique_ptr<Task> ptrTask(
-    bWait ? ptrInterface->getResponses()->deque() : ptrInterface->getResponses()->dequeNoWait(), 
-    pMemoryPool->getDeleter());
-
-  if(!ptrTask)
+  if(!bWait && !(bGotIt = ptrPort->dequeue(pTask)))
     return false;
+
+  if(!bGotIt){
+    while( bWait && ptrPort->dequeue(pTask)){}
+  }
+
+  Memory::SharableMemoryPool::unique_ptr<Task> ptrTask( pTask, ptrMemoryPoolHolder->getDeleter());
 
   uint8_t buf[5000];
 
@@ -144,7 +147,7 @@ bool Listener::serve(bool bWait){
         //IA20_LOG(true, "rc "<<rc);
 
         if(hmContent.find(ptrTask->getMessageHandle()) == hmContent.end()){
-          IA20_LOG(true, "Content not found: "<<(void*)ptrTask->getMessageHandle());
+          IA20_LOG(true, "Content not found: "<<(void*)(long)ptrTask->getMessageHandle());
           return false;
         }
 
@@ -209,7 +212,7 @@ void Listener::sendMessage(const String& strHex, int iConnectionId){
   static MQTT::Message *theMessage = NULL;
 
   Memory::SharableMemoryPool::unique_ptr<Task> ptrTask(
-    new(pMemoryPool->allocate<Task>(0))Task(Listener::Task::CA_InputMsg), pMemoryPool->getDeleter());
+    new(ptrMemoryPoolHolder->allocate<Task>(0))Task(Listener::Task::CA_InputMsg), ptrMemoryPoolHolder->getDeleter());
 
   // if(!theMessage){
   //   theMessage = new(pMemoryPool->allocate<MQTT::Message>(ptrTask.get())) MQTT::Message(strHex);
@@ -219,7 +222,7 @@ void Listener::sendMessage(const String& strHex, int iConnectionId){
 
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "*** Mocker send: "<<strHex);
 
-  Memory::StreamBufferList sbl(pMemoryPool, ptrTask.get());
+  Memory::StreamBufferList sbl(ptrMemoryPoolHolder.get(), ptrTask.get());
   //TODO helper StringToSBL
 
   int iMessageLen = strHex.length()/2;
@@ -254,8 +257,10 @@ void Listener::sendMessage(const String& strHex, int iConnectionId){
   ptrTask->iMessageId = ++iMessageId;
 
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Task set msg: "<<(void*)ptrTask->getMessage());
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Port: "<<(void*)ptrPort.get());
 
-  ptrInterface->getRequests()->enque(ptrTask.release());
+  ptrPort->enqueue(ptrTask.release());
+  ptrPort->flush();
 
   tabConnections[iConnectionId].lstWire.push_back("INPUT:   "+strHex);
 

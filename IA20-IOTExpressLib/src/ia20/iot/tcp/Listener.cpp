@@ -13,6 +13,7 @@
 
 #include <ia20/iot/memory/SharableMemoryPool.h>
 #include <ia20/iot/memory/StreamBufferList.h>
+#include <ia20/iot/tools/sys/TaskPort.h>
 
 #include <ia20/iot/logger/LogLevel.h>
 
@@ -24,14 +25,10 @@ namespace IOT {
 namespace TCP {
 
 /*************************************************************************/
-Listener::Listener(std::unique_ptr<RingType::Interface>&& ptrInterface, int iMaxConnections):
-  	IOT::Listener(std::move(ptrInterface), NULL),
+Listener::Listener(int fdIn, int fdOut, int iMaxConnections):
+  	IOT::Listener(fdIn, fdOut),
 	ptrMemoryPoolHolder(new Memory::SharableMemoryPool),
 	Thread(this){
-	IA20_TRACER;
-
-  	pMemoryPool = ptrMemoryPoolHolder.get();
-
 	IA20_TRACER;
 }
 /*************************************************************************/
@@ -55,8 +52,8 @@ void Listener::run(){
 
 	SYS::Signal::ThreadRegistration tr;
 
-    ptrRingHandler.reset(new URing::RingHandler);
-
+	setupPort();
+	
     Net::Conn::TCP::Peer peer("127.0.0.1", 55556);
 
 	std::unique_ptr<URing::IO::TCP::AsyncServer> ptrAsyncServer(new 
@@ -81,12 +78,13 @@ void Listener::run(){
         	e.printToStream(std::cerr);
     	}
 		
-				Memory::SharableMemoryPool::unique_ptr<Task> ptrTask(
-    	 	ptrInterface->getResponses()->dequeNoWait(), pMemoryPool->getDeleter());
-	
-		
-		if(!ptrTask)
+	  	Task* pTask;
+
+		if(!ptrPort->dequeue(pTask))
 			continue;
+	
+		Memory::SharableMemoryPool::unique_ptr<Task> ptrTask(pTask, ptrMemoryPoolHolder->getDeleter());
+	
 		IA20_LOG(true, "Got message");
 
 		if(ptrTask->getReferenceId()){
@@ -162,7 +160,7 @@ void Listener::run(){
 
         if(--hmContent[aMessageHandle].iUsageCount == 0){
           IA20_LOG(true, "Free content usage");
-		  pMemoryPool->free(hmContent[aMessageHandle].pPayLoad);
+		  ptrMemoryPoolHolder->free(hmContent[aMessageHandle].pPayLoad);
 
 		  hmContent.erase(aMessageHandle);
 

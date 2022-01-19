@@ -96,7 +96,7 @@ void Server::handleRead(off_t iDataLen){
             //TODO first time only ?
             ctx.ptrTask->setReferenceId((uint64_t)this);
             ctx.ptrTask->setConnectionHandle(aConnectionHandle);
-            pListener->getInterface()->getRequests()->enque(ctx.ptrTask.release());
+            pListener->getPort()->enqueue(ctx.ptrTask.release());
 
             uint32_t iRemaining = iBufferDataLength - ctx.iExpectingLength;
 

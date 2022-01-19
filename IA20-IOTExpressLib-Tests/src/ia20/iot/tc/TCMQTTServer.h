@@ -23,8 +23,7 @@
 
 #include <ia20/iot/iot.h>
 #include <ia20/iot/mocker/mocker.h>
-#include <ia20/iot/tools/sys/TasksRing.h>
-#include <ia20/iot/tools/spin/TasksRing.h>
+#include <ia20/iot/tools/sys/TaskPort.h>
 
 namespace IA20{
 namespace TC{
@@ -48,16 +47,10 @@ protected:
 
   struct TestEnv {
 
-    std::unique_ptr<IOT::Mocker::ActivityStore> ptrActivityStore;
-    // std::unique_ptr<IOT::Mocker::ActionsStore>  ptrActionsStore;
     std::unique_ptr<IOT::Mocker::Listener>      ptrListener;
-
-
-    std::unique_ptr<IOT::Engine> ptrEngine;
+    std::unique_ptr<IOT::Engine>                ptrEngine;
 
     void reset();
-
-
   };
 
     void caseBasicImpl(const std::initializer_list<std::pair<int, String> >& lstArgs);

@@ -18,7 +18,8 @@
 
 
 #include "TCMQTTServer.h"
-
+#include <fcntl.h>
+#include <unistd.h>
 
 
 #include <memory>
@@ -115,8 +116,27 @@ std::initializer_list< std::pair<int, String> > CaseMQv5QoS1Retain{
 	IA20::TimeSample ts(true);
 
    for(const auto& s: lstArgs){
+
+    IA20_LOG(true, "*** Iterate 1 ***");
+
     env.ptrListener->sendMessage(s.second, s.first);
+    
+    env.ptrListener->getRingHandler()->handle();
+    //env.ptrEngine->getPort()->schedule();
+    env.ptrEngine->getRingHandler()->handle();
+
+    IA20_LOG(true, "*** Engine ***");
+
     env.ptrEngine->serve();
+
+    IA20_LOG(true, "*** Responses ***");
+
+    //env.ptrEngine->getPort()->flush();
+    env.ptrEngine->getRingHandler()->handle();
+
+    env.ptrListener->getPort()->schedule();
+    env.ptrListener->getRingHandler()->handle();
+
     env.ptrListener->serveUntilEmptyQueue();
    }
 
@@ -212,14 +232,21 @@ void TCMQTTServer::TestEnv::reset(){
   //  ptrActivityStore.reset(new Mocker::ActivityStore(Tools::SPIN::TasksRing<ActivityStore::Task>::CreateInterface(50)));
   //  ptrActionsStore.reset(new Mocker::ActionsStore(Tools::SPIN::TasksRing<ActionsStore::Task>::CreateInterface(50)));
 
-  ptrListener.reset(new Mocker::Listener(Tools::SPIN::TasksRing<Listener::Task>::CreateInterface(50), 2));
+   int fdRequests[2];
+   int fdResponses[2];
 
-  ptrEngine.reset(new Engine(ptrListener.get()));
+   int flags = 0;// | O_NONBLOCK;
 
+   pipe2(fdRequests,  flags);
+   pipe2(fdResponses,  flags);
 
+   
+   ptrListener.reset(new Mocker::Listener(fdResponses[0], fdRequests[1], 2));
 
-  // ptrActivityStore->start(); 
-  // ptrActionsStore->start();
+   ptrEngine.reset(new Engine());
+
+   ptrEngine->addListener(ptrListener.get(), fdRequests[0], fdResponses[1]);
+
 }
 /*************************************************************************/
 }

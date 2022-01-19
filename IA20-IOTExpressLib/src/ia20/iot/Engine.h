@@ -45,11 +45,10 @@ class Engine {
 
   struct ListenerDetails {
     
-    int                   iIdx;
-    Listener*             pListener;
-    Listener::RingType*   pRingRequest;
-    Listener::RingType*   pRingResponse;
-    Memory::SharableMemoryPool* pMemoryPool;
+    int                                 iIdx;
+    Listener*                           pListener;
+    std::unique_ptr<Listener::PortType> ptrServerPort;
+    Memory::SharableMemoryPool*         pMemoryPool;
 
     union {
       uint32_t iCounter;  
@@ -62,11 +61,16 @@ public:
 
 	virtual ~Engine() throw();
 
-  Engine(
-    Listener*      pListener
-   );
+  Engine();
 
   void serve();
+  
+
+  URing::RingHandler* getRingHandler()const{
+    return ptrRingHandler.get();
+  }
+
+  void addListener(Listener* pListener, int fdIn, int fdOut);
   
 protected:
 
@@ -74,7 +78,6 @@ protected:
   ListenerVector tabListners;
 
   void serveLister(ListenerDetails& ld);
-  void addListener(Listener* pListener);
 
   struct Context {
 
@@ -111,6 +114,8 @@ protected:
   std::unique_ptr<SubscriptionsStore> ptrSubscriptionsStore;
   std::unique_ptr<MessageStore>       ptrMessageStore;
   std::unique_ptr<ActivityStore>      ptrActivityStore;
+
+  std::unique_ptr<URing::RingHandler> 		  ptrRingHandler;
 
   class Publisher : public Topic::Callback {
     public:

@@ -32,8 +32,7 @@ public:
   protected:
 
     EventHandler(RingHandler* pRingHandler);
-
-  RingHandler* pRingHandler;
+    RingHandler* pRingHandler;
 };
 /*************************************************************************/
 

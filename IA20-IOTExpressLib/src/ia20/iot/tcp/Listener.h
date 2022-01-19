@@ -30,7 +30,7 @@ class Listener :
 public:
 
 	virtual ~Listener() throw();
-	Listener(std::unique_ptr<RingType::Interface>&& ptrInterface, int iMaxConnections);
+	Listener(int fdIn, int fdOut, int iMaxConnections);
 
 	inline URing::RingHandler* getRingHandler()const{
 		return ptrRingHandler.get();
@@ -50,10 +50,13 @@ public:
 		return it->second.pPayLoad;
 	};
 
+  virtual Memory::SharableMemoryPool *getMemoryPool()const{
+    return ptrMemoryPoolHolder.get();
+  }
+
 protected:
 
   std::unique_ptr<Memory::SharableMemoryPool> ptrMemoryPoolHolder;
-  std::unique_ptr<URing::RingHandler> ptrRingHandler;
 
   std::list< std::unique_ptr<Server> > lstServers;
   typedef std::unordered_map< Connection::HandleType, Server*> ConnectionHandleMap;

@@ -35,6 +35,9 @@ RingHandler::RingHandler(){
 /*************************************************************************/
 RingHandler::~RingHandler() throw(){
 	IA20_TRACER;
+
+  io_uring_queue_exit(&ring);
+
 }
 /*************************************************************************/
 void RingHandler::onEvent(struct io_uring_cqe *cqe){
@@ -60,7 +63,7 @@ static inline void _submit_and_check(struct io_uring* pRing){
 void RingHandler::prepareRead(EventHandler* pEventHandler, int fd, struct iovec* iovec, off_t iOffset){
   IA20_TRACER;
 
-  IA20_LOG(LogLevel::INSTANCE.isSystem(), "Prepare read, fd: "<<fd);
+  IA20_LOG(LogLevel::INSTANCE.isSystem(), "Prepare read, fd: "<<fd<<" "<<(void*)this);
 
   io_uring_sqe *sqe = io_uring_get_sqe(&ring);
 
@@ -108,7 +111,7 @@ void RingHandler::prepareShutdown(EventHandler* pEventHandler, int fd, int how){
 void RingHandler::prepareWrite(EventHandler* pEventHandler, int fd, struct iovec* iovec, off_t iOffset){
   IA20_TRACER;
 
-  IA20_LOG(LogLevel::INSTANCE.isSystem(), "Prepare write, fd: "<<fd);
+  IA20_LOG(LogLevel::INSTANCE.isSystem(), "Prepare write, fd: "<<fd<<" "<<(void*)this);
 
   io_uring_sqe *sqe = io_uring_get_sqe(&ring);
 
@@ -145,7 +148,7 @@ void RingHandler::prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::
     struct io_uring_cqe *cqe;
     int iResult = -62;
 
-//    IA20_LOG(LogLevel::INSTANCE.isSystem(), "Waiting for ring SQE ...");
+    IA20_LOG(LogLevel::INSTANCE.isSystem(), "Waiting for ring SQE ...");
 
    _submit_and_check(&ring);
 
@@ -176,7 +179,7 @@ void RingHandler::prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::
 // >>>>>>> c392d7715f0a65ca912543967e35f8f77e3a4d42
 
      // Thread::Cancellation::Test();
-     // IA20_LOG(LogLevel::INSTANCE.isSystem(), "iResult = "<<iResult);
+     IA20_LOG(LogLevel::INSTANCE.isSystem(), "iResult = "<<iResult);
     //}
 
     if(iResult < 0){

@@ -37,7 +37,7 @@ void ReadHandler::handle(int iResult){
 
   IA20_LOG(LogLevel::INSTANCE.isSystem(), "handle: res="<<iResult);
 
-  if(iResult < 0)
+  if(iResult < 0 && iResult != -11)
     IA20_THROW(URingException("Failure in ReadHandler", -iResult));
 
   handleRead(iResult);
