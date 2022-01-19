@@ -16,6 +16,7 @@
 #include "Subscription.h"
 #include "MessageStore.h"
 #include "Listener.h"
+#include "Topic.h"
 
 namespace IA20 {
 namespace IOT {
@@ -42,12 +43,14 @@ class Activity {
     Activity(SequenceType iSequence,
              State        iState,
              Subscription::HandleType   sSubscriptionHandle,
+             Topic::FullTopicNameHandle aTopicNameHandle,
              Message::HandleType        aMessageHandle,
              Listener::Task::Command    iCommand,
              uint8_t                    iQoS):
         iSequence(iSequence),
         iState(iState),
         aSubscriptionHandle(sSubscriptionHandle),
+        aTopicNameHandle(aTopicNameHandle),
         aMessageHandle(aMessageHandle),
         iCommand(iCommand),
         iQoS(iQoS){}
@@ -57,6 +60,10 @@ class Activity {
         return aSubscriptionHandle;
       };
       
+      inline Topic::FullTopicNameHandle getTopicNameHandle()const{
+        return aTopicNameHandle;
+      };
+
       inline Message::HandleType getMessageHandle()const{
         return aMessageHandle;
       };
@@ -82,6 +89,7 @@ class Activity {
      Listener::Task::Command    iCommand;
      Subscription::HandleType   aSubscriptionHandle;
      Message::HandleType        aMessageHandle;
+     Topic::FullTopicNameHandle aTopicNameHandle;
   };
 /*************************************************************************/
 }

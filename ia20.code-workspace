@@ -99,7 +99,26 @@
       "semaphore": "cpp",
       "bitset": "cpp",
       "future": "cpp",
-      "variant": "cpp"
+      "variant": "cpp",
+      "csetjmp": "cpp",
+      "csignal": "cpp",
+      "any": "cpp",
+      "barrier": "cpp",
+      "cfenv": "cpp",
+      "charconv": "cpp",
+      "complex": "cpp",
+      "coroutine": "cpp",
+      "cuchar": "cpp",
+      "forward_list": "cpp",
+      "unordered_set": "cpp",
+      "regex": "cpp",
+      "source_location": "cpp",
+      "latch": "cpp",
+      "scoped_allocator": "cpp",
+      "shared_mutex": "cpp",
+      "syncstream": "cpp",
+      "typeindex": "cpp",
+      "valarray": "cpp"
     }
   }
 }

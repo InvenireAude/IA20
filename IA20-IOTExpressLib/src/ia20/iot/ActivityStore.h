@@ -42,9 +42,10 @@ public:
 
   ActivityStore(IndexType iSize = 1000);
 
-   Activity* createActivity( Subscription::HandleType  mSubscriptionHandle,
-                             Message::HandleType       mMessageHandle,
-                             Listener::Task::Command   iCommand,
+   Activity* createActivity( Subscription::HandleType   mSubscriptionHandle,
+                             Topic::FullTopicNameHandle aTopicNameHandle,
+                             Message::HandleType        mMessageHandle,
+                             Listener::Task::Command    iCommand,
                              uint8_t      iQoS);
 
     inline Activity* back()const{

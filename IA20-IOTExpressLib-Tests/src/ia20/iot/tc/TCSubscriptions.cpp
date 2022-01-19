@@ -193,16 +193,21 @@ std::list< std::pair<int, String> > ResultSetRetain03a {
 /*************************************************************************/
 class RetainCallback : public Topic::RetainCallback{
   public:
+
+  RetainCallback(TCSubscriptions::TestEnv& env):env(env){}
   virtual void onTopic(const Topic* pTopic);
 
   std::list< std::pair<int, String> > lstResult;
+
+  protected:
+  TCSubscriptions::TestEnv& env;
 };
 /*************************************************************************/
 void RetainCallback::onTopic(const Topic* pTopic){
-  std::cerr<<"Callback: "<<pTopic->getName()<<"\t"<<(void*)(long)pTopic->getRetained()<<std::endl;
+  std::cerr<<"Callback: "<<env.ptrTopicsStore->getFullTopicName(pTopic->getNameHandle())<<"\t"<<(void*)(long)pTopic->getRetained()<<std::endl;
   lstResult.push_back(std::pair<int, String>(
       pTopic->getRetained(), 
-      pTopic->getName()) );
+      env.ptrTopicsStore->getFullTopicName(pTopic->getNameHandle())) );
 }
 /*************************************************************************/
 void TCSubscriptions::checkRetained(
@@ -220,7 +225,7 @@ void TCSubscriptions::checkRetained(
   }
 
   Tools::StringRef strTopic(strPubTopic);
-  std::unique_ptr<RetainCallback> ptrCallback(new RetainCallback());
+  std::unique_ptr<RetainCallback> ptrCallback(new RetainCallback(env));
 
   env.ptrTopicsStore->iterateRetained(strTopic, ptrCallback.get());
   ptrCallback->lstResult.sort();

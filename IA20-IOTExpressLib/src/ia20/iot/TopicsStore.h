@@ -51,6 +51,36 @@ public:
 				 		 Topic::RetainCallback* pCallback);
 
 	
+	inline Tools::StringRef getFullTopicName(Topic::FullTopicNameHandle iNameHandle)const{
+		FullTopicNamesRevMap::const_iterator it = hmFullTopicNamesRev.find(iNameHandle);
+		
+		if(it == hmFullTopicNamesRev.end()){
+			IA20_THROW(ItemNotFoundException("FullTopicNameHandle: ")<<(long)iNameHandle);
+		}
+
+		return it->second;
+	};
+
+	inline Topic::FullTopicNameHandle getTopicNameHandle(const Tools::StringRef& strTopic)const{
+		FullTopicNamesMap::const_iterator it = hmFullTopicNames.find(String(strTopic));
+		
+		if(it == hmFullTopicNames.end()){
+			IA20_THROW(ItemNotFoundException("FullTopicName: ")<<strTopic);
+		}
+
+		return it->second;
+	};
+
+	inline Topic::FullTopicNameHandle addFullTopicName(const Tools::StringRef& strTopic){
+
+		Topic::FullTopicNameHandle iHandle = hmFullTopicNames.size() + 1;
+
+		hmFullTopicNames[strTopic] = iHandle;
+		hmFullTopicNamesRev[iHandle] = strTopic;
+
+		return iHandle;
+	};
+
 protected:
 
 	typedef Memory::FixedObjectsPool<Topic, 10000> TopicPool;
@@ -71,7 +101,14 @@ protected:
 	Topic* pRootTopic;
 
 	std::unique_ptr<Tools::WordsMap> ptrWordsMap;
+	
+	//TODO temporary
 
+	typedef std::unordered_map<String, Topic::FullTopicNameHandle, _Hash<String>> FullTopicNamesMap;
+	typedef std::unordered_map<Topic::FullTopicNameHandle, String> FullTopicNamesRevMap;
+
+	FullTopicNamesMap hmFullTopicNames;
+	FullTopicNamesRevMap hmFullTopicNamesRev;
 
 	class RetainedWorker {
 		

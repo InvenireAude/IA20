@@ -18,6 +18,7 @@
 #include "ConnectionsStore.h"
 #include "TopicsStore.h"
 #include "Subscription.h"
+#include "Connection.h"
 #include "SubscriptionsStore.h"
 #include "MessageStore.h"
 #include "Topic.h"
@@ -198,6 +199,25 @@ void Engine::addListener(Listener* pListener){
 
  }
 /*************************************************************************/
+void Engine::RetainedPublisher::onTopic(const Topic* pTopic){
+
+ IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Topic has retained: "<<(void*)(long)pTopic->getRetained());
+
+  Connection *pConnection = pEngine->ptrConnectionsStore->get(pSubscription->getConnectionHandle());
+
+  Activity* pActivity = pEngine->ptrActivityStore->createActivity(pSubscription->getHandle(), 
+                                                          pTopic->getNameHandle(),
+                                                          pTopic->getRetained(),
+                                                          Listener::Task::CA_SendDirect,
+                                                          std::max(iQoS, pConnection->getMaxQoS()));
+  
+  Message *pMessage = pEngine->ptrMessageStore->lookup(pTopic->getRetained());
+
+  pEngine->buildAndSendRetained(&pEngine->tabListners[pConnection->getListenerIdx()],
+        pSubscription, pConnection, pMessage, pActivity);
+
+}
+/*************************************************************************/
  void Engine::handleSubscribe(Engine::ListenerDetails& ld, Context& ctx){
    IA20_TRACER;
 
@@ -213,7 +233,7 @@ void Engine::addListener(Listener* pListener){
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "MQTT version: "<<(int)pConnection->getMQTTVersion());
 
    if(iQoS >= pConnection->getMaxQoS()){
-      iQoS = pConnection->getMaxQoS();
+      iQoS  = pConnection->getMaxQoS();
    }
 
     if(pConnection->getMQTTVersion() >= MQTT::Message::MV_MQTTv5){
@@ -236,18 +256,8 @@ void Engine::addListener(Listener* pListener){
       Topic* pTopic = ptrTopicsStore->getOrCreateTopic(strTopic);
       Subscription *pSubscription = ptrSubscriptionsStore->addSubscription(ctx.ptrTask->getConnectionHandle(), pTopic, strTopic, iOptions);
 
-      if(pTopic->hasRetained()){
-          IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Topic has retained: "<<(void*)(long)pTopic->getRetained());
-
-          Activity* pActivity = ptrActivityStore->createActivity(pSubscription->getHandle(), 
-                                                                  pTopic->getRetained(),
-                                                                  Listener::Task::CA_SendDirect,
-                                                                  std::max(ctx.headerReader.getQoS(),pSubscription->getQoS()));
-          
-          Message *pMessage = ptrMessageStore->lookup(pTopic->getRetained());
-          buildAndSendRetained(&ld, pSubscription, pConnection, pMessage, pActivity);
-
-      }
+      RetainedPublisher publisher(this, pSubscription, iQoS);
+      ptrTopicsStore->iterateRetained(strTopic, &publisher);
     }
 
   Memory::SharableMemoryPool::unique_ptr<Listener::Task>
@@ -289,6 +299,21 @@ void Engine::addListener(Listener* pListener){
   ld.pRingResponse->enque(ptrTask2.release());
 
  }
+
+/*************************************************************************/
+void Engine::Publisher::onSubscription(const Subscription* pSubscription){
+
+  Connection *pConnection = pEngine->ptrConnectionsStore->get(pSubscription->getConnectionHandle());
+
+  pEngine->ptrActivityStore->createActivity( pSubscription->getHandle(), 
+                                    aNameHandle,
+                                    pMessage->getHandle(),
+                                    Listener::Task::CA_SendShared,
+                                    std::max(iQoS, pConnection->getMaxQoS()));
+  pEngine->tabListners[pConnection->getListenerIdx()].tmp.iCounter++;
+  pMessage->incUsageCount();
+
+}
 /*************************************************************************/
  void Engine::handlePublish(Engine::ListenerDetails& ld, Context& ctx){
    IA20_TRACER;
@@ -327,9 +352,11 @@ void Engine::addListener(Listener* pListener){
 
   Message* pMessage = ptrMessageStore->createMessage(ctx.reader, iDataLen, ctx.headerReader.getQoS());
 
-  Topic*pTopic = ptrTopicsStore->getOrCreateTopic(strTopic);
+  Topic* pTopic = ptrTopicsStore->getOrCreateTopic(strTopic);
+  
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Topic name:"<<pTopic->getNameHandle());
 
-  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Retain message ???");
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Retain message ?");
 
     if( ctx.headerReader.testFlag(MQTT::Message::MF_RETAIN) ){
       IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Retain message");
@@ -345,21 +372,9 @@ void Engine::addListener(Listener* pListener){
       l.tmp.iCounter = 0;
     }
 
-  if(pTopic->hasFirstSubscription()){
-
-    Subscription* pSubscription = pTopic->getFirstSubscription();
-
-    while(pSubscription){
-
-       ptrActivityStore->createActivity( pSubscription->getHandle(), 
-                                         pMessage->getHandle(),
-                                         Listener::Task::CA_SendShared,
-                                         std::max(ctx.headerReader.getQoS(),pSubscription->getQoS()));
-
-       tabListners[pConnection->getListenerIdx()].tmp.iCounter++;
-       pMessage->incUsageCount();
-       pSubscription = pSubscription->getNext();
-    }
+  
+  Publisher publisher(this, pTopic->getNameHandle(), pMessage, ctx.headerReader.getQoS());
+  ptrTopicsStore->iterate(strTopic, &publisher);
 
   for(auto& l : tabListners)
       if(l.tmp.iCounter > 0){
@@ -383,7 +398,6 @@ void Engine::addListener(Listener* pListener){
         l.pRingResponse->enque(ptrTask2.release());
       }
 
-    }
 
   if(iQoS == 0){
   //  ptrMessageStore->dispose(pMessage);
@@ -504,7 +518,15 @@ void Engine::buildAndSendShared(ListenerDetails* pListenerDetails,
       builder.setType(MQTT::Message::MT_PUBLISH);
      // builder.setID(pConnection->getNextId());
       builder.setFlags((MQTT::Message::Flag)0, pMessage->getQoS());
-      Tools::StringRef strTopic(pSubsciption->getTopic());
+
+      Topic::FullTopicNameHandle aNameHandle = pActivity->getTopicNameHandle();
+      IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Name handle :: **"<<(long)aNameHandle);
+
+      Tools::StringRef strTopic(
+          aNameHandle != Topic::CNullName ?
+          ptrTopicsStore->getFullTopicName(aNameHandle) :
+          pSubsciption->getTopic()
+        );
 
       builder.setLength(pMessage->getDataLength() + 2 + (2 + strTopic.getLength()) + propertiesComposer.computeLength());
       builder.build(writer);

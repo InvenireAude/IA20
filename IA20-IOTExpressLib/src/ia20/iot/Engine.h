@@ -20,6 +20,7 @@
 #include "Listener.h"
 #include "ActivityStore.h"
 #include "MessageStore.h"
+#include "Topic.h"
 
 namespace IA20 {
 namespace IOT {
@@ -35,6 +36,9 @@ class TopicsStore;
 class SubscriptionsStore;
 class MessageStore;
 class ActivityStore;
+class Message;
+class Topic;
+class Subscription;
 
 class Engine {
   protected:
@@ -107,6 +111,46 @@ protected:
   std::unique_ptr<SubscriptionsStore> ptrSubscriptionsStore;
   std::unique_ptr<MessageStore>       ptrMessageStore;
   std::unique_ptr<ActivityStore>      ptrActivityStore;
+
+  class Publisher : public Topic::Callback {
+    public:
+      
+      inline Publisher(Engine  *pEngine,
+                      Topic::FullTopicNameHandle aNameHandle,
+                      Message *pMessage,
+                      uint8_t  iQoS):
+        pMessage(pMessage),
+        aNameHandle(aNameHandle),
+        pEngine(pEngine),
+        iQoS(iQoS){};
+
+      virtual void onSubscription(const Subscription* pSubscription);
+    
+    protected:
+      Message *pMessage;
+      Engine  *pEngine;
+      Topic::FullTopicNameHandle aNameHandle;
+      uint8_t iQoS;
+  };
+
+  class RetainedPublisher : public Topic::RetainCallback {
+    public:
+      
+      inline RetainedPublisher(Engine  *pEngine,
+                              Subscription *pSubscription,
+                              uint8_t  iQoS):
+        pSubscription(pSubscription),
+        pEngine(pEngine),
+        iQoS(iQoS){};
+
+      virtual void onTopic(const Topic* pTopic);
+    
+    protected:
+      Subscription  *pSubscription;
+      Engine        *pEngine;
+      uint8_t       iQoS;
+  };
+
 };
 
 /*************************************************************************/

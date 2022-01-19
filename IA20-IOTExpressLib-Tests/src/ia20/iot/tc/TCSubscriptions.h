@@ -49,8 +49,6 @@ public:
 	void caseRetained02();
   void caseRetained03();
 
-protected:
-
   struct TestEnv {
 
     std::unique_ptr<IOT::SubscriptionsStore> ptrSubscriptionsStore;
@@ -59,7 +57,9 @@ protected:
     void reset();
   };
 
-  struct TestEnv env;
+protected:
+
+   TestEnv env;
 
   void checkSubscriptions(
     const std::list< std::pair<int, String> >& lstSetup,

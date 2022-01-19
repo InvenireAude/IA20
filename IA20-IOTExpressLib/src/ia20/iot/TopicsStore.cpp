@@ -19,9 +19,11 @@ namespace IOT {
 /*************************************************************************/
 TopicsStore::TopicsStore():
 	hmChild(1000),
+	hmFullTopicNames(100),
+	hmFullTopicNamesRev(100),
 	ptrWordsMap(new Tools::WordsMap()){
 	IA20_TRACER;
-	pRootTopic = TopicPool::New(Tools::WordsMap::CRoot, nullptr , "");
+	pRootTopic = TopicPool::New(Tools::WordsMap::CRoot, nullptr , Topic::CNullName);
 }
 /*************************************************************************/
 TopicsStore::~TopicsStore() throw(){
@@ -53,8 +55,8 @@ Topic *TopicsStore::getOrCreateTopic(const Tools::StringRef& strTopic){
 		ChildMap::iterator itNext = hmChild.find(key);
 
 		if(itNext == hmChild.end()){
-			pCursor = TopicPool::New(*it, pCursor, ptrWordsMap->getName(*it));
-
+			//TODO only leave nodes have names/handles
+			pCursor = TopicPool::New(*it, pCursor, addFullTopicName(strTopic));
 			if(*it != Tools::WordsMap::CHash && *it != Tools::WordsMap::CPlus){
 				hmChildren[key.first].push_back(pCursor);
 			}
@@ -64,6 +66,8 @@ Topic *TopicsStore::getOrCreateTopic(const Tools::StringRef& strTopic){
 			pCursor = itNext->second;
 		}
 	}
+
+	
 
   	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Get Topic: "<<strTopic<<" = "<<(void*)pCursor);
 	return pCursor;

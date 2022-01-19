@@ -29,17 +29,16 @@ public:
 
 	//~Topic() throw();
 
-	inline Topic(Tools::WordsMap::WordIdType iToken, Topic* pParent, const String& strTokenName):
+	typedef uint32_t FullTopicNameHandle;
+
+	static const uint32_t CNullName = 0x0;
+
+	Topic(Tools::WordsMap::WordIdType iToken, Topic* pParent, FullTopicNameHandle iNameHandle):
 	iToken(iToken),
     pParent(pParent),
     aRetainedMessageHandle(Message::CNullHandle),
-	pFirst(NULL){
-		if(pParent){
-			strName = pParent->getName() + "/";
-		}
-		strName += strTokenName;
-		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo,"New token: "<<(int)iToken<<", name: "<<strName);
-	};
+	iNameHandle(iNameHandle),
+	pFirst(NULL){}
 
 	inline Tools::WordsMap::WordIdType getToken()const{
 		return iToken;
@@ -83,8 +82,8 @@ public:
 		return pParent;
 	}
 
-	inline const String& getName()const{
-		return strName;
+	FullTopicNameHandle getNameHandle()const{
+		return iNameHandle;
 	}
 
 protected:
@@ -92,8 +91,7 @@ protected:
   	Topic* pParent;
 	Subscription* pFirst;
 	Message::HandleType aRetainedMessageHandle;
-
-	String strName;//TODO
+	FullTopicNameHandle iNameHandle;	
 };
 
 /*************************************************************************/
