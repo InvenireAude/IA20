@@ -15,19 +15,12 @@ int main(){
 
 	SYS::Signal::ThreadRegistration tr;
 
-    int fdRequests[2];
-   int fdResponses[2];
 
-   int flags = 0 | O_NONBLOCK;
-
-   pipe2(fdRequests,  flags);
-   pipe2(fdResponses,  flags);
-
-   unique_ptr<TCP::Listener> ptrListener(new TCP::Listener(fdResponses[0], fdRequests[1], 1000));
+   unique_ptr<TCP::Listener> ptrListener(new TCP::Listener(1000));
 
    unique_ptr<Engine> ptrEngine(new Engine());
 
-   ptrEngine->addListener(ptrListener.get(), fdRequests[0], fdResponses[1]);
+   ptrEngine->addListener(ptrListener.get());
 
    ptrListener->start();
 

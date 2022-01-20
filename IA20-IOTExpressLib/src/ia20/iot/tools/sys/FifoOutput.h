@@ -41,8 +41,8 @@ public:
 
 	bool enqueue(T v){
 
-		IA20_LOG(true, "enqueue: "<<(void*)v<<" "<<
-			iNumPending<<" ? "<<Fifo<T>::iBufferSize);
+		// IA20_LOG(true, "enqueue: "<<(void*)v<<" "<<
+		// 	iNumPending<<" ? "<<Fifo<T>::iBufferSize);
 
 		if(iNumPending == Fifo<T>::iBufferSize)
 			return false;
@@ -84,7 +84,7 @@ protected:
 		if(iRequestSize == 0)
 			return;
 
-		IA20_LOG(true, "Writing: "<<iRequestSize);
+		// IA20_LOG(true, "Writing: "<<iRequestSize);
 		
 
 		URing::IO::WriteHandler::iovec.iov_base = pIOWriteHead;

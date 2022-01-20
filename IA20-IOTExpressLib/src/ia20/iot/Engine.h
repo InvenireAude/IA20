@@ -63,15 +63,14 @@ public:
 
   Engine();
 
-  void serve();
-  
+  void serve();  
 
   URing::RingHandler* getRingHandler()const{
     return ptrRingHandler.get();
   }
 
-  void addListener(Listener* pListener, int fdIn, int fdOut);
-  
+  void addListener(Listener* pListener);
+
 protected:
 
   typedef std::vector<ListenerDetails> ListenerVector;

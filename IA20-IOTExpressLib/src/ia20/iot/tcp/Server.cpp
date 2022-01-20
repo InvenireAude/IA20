@@ -49,7 +49,7 @@ void Server::prepareRead(){
     ReadHandler::iovec.iov_base = ptrInputBuffer.get();
 	ReadHandler::iovec.iov_len  = 4096;
 	
-    iBufferDataLength = 0;
+    iBufferDataLength = 0;  
     
     IA20_LOG(true,"Waiting for data");
 	ReadHandler::prepare();
@@ -96,8 +96,8 @@ void Server::handleRead(off_t iDataLen){
             //TODO first time only ?
             ctx.ptrTask->setReferenceId((uint64_t)this);
             ctx.ptrTask->setConnectionHandle(aConnectionHandle);
-            pListener->getPort()->enqueue(ctx.ptrTask.release());
-
+            pListener->getPort()->enqueue(ctx.ptrTask.release());            
+            
             uint32_t iRemaining = iBufferDataLength - ctx.iExpectingLength;
 
             IA20_LOG(true,"Check1:"<<(int)iRemaining);
@@ -123,6 +123,8 @@ void Server::handleRead(off_t iDataLen){
     }
 
     ReadHandler::prepare();
+
+    pListener->getPort()->flush();
 }
 /*************************************************************************/
 void Server::sendMessage(Memory::SharableMemoryPool::unique_ptr<IOT::Listener::Task>&& ptrTask){

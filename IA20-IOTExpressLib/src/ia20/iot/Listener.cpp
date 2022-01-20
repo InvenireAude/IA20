@@ -15,8 +15,7 @@ namespace IA20 {
 namespace IOT {
 
 /*************************************************************************/
-Listener::Listener(int fdIn, int fdOut):
-	fdIn(fdIn), fdOut(fdOut){
+Listener::Listener(){
 	IA20_TRACER;
 }
 /*************************************************************************/
@@ -26,7 +25,9 @@ Listener::~Listener() throw(){
 /*************************************************************************/
 void Listener::setupPort(){
 	ptrRingHandler.reset(new URing::RingHandler);
-    ptrPort = Tools::SYS::TaskPort<Listener::Task*>::Create(1000, ptrRingHandler.get(), fdIn, fdOut);
+	Tools::SYS::PipeFD::PeerType peerClient(aPipeFD.getClientPeer());
+    ptrPort = Tools::SYS::TaskPort<Listener::Task*>::Create(
+		1000, ptrRingHandler.get(), peerClient.first, peerClient.second);
 }
 /*************************************************************************/
 }

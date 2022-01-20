@@ -36,6 +36,7 @@ public:
 	RingHandler();
 
   void handle();
+  void handleAtLeastOnce();
   void loop();
 
   void prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::Address& address, int flags);

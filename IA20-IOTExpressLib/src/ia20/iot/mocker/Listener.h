@@ -42,7 +42,7 @@ public:
   }
 
 	virtual ~Listener() throw();
-	Listener(int fdIn, int fdOut, int iMaxConnections = 1);
+	Listener(int iMaxConnections = 1);
 
   void sendMessage(const String& strHex, int iConnectionId = 0);
 

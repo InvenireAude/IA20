@@ -55,11 +55,30 @@ Engine::~Engine() throw(){
 void Engine::serve(){
   IA20_TRACER;
 
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " ************************");
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " **** Serve Listeners ***");
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " ************************");
+
+  for(auto& it : tabListners){
+    it.ptrServerPort->schedule();
+  }
+  
+  ptrRingHandler->handleAtLeastOnce();
+
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " ************************");
+
   for(auto& it : tabListners){
     serveLister(it);
   }
 
   handleActivities();
+
+  for(auto& it : tabListners){
+    it.ptrServerPort->flush();
+  }
+
+  ptrRingHandler->handle();
+
 }
 /*************************************************************************/
 Engine::Context::Context(Listener::Task* pTask, Memory::SharableMemoryPool::Deleter& deleter):
@@ -77,12 +96,6 @@ void Engine::serveLister(Engine::ListenerDetails& ld){
 
   IA20_TRACER;
 
-  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " ************************");
-  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " **** Serve Listener ****");
-  IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " ************************");
-
-  ld.ptrServerPort->schedule();
-  ptrRingHandler->handle();
 
   Listener::Task *pTask;
   while(ld.ptrServerPort->dequeue(pTask)){
@@ -113,16 +126,17 @@ void Engine::serveLister(Engine::ListenerDetails& ld){
 
   }
 
-  ld.ptrServerPort->flush();
-  ptrRingHandler->handle();
-
 }
 /*************************************************************************/
-void Engine::addListener(Listener* pListener, int fdIn, int fdOut){
+void Engine::addListener(Listener* pListener){
+
+	Tools::SYS::PipeFD::PeerType peerServer(pListener->getServerPeer());
 
   tabListners[0].iIdx = 0;
   tabListners[0].pListener = pListener;
-  tabListners[0].ptrServerPort  = Tools::SYS::TaskPort<Listener::Task*>::Create(1000, ptrRingHandler.get(), fdIn, fdOut);
+  tabListners[0].ptrServerPort  = Tools::SYS::TaskPort<Listener::Task*>::Create(
+      1000, ptrRingHandler.get(), peerServer.first, peerServer.second);
+
   tabListners[0].pMemoryPool = pListener->getMemoryPool();
 
 

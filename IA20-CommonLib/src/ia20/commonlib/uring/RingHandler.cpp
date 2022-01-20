@@ -148,7 +148,7 @@ void RingHandler::prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::
     struct io_uring_cqe *cqe;
     int iResult = -62;
 
-    IA20_LOG(LogLevel::INSTANCE.isSystem(), "Waiting for ring SQE ...");
+    // IA20_LOG(LogLevel::INSTANCE.isSystem(), "Waiting for ring SQE ...");
 
    _submit_and_check(&ring);
 
@@ -179,7 +179,64 @@ void RingHandler::prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::
 // >>>>>>> c392d7715f0a65ca912543967e35f8f77e3a4d42
 
      // Thread::Cancellation::Test();
-     IA20_LOG(LogLevel::INSTANCE.isSystem(), "iResult = "<<iResult);
+    //  IA20_LOG(LogLevel::INSTANCE.isSystem(), "iResult = "<<iResult);
+    //}
+
+    if(iResult < 0){
+        //IA20_THROW(URingException("io_uring_wait_cqe", -iResult));
+    }else{
+      try{
+        onEvent(cqe);
+      }catch(IA20::Exception& e){
+        e.printToStream(std::cerr);
+      }
+    }
+
+    io_uring_cqe_seen(&ring, cqe);
+
+  // TODO if necessary
+    ////_submit_and_check(&ring);
+
+}
+/*************************************************************************/
+  void RingHandler::handleAtLeastOnce(){
+    IA20_TRACER;
+
+    struct io_uring_cqe *cqe;
+    int iResult = -62;
+
+    // IA20_LOG(LogLevel::INSTANCE.isSystem(), "Waiting for ring SQE ...");
+
+   _submit_and_check(&ring);
+
+   while(iResult == -62){ // wait is not a cancellation point
+      Thread::Cancellation tc(true);
+      __kernel_timespec ts = { 1L , 0L };
+    //  iResult = io_uring_wait_cqe(&ring, &cqe);
+      iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
+      //usleep(1000000);
+      // iResult = 1;
+
+    //  for(int i=0; i<1000000 && iResult !=0; i++)
+    //     iResult = io_uring_wait_cqe_nr(&ring, &cqe, 1);
+
+      // if(iResult != 0){
+      //   iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
+     }
+  //}
+// =======
+//       //usleep(1);
+//       iResult = 1;
+
+//       for(int i=0; i<100000 && iResult !=0; i++)
+//         iResult =  io_uring_wait_cqe_nr(&ring, &cqe, 0);
+
+//       if(iResult != 0)
+//         iResult = io_uring_wait_cqe_timeout(&ring, &cqe, &ts);
+// >>>>>>> c392d7715f0a65ca912543967e35f8f77e3a4d42
+
+     // Thread::Cancellation::Test();
+    //  IA20_LOG(LogLevel::INSTANCE.isSystem(), "iResult = "<<iResult);
     //}
 
     if(iResult < 0){

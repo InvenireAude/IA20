@@ -16,6 +16,8 @@
 #include <ia20/iot/tools/StringRef.h>
 #include <ia20/iot/memory/FixedObjectsTable.h>
 
+#include <ia20/iot/logger/LogLevel.h>
+
 #include <string.h>
 
 #include <wchar.h>
@@ -60,7 +62,7 @@ public:
 
     PacketIdentifierType addOutputActivity(Activity* pActivity){
         Activity** pEntry = tabOutputActivies.allocate(pActivity);
-        IA20_LOG(true, "Packet Identifier (add):    ["<<(int)getHandle()<<"]"<<(int)tabOutputActivies.pointerToIdx(pEntry) + 1);
+        IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo(), "Packet Identifier (add):    ["<<(int)getHandle()<<"]"<<(int)tabOutputActivies.pointerToIdx(pEntry) + 1);
         return tabOutputActivies.pointerToIdx(pEntry) + 1;
     }
 
@@ -70,7 +72,7 @@ public:
 
     void removeOutputActivity(PacketIdentifierType iPacketId){
         tabOutputActivies.free(iPacketId - 1);
-        IA20_LOG(true, "Packet Identifier (remove): ["<<(int)getHandle()<<"]"<<(int)iPacketId);        
+        IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo(), "Packet Identifier (remove): ["<<(int)getHandle()<<"]"<<(int)iPacketId);        
     }
 
     inline uint8_t getMaxQoS()const{

@@ -31,7 +31,7 @@ namespace Conn {
         iSize = sizeof(struct sockaddr_in); // TODO IP V6??
         break;
     default:
-      IA20_LOG(true, "Unknown: "<<address.ss_family);
+      IA20_LOG(IA20::LogLevel::INSTANCE.isDetailedInfo(), "Unknown: "<<address.ss_family);
     }
 
   return memcmp(&address, &other.address, iSize) == 0;

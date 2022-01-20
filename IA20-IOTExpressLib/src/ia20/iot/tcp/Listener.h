@@ -30,11 +30,7 @@ class Listener :
 public:
 
 	virtual ~Listener() throw();
-	Listener(int fdIn, int fdOut, int iMaxConnections);
-
-	inline URing::RingHandler* getRingHandler()const{
-		return ptrRingHandler.get();
-	}
+	Listener(int iMaxConnections);
 
 	virtual void run();
 

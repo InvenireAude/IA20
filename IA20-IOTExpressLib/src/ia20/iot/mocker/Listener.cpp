@@ -22,10 +22,10 @@ namespace IOT {
 namespace Mocker {
 
 /*************************************************************************/
-Listener::Listener(int fdIn, int fdOut, int iMaxConnections):
-  IOT::Listener(fdIn, fdOut),
+Listener::Listener( int iMaxConnections):
   tabConnections(iMaxConnections),
   ptrMemoryPoolHolder(new Memory::SharableMemoryPool){
+    
 	IA20_TRACER;
 
   for(auto& c: tabConnections){

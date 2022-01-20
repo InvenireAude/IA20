@@ -17,6 +17,8 @@
 #include <ia20/iot/tools/OffsetPtr.h>
 #include <ia20/iot/tools/IdentifiedByHandle.h>
 
+#include <ia20/iot/tools/sys/PipeFD.h>
+
 #include "MessageStore.h"
 #include "Connection.h"
 
@@ -143,6 +145,7 @@ public:
 
    typedef IA20::IOT::Tools::TaskPort<Task*> PortType;
 
+
     PortType* getPort()const{
       return ptrPort.get();
     }
@@ -150,7 +153,7 @@ public:
 
 	virtual ~Listener() throw();
 
-  Listener(int fdIn, int fdOut);
+  Listener();
 
   virtual Memory::SharableMemoryPool *getMemoryPool()const = 0;
 
@@ -158,12 +161,15 @@ public:
     return ptrRingHandler.get();
   }
 
+  Tools::SYS::PipeFD::PeerType getServerPeer()const{
+    return aPipeFD.getServerPeer();
+  }
+
 protected:
 
-  int fdIn;
-  int fdOut;
+  Tools::SYS::PipeFD aPipeFD;
 
-  std::unique_ptr<PortType> 				  ptrPort;
+  std::unique_ptr<PortType> 				        ptrPort;
   std::unique_ptr<URing::RingHandler> 		  ptrRingHandler;
 
   void setupPort();

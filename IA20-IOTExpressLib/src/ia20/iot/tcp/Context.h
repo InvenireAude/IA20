@@ -38,9 +38,7 @@ class Context {
 
 		Context(Memory::SharableMemoryPool* pMemoryPool);
 
-		~Context(){
-			IA20_LOG(true,"context reset, hurray !");
-		}
+		~Context(){}
 };
 
 /*************************************************************************/

@@ -54,7 +54,7 @@ public:
 			pCursor = Fifo<T>::tabBuffer;
 		}
 
-		IA20_LOG(true, "dequeue: "<<(void*)v);
+		// IA20_LOG(true, "dequeue: "<<(void*)v);
 
 		return true;
 	}
