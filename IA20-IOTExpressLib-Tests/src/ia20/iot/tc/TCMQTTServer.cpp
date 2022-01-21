@@ -38,7 +38,7 @@ TCMQTTServer::TCMQTTServer(TestSuite* pTestSuite):
   addCase("caseBasicv31QoS1",       &::IA20::TC::TCMQTTServer::caseBasicv31QoS1);
   addCase("caseBasicv5QoS1",        &::IA20::TC::TCMQTTServer::caseBasicv5QoS1);
   addCase("caseBasicv5QoS1Retain",  &::IA20::TC::TCMQTTServer::caseBasicv5QoS1Retain);
-  
+
   pTestSuite->addTestUnit(this);
 }
 /*************************************************************************/
@@ -52,7 +52,7 @@ std::initializer_list< std::pair<int, String> > CaseMQv31{
     { 0, "821B000100042F6162630000042F78797A0000082F6162632F78797A00" },
     { 0, "301100082F6162632F78797A00014142434446" },
     { 1, "100C00044D5154540402003C0000" },
-    { 1, "821B000100042F6162630000042F78797A0000082F6162632F78797A00" },    
+    { 1, "821B000100042F6162630000042F78797A0000082F6162632F78797A00" },
     { 0, "301100082F6162632F78797A00024142434447" }
 };
 
@@ -61,7 +61,7 @@ std::initializer_list< std::pair<int, String> > CaseMQv5{
     { 0, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },
     { 0, "301200082F6162632F78797A0001004142434446" },
     { 1, "101000044D5154540502003C032100140000" },
-    { 1, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },    
+    { 1, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },
     { 0, "301200082F6162632F78797A0002004142434447" }
 };
 
@@ -71,10 +71,10 @@ std::initializer_list< std::pair<int, String> > CaseMQv31QoS1{
     { 0, "321100082F6162632F78797A00014142434446" },
     { 0, "4003000100" },
     { 1, "100C00044D5154540402003C0000" },
-    { 1, "821B000100042F6162630000042F78797A0000082F6162632F78797A00" },    
+    { 1, "821B000100042F6162630000042F78797A0000082F6162632F78797A00" },
     { 0, "321100082F6162632F78797A00024142434447" },
-    { 0, "4003000200" },
-    { 1, "4003000200" },
+    { 0, "4003000100" },
+    { 1, "4003000100" },
 };
 
 std::initializer_list< std::pair<int, String> > CaseMQv5QoS1{
@@ -83,10 +83,10 @@ std::initializer_list< std::pair<int, String> > CaseMQv5QoS1{
     { 0, "321200082F6162632F78797A0001004142434446" },
     { 0, "4003000100" },
     { 1, "101000044D5154540502003C032100140000" },
-    { 1, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },    
+    { 1, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },
     { 0, "321200082F6162632F78797A0002004142434447" },
-    { 0, "4003000200" },
-    { 1, "4003000200" }
+    { 0, "4003000100" },
+    { 1, "4003000100" }
 };
 
 std::initializer_list< std::pair<int, String> > CaseMQv5QoS1Retain{
@@ -95,16 +95,16 @@ std::initializer_list< std::pair<int, String> > CaseMQv5QoS1Retain{
     { 0, "331200082F6162632F78797A0001004142434446" },
     { 0, "4003000100" },
     { 1, "101000044D5154540502003C032100140000" },
-    { 1, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },    
+    { 1, "821C00010000042F6162630000042F78797A0000082F6162632F78797A00" },
     { 0, "321200082F6162632F78797A0002004142434447" },
-    { 0, "4003000200" },
-    { 1, "4003000200" }
+    { 0, "4003000100" },
+    { 1, "4003000100" }
 };
 
 // static String CMSgCONNECT_Req ("101000044D5154540502003C032100140000");
 // static String CMSgSUBSCRIBE_Req("821C00010000042F6162630000042F78797A0000082F6162632F78797A00");
 // static String CMSgPUBLISH1_Req("321200082F6162632F78797A0001004142434446");
-// static String CMSgPUBLISH2_Req("321200082F6162632F78797A0002004142434447");                                
+// static String CMSgPUBLISH2_Req("321200082F6162632F78797A0002004142434447");
                               //321100082F6162632F78797A0001  4142434446
 /*************************************************************************/
  void TCMQTTServer::caseBasicImpl(const std::initializer_list<std::pair<int, String> >& lstArgs){
@@ -118,20 +118,20 @@ std::initializer_list< std::pair<int, String> > CaseMQv5QoS1Retain{
     IA20_LOG(true, "*** Iterate 1 ***");
 
     env.ptrListener->sendMessage(s.second, s.first);
-    
+
     env.ptrListener->getRingHandler()->handle();
-    
+
     IA20_LOG(true, "*** Engine ***");
 
     env.ptrEngine->serve();
 
     IA20_LOG(true, "*** Responses ***");
 
-    
+
     env.ptrListener->getPort()->schedule();
     env.ptrListener->getRingHandler()->handle();
     env.ptrListener->serveUntilEmptyQueue();
-    
+
    }
 
    env.ptrListener->dump(std::cerr); // TODO compare results
@@ -203,7 +203,7 @@ void TCMQTTServer::caseBasicv5QoS1Retain(){
 //     env.ptrListener->sendMessage(CMSgPUBLISH2_Req);
 //     env.ptrEngine->serve();
 //     env.ptrListener->serveUntilEmptyQueue();
- 
+
 
 //   //}
 
@@ -226,8 +226,8 @@ void TCMQTTServer::TestEnv::reset(){
   //  ptrActivityStore.reset(new Mocker::ActivityStore(Tools::SPIN::TasksRing<ActivityStore::Task>::CreateInterface(50)));
   //  ptrActionsStore.reset(new Mocker::ActionsStore(Tools::SPIN::TasksRing<ActionsStore::Task>::CreateInterface(50)));
 
-   
-   
+
+
    ptrListener.reset(new Mocker::Listener(2));
 
    ptrEngine.reset(new Engine());

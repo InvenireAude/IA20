@@ -34,7 +34,7 @@ public:
 		if(tIsValid)
 			delete reinterpret_cast<uint8_t*>(tIsValid);
 	};
-	
+
 protected:
 
 	static const int32_t CEmpty = -1;
@@ -50,7 +50,7 @@ public:
 		//TODO memory provider and some check and error reporting.
 		tEntries = reinterpret_cast<C*>(new uint8_t[sizeof(C) * iSize]);
 		tIsValid = reinterpret_cast<uint8_t*>(new uint8_t[iSize]); //TODO bits
-		
+
 		for(uint32_t i = 0; i<iSize; i++){
 			*reinterpret_cast<int32_t*>(tEntries + i) =  i == iSize - 1 ? CEmpty : i + 1;
 			tIsValid[i] = false;
@@ -61,7 +61,7 @@ public:
 	}
 
 	C* allocate(){
-		
+
 		if(iNextFreeIdx == CEmpty)
 			throw ItemNotFoundException("no memory - TODO better exception");
 
@@ -70,7 +70,7 @@ public:
 
 		iNextFreeIdx = *reinterpret_cast<int32_t*>(pResult);
 		iNumEntries++;
-		
+
 		return pResult;
 	}
 
@@ -81,7 +81,7 @@ public:
 	}
 
 	void free(int32_t iIdx){
-		
+
 		if(iIdx < 0 || iIdx >= iSize || !tIsValid[iIdx])
 			return;
 
@@ -100,14 +100,14 @@ public:
 		return iIdx;
 	}
 
-	C* idxToPonter(int32_t iIdx){	
+	C* idxToPointer(int32_t iIdx){
 		if(iIdx < 0 || iIdx >= iSize)
-			return NULL;	
+			return NULL;
 		IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "IdxToPonter: "<<iIdx<<" "<<(tEntries + iIdx));
 		return tEntries + iIdx;
 	}
 
-	
+
 
 	template<typename... Args>
 	inline C* allocate(Args... args){
@@ -119,7 +119,7 @@ public:
 	C* tEntries;
 	uint8_t* tIsValid;
 	uint32_t iNumEntries;
-	
+
 };
 
 /*************************************************************************/

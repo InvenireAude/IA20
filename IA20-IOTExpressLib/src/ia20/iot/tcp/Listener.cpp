@@ -42,7 +42,7 @@
 	/*************************************************************************/
 	void Listener::createServer(Net::Conn::TCP::FileHandle* pFileHandle){
 		IA20_TRACER;
-		std::unique_ptr<Server> ptrServer(new Server(pFileHandle, this));    
+		std::unique_ptr<Server> ptrServer(new Server(pFileHandle, this));
 		lstServers.push_back(std::move(ptrServer));
 	}
 	/*************************************************************************/
@@ -52,10 +52,10 @@
 		SYS::Signal::ThreadRegistration tr;
 
 		setupPort();
-		
-		Net::Conn::TCP::Peer peer("127.0.0.1", 55556);
 
-		std::unique_ptr<URing::IO::TCP::AsyncServer> ptrAsyncServer(new 
+		Net::Conn::TCP::Peer peer("0.0.0.0", 55556);
+
+		std::unique_ptr<URing::IO::TCP::AsyncServer> ptrAsyncServer(new
 			URing::IO::TCP::AsyncServer(peer, Net::Conn::TCP::DefaultConnectionFactory::GetInstance()));
 
 		std::unique_ptr<URing::IO::TCP::AsyncServer::Acceptor>
@@ -65,7 +65,7 @@
 		ptrAcceptor->prepare();
 
 		while(!SYS::Signal::GetInstance()->isStopping()){
-			
+
 			static long iCounter=0;
 
 			if(iCounter++ % 100== 0)
@@ -77,14 +77,14 @@
 			}catch(Exception& e){
 				e.printToStream(std::cerr);
 			}
-			
+
 			Task* pTask;
 
 			while(ptrPort->dequeue(pTask)){
-		
+
 
 			Memory::SharableMemoryPool::unique_ptr<Task> ptrTask(pTask, ptrMemoryPoolHolder->getDeleter());
-		
+
 			IA20_LOG(true, "Got message");
 
 			if(ptrTask->getReferenceId()){
@@ -154,7 +154,7 @@
 
 			IA20_LOG(true, "Connection at: "<<(void*)it->second);
 			Message::HandleType aMessageHandle = ptrTask->getMessageHandle();
-			
+
 			it->second->publishMessage(std::move(ptrTask));
 				IA20_LOG(true, "Check content usage");
 
@@ -173,7 +173,7 @@
 			}
 			}
 		}
-		
+
 		}catch(Exception& e){
 			e.printToStream(std::cerr);
 		}

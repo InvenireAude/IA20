@@ -38,7 +38,7 @@ public:
     typedef uint16_t PacketIdentifierType;
 
     ~Connection();
-	Connection(unsigned int iListener, 
+	Connection(unsigned int iListener,
                HandleType   aHandle,
                wchar_t*     utfClientId);
 
@@ -62,17 +62,18 @@ public:
 
     PacketIdentifierType addOutputActivity(Activity* pActivity){
         Activity** pEntry = tabOutputActivies.allocate(pActivity);
+        *pEntry = pActivity;
         IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo(), "Packet Identifier (add):    ["<<(int)getHandle()<<"]"<<(int)tabOutputActivies.pointerToIdx(pEntry) + 1);
         return tabOutputActivies.pointerToIdx(pEntry) + 1;
     }
 
     Activity* getOutputActivity(PacketIdentifierType iPacketId){
-        return *tabOutputActivies.idxToPonter(iPacketId);
+        return *tabOutputActivies.idxToPointer(iPacketId - 1);
     }
 
     void removeOutputActivity(PacketIdentifierType iPacketId){
         tabOutputActivies.free(iPacketId - 1);
-        IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo(), "Packet Identifier (remove): ["<<(int)getHandle()<<"]"<<(int)iPacketId);        
+        IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo(), "Packet Identifier (remove): ["<<(int)getHandle()<<"]"<<(int)iPacketId);
     }
 
     inline uint8_t getMaxQoS()const{
@@ -91,7 +92,7 @@ protected:
     static const int CMaxActivitesPerConnection = 10;
 
     typedef Memory::FixedObjectsTable<Activity*> ActivityTable;
-    
+
     ActivityTable tabInputActivies;
     ActivityTable tabOutputActivies;
 };
