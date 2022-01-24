@@ -41,9 +41,10 @@ public:
 
 		return it->second;
 	};
-	static const WordIdType CRoot = 0;
-	static const WordIdType CHash = 1;
-	static const WordIdType CPlus = 2;
+	static const WordIdType CRoot;
+	static const WordIdType CHash;
+	static const WordIdType CPlus;
+
 protected:
 
  //TODO temporary implementation with STL and String (change to UTFStrReference(s, len) )

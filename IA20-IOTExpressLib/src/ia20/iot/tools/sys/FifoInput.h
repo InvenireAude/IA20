@@ -14,6 +14,9 @@
 #include <ia20/commonlib/uring/uring.h>
 #include "Fifo.h"
 
+#include <ia20/iot/logger/LogLevel.h>
+
+
 namespace IA20 {
 namespace IOT {
 namespace Tools {
@@ -54,7 +57,7 @@ public:
 			pCursor = Fifo<T>::tabBuffer;
 		}
 
-		// IA20_LOG(true, "dequeue: "<<(void*)v);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo|true, "dequeue: "<<(void*)v);
 
 		return true;
 	}
@@ -101,7 +104,7 @@ protected:
 			pIOReadHead = Fifo<T>::tabBuffer;
 		}
 
-		IA20_LOG(true, "Read: "<<iDataLen<<", IO offset: "
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo|true , "Read: "<<iDataLen<<", IO offset: "
 			<<(pIOReadHead-Fifo<T>::tabBuffer)<<" Read offset: "
 			<<(pCursor-Fifo<T>::tabBuffer));
 

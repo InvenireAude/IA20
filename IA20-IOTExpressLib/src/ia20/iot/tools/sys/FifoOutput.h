@@ -12,6 +12,8 @@
 
 #include <ia20/commonlib/commonlib.h>
 #include <ia20/commonlib/uring/uring.h>
+#include <ia20/iot/logger/LogLevel.h>
+
 #include "Fifo.h"
 
 namespace IA20 {
@@ -41,8 +43,8 @@ public:
 
 	bool enqueue(T v){
 
-		// IA20_LOG(true, "enqueue: "<<(void*)v<<" "<<
-		// 	iNumPending<<" ? "<<Fifo<T>::iBufferSize);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo|true, "enqueue: "<<(void*)v<<" "<<
+			iNumPending<<" ? "<<Fifo<T>::iBufferSize);
 
 		if(iNumPending == Fifo<T>::iBufferSize)
 			return false;
@@ -84,7 +86,7 @@ protected:
 		if(iRequestSize == 0)
 			return;
 
-		// IA20_LOG(true, "Writing: "<<iRequestSize);
+		// IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Writing: "<<iRequestSize);
 		
 
 		URing::IO::WriteHandler::iovec.iov_base = pIOWriteHead;
@@ -99,7 +101,7 @@ protected:
 		pIOWriteHead += iDataLen / sizeof(T);
 		iNumPending  -= iDataLen / sizeof(T);
 
-		IA20_LOG(true, "Written: "<<iDataLen<<", IO offset: "
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo|true, "Written: "<<iDataLen<<", IO offset: "
 			<<(pIOWriteHead-Fifo<T>::tabBuffer)<<", iNumPending: "<<iNumPending);
 
 		if(pIOWriteHead >= Fifo<T>::pGuard){

@@ -101,7 +101,7 @@ public:
 	}
 
 	C* idxToPointer(int32_t iIdx){
-		if(iIdx < 0 || iIdx >= iSize)
+		if(iIdx < 0 || iIdx >= iSize || !tIsValid[iIdx])
 			return NULL;
 		IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "IdxToPonter: "<<iIdx<<" "<<(tEntries + iIdx));
 		return tEntries + iIdx;

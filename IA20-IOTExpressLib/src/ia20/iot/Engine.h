@@ -92,6 +92,7 @@ protected:
   void handleSubscribe(Engine::ListenerDetails& ld, Context& ctx);
   void handlePublish(Engine::ListenerDetails& ld, Context& ctx);
   void handlePubAck(Engine::ListenerDetails& ld, Context& ctx);
+  void handlePing(Engine::ListenerDetails& ld, Context& ctx);
 
   void handleActivities();
 

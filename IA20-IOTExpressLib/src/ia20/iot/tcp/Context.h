@@ -29,16 +29,44 @@ class Context {
 
 	public:
  
- 		Memory::SharableMemoryPool::unique_ptr<IOT::Listener::Task> ptrTask;
+		Context(Memory::SharableMemoryPool* pMemoryPool);
+		~Context(){}
 
-  		uint32_t iExpectingLength;
+		Memory::SharableMemoryPool::unique_ptr<IOT::Listener::Task> finish(uint64_t iReferenceId, 
+					Connection::HandleType aConnectionHandle);
+
+
+		inline uint32_t getExpectedLength()const{
+			return data.iExpectedLength;
+		}
+
+		inline void setExpectedLength(uint32_t iExpectedLength){
+			data.iExpectedLength = iExpectedLength;
+		}
 		
+		inline void appendExpected(const uint8_t* pData){
+			data.writer.write(pData, data.iExpectedLength);
+			data.iExpectedLength = 0;
+		}
+
+		inline void append(const uint8_t* pData, uint32_t iDataLength){
+			data.writer.write(pData, iDataLength);
+			data.iExpectedLength -= iDataLength;
+		}
+
+	protected:
+	
+	struct Data {
+		Data(Memory::SharableMemoryPool* pMemoryPool);
+ 		Memory::SharableMemoryPool::unique_ptr<IOT::Listener::Task> ptrTask;
+  		uint32_t iExpectedLength;
 		Memory::StreamBufferList sbl;
 		Memory::StreamBufferList::Writer writer;
+	};
 
-		Context(Memory::SharableMemoryPool* pMemoryPool);
+	Data data;
 
-		~Context(){}
+	Memory::SharableMemoryPool* pMemoryPool;
 };
 
 /*************************************************************************/

@@ -27,7 +27,7 @@ namespace IA20 {
 public:
 
 	static void   BinarytoHex(const void *pData, size_t iDataLen, String& strOutput);
-  static String BinarytoHex(const void *pData, size_t iDataLen);
+    static String BinarytoHex(const void *pData, size_t iDataLen);
 	static void   HexToBinary(const String& strInput,void *pData, size_t iBufLen);
 
 	static String StrToHex(const String& strData);

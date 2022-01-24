@@ -1,4 +1,4 @@
-#Thu Jan 20 07:48:31 AM CET 2022
+#Mon Jan 24 03:11:55 PM CET 2022
 FILES+=ia20/iot
 FILES+=ia20/iot/Activity
 FILES+=ia20/iot/ActivityStore
@@ -29,6 +29,9 @@ FILES+=ia20/iot/Subscription
 FILES+=ia20/iot/SubscriptionsStore
 FILES+=ia20/iot/tcp/Acceptor
 FILES+=ia20/iot/tcp/Context
+FILES+=ia20/iot/tcp/ContextOutput
+FILES+=ia20/iot/tcp/ContextOutputDirect
+FILES+=ia20/iot/tcp/ContextOutputShared
 FILES+=ia20/iot/tcp/Listener
 FILES+=ia20/iot/tcp/Server
 FILES+=ia20/iot/tools/StringRef

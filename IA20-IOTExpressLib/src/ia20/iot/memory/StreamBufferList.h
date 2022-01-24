@@ -270,6 +270,10 @@ public:
 		return (uint8_t*)pHead;
 	}
 
+	inline DataLengthType getAvailableSpace()const{
+		return pHead->iChunkSize - pHead->iDataLength;
+	}
+
 protected:
 	Chunk *pHead;
 	SharableMemoryPool* pMemoryPool;

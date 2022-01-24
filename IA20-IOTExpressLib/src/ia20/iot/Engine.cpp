@@ -112,6 +112,10 @@ void Engine::serveLister(Engine::ListenerDetails& ld){
         handlePubAck(ld, ctx);
       break;
 
+      case MQTT::Message::MT_PINGREQ:
+        handlePing(ld, ctx);
+      break;
+
       case MQTT::Message::MT_SUBSCRIBE:
         handleSubscribe(ld, ctx);
       break;
@@ -481,15 +485,45 @@ void Engine::Publisher::onSubscription(const Subscription* pSubscription){
       IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " Reason: "<<(int)iReason);
     }
 
+  try{
     Activity* pActivity = pConnection->getOutputActivity(iPacketIdentfier);
     pConnection->removeOutputActivity(iPacketIdentfier);
     ptrActivityStore->dispose(pActivity);
-
+  }catch(Exception& e){
+   IA20_LOG(IOT::LogLevel::INSTANCE.bIsError, " ERROR: unknow packet identifires in PUBACK"<<e.getInfo());   
+  }
   // TODO handle reason  and properties
   // if(pConnection->getMQTTVersion() >= 5){
   //   uint32_t iPropertiesLen = MQTT::HeaderReader::DecodeVL(ctx.reader);
   //   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "PropertiesLen: "<<(int)iPropertiesLen);
   // }
+
+ }
+
+ /*************************************************************************/
+ void Engine::handlePing(Engine::ListenerDetails& ld, Context& ctx){
+   IA20_TRACER;
+
+   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Server PING, len: "<<ctx.headerReader.getLength());
+
+  Memory::SharableMemoryPool::unique_ptr<Listener::Task>
+  ptrTask2(new (ld.pMemoryPool->allocate<Listener::Task>(NULL))
+        Listener::Task(Listener::Task::CA_SendDirect, *ctx.ptrTask), ld.pMemoryPool->getDeleter());
+
+  ptrTask2->iMessageId = ctx.ptrTask->iMessageId + 10000000;
+
+  MQTT::FixedHeaderBuilder builder;
+
+  builder.setType(MQTT::Message::MT_PINGRESP);
+  
+  Memory::StreamBufferList sbl(ld.pMemoryPool, ptrTask2.get());
+  Memory::StreamBufferList::Writer writer(sbl);
+  
+  builder.setLength(0);
+  builder.build(writer);
+
+  ptrTask2->setMessage(sbl.getHead());
+  ld.ptrServerPort->enqueue(ptrTask2.release());
 
  }
 /*************************************************************************/

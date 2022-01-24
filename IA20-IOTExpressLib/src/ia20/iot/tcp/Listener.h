@@ -13,6 +13,9 @@
 #include <ia20/commonlib/commonlib.h>
 #include <ia20/commonlib/uring/uring.h>
 
+#include <ia20/iot/memory/StreamBufferList.h>
+#include <ia20/iot/memory/SharableMemoryPool.h>
+
 #include "../Listener.h"
 
 namespace IA20 {
@@ -50,6 +53,8 @@ public:
     return ptrMemoryPoolHolder.get();
   }
 
+  void decUsageCount(Message::HandleType aMessageHandle);
+
 protected:
 
   std::unique_ptr<Memory::SharableMemoryPool> ptrMemoryPoolHolder;
@@ -68,6 +73,11 @@ protected:
 
   ContentMap hmContent;
 
+  void serve();
+
+  void send(Memory::SharableMemoryPool::unique_ptr<IOT::Listener::Task>&& ptrTask);
+  void setContent(Memory::SharableMemoryPool::unique_ptr<IOT::Listener::Task>&& ptrTask);
+ 
 };
 
 /*************************************************************************/

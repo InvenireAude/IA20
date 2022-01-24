@@ -14,6 +14,10 @@ namespace IA20 {
 namespace IOT {
 namespace Tools {
 
+const WordsMap::WordIdType WordsMap::CRoot = 0;
+const WordsMap::WordIdType WordsMap::CHash = 1;
+const WordsMap::WordIdType WordsMap::CPlus = 2;
+
 /*************************************************************************/
 WordsMap::WordsMap(){
 	IA20_TRACER;

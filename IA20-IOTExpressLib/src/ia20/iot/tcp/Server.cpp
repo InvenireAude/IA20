@@ -13,6 +13,9 @@
 #include <ia20/iot/tools/MQTT.h>
 #include <ia20/iot/mqtt/HeaderReader.h>
 
+#include "ContextOutputDirect.h"
+#include "ContextOutputShared.h"
+
 namespace IA20 {
 namespace IOT {
 namespace TCP {
@@ -21,19 +24,17 @@ const String Server::CStrData("123456789");
 
 /*************************************************************************/
 Server::Server(Net::Conn::TCP::FileHandle* pFileHandle,
-		   	  const Listener *pListener):
+		   	   Listener *pListener):
       ReadHandler(pListener->getRingHandler(), pFileHandle),
       WriteHandler(pListener->getRingHandler(), pFileHandle),
       ShutdownHandler(pListener->getRingHandler(), pFileHandle),
 	  pListener(pListener),
 	  ctx(pListener->getMemoryPool()),
-      ptrTask(nullptr, pListener->getMemoryPool()),
       ptrFileHandle(pFileHandle){
 
 	ptrInputBuffer.reset((uint8_t*)malloc(4096));
-	ptrOutputBuffer.reset((uint8_t*)malloc(4096));
 
-	if(!ptrInputBuffer || !ptrOutputBuffer)
+	if(!ptrInputBuffer)
 		IA20_THROW(InternalException("Not enought memory !!!"));
 
 	prepareRead();
@@ -51,7 +52,7 @@ void Server::prepareRead(){
 	
     iBufferDataLength = 0;  
     
-    IA20_LOG(true,"Waiting for data");
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Waiting for data");
 	ReadHandler::prepare();
 };
 /*************************************************************************/
@@ -63,59 +64,56 @@ void Server::handleRead(off_t iDataLen){
        return;
     }
 
-    IA20_LOG(true,"Got data[read]: "<<iDataLen<<" "<<ctx.iExpectingLength);
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Got data[read]: "<<iDataLen<<" "<<ctx.getExpectedLength());
 
     iBufferDataLength += iDataLen;
 	
     while(iBufferDataLength > 0){
 
-       // IA20_LOG(true,"iBufferDataLength[read]: "<<iBufferDataLength<<" "<<ctx.iExpectingLength);
+        IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"iBufferDataLength[read]: "<<iBufferDataLength<<" "<<ctx.getExpectedLength());
     
-        if(ctx.iExpectingLength == 0){
+        /* ctx.getExpectedLength() == 0 => no header yet */
+
+        if(ctx.getExpectedLength() == 0){ 
 
             if(Tools::MQTT::hasFixedHeader(ptrInputBuffer.get(), iBufferDataLength)){
                 
                 MQTT::HeaderReader headerReader(ptrInputBuffer.get());
-                ctx.iExpectingLength = headerReader.getTotalLength();
+                ctx.setExpectedLength(headerReader.getTotalLength());
                 
-                IA20_LOG(true, "Header type: "<<(int)headerReader.getType()<<", len: "<<headerReader.getLength());
+                IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "LISTENER: Header type: "<<(int)headerReader.getType()<<", len: "<<headerReader.getLength());
                 
             }else{
-                IA20_LOG(true,"Wants more");
+                IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Wants more");
                 ReadHandler::iovec.iov_base = ptrInputBuffer.get() + iBufferDataLength;
                 break;
             }
 
         }
 
-        IA20_LOG(true,"Check:"<<(int)ctx.iExpectingLength<<" ? "<<(int)iBufferDataLength);
+        IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo|true,"Check:"<<(int)ctx.getExpectedLength()<<" ? "<<(int)iBufferDataLength);
 
-        if(ctx.iExpectingLength <= iBufferDataLength){             
+        if(ctx.getExpectedLength() <= iBufferDataLength){             
                     
-            ctx.writer.write(ptrInputBuffer.get(), ctx.iExpectingLength);
-            //TODO first time only ?
-            ctx.ptrTask->setReferenceId((uint64_t)this);
-            ctx.ptrTask->setConnectionHandle(aConnectionHandle);
-            pListener->getPort()->enqueue(ctx.ptrTask.release());            
-            
-            uint32_t iRemaining = iBufferDataLength - ctx.iExpectingLength;
+            const uint32_t iCompletedLength = ctx.getExpectedLength();
 
-            IA20_LOG(true,"Check1:"<<(int)iRemaining);
+            ctx.appendExpected(ptrInputBuffer.get());
+
+            pListener->getPort()->enqueue(ctx.finish((uint64_t)this, aConnectionHandle).release()); //TODO enqueue unique_ptr            
+            
+            uint32_t iRemaining = iBufferDataLength - iCompletedLength;
 
             if(iRemaining >= 0){
-                uint8_t* pSrc =  ptrInputBuffer.get() + ctx.iExpectingLength;
+                uint8_t* pSrc =  ptrInputBuffer.get() + iCompletedLength;
                 memcpy(ReadHandler::iovec.iov_base, pSrc, iRemaining);
             }            
                     
-            iBufferDataLength -= ctx.iExpectingLength;
-            
-            ctx.~Context(); //this is stupid.
-            new (&ctx)Context(pListener->getMemoryPool());
+            iBufferDataLength -= iCompletedLength;
 
         }else{ 
 
-            ctx.writer.write(ptrInputBuffer.get(), iBufferDataLength);
-            ctx.iExpectingLength -= iBufferDataLength;
+            ctx.append(ptrInputBuffer.get(), iBufferDataLength);
+            
             iBufferDataLength = 0;
 
         }
@@ -127,64 +125,78 @@ void Server::handleRead(off_t iDataLen){
     pListener->getPort()->flush();
 }
 /*************************************************************************/
+void Server::serveNextOutputTask(){
+    IA20_TRACER;
+
+    Listener::Task *pTask = queueTasks.front().get();
+
+	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Sending message at: "<<(void*)pTask->getConnectionHandle());
+    
+    this->aConnectionHandle = pTask->getConnectionHandle();
+    uint8_t *pMessage = pTask->getMessage();
+
+    switch(pTask->getCommand()){
+
+    case Listener::Task::CA_SendDirect:
+        ptrContextOutput.reset(new ContextOutputDirect(pTask->getMessage()));
+    break;
+
+    case Listener::Task::CA_SendShared:
+        ptrContextOutput.reset(new ContextOutputShared(pTask->getMessage(), 
+                                                        pListener->getContentPayload(pTask->getMessageHandle())));
+    break;
+
+    default:
+        IA20_THROW(InternalException("Unsupported task type in  ContextOutput::Create"));
+	}
+
+    prepareWrite();
+}
+/*************************************************************************/
+void Server::prepareWrite(){
+    
+    IA20_TRACER;
+
+    WriteHandler::iovec.iov_base = ptrContextOutput->getData();
+    WriteHandler::iovec.iov_len  = ptrContextOutput->getDataLength();
+
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Sending Data: "
+        <<MiscTools::BinarytoHex(WriteHandler::iovec.iov_base, WriteHandler::iovec.iov_len));
+    
+    WriteHandler::prepare();
+
+}
+/*************************************************************************/
 void Server::sendMessage(Memory::SharableMemoryPool::unique_ptr<IOT::Listener::Task>&& ptrTask){
     IA20_TRACER;
 
-	IA20_LOG(true, "Sending message at: "<<(void*)ptrTask->getConnectionHandle());
-    
-    this->aConnectionHandle = ptrTask->getConnectionHandle();
+    queueTasks.emplace_back(std::move(ptrTask));
 
-    uint8_t *pMessage = ptrTask->getMessage();
-    Memory::StreamBufferList sbl(pMessage);
-    Memory::StreamBufferList::Reader reader(sbl);
-    
-    WriteHandler::iovec.iov_base = reader.getData();
-    WriteHandler::iovec.iov_len  = reader.getLength();
-
-    IA20_LOG(true, "Sending Data: "
-    <<MiscTools::BinarytoHex(WriteHandler::iovec.iov_base, WriteHandler::iovec.iov_len));
-    
-    this->ptrTask = std::move(ptrTask);
-
-    WriteHandler::prepare();
-}
-/*************************************************************************/
-void Server::publishMessage(Memory::SharableMemoryPool::unique_ptr<IOT::Listener::Task>&& ptrTask){
-    IA20_TRACER;
-
-	IA20_LOG(true, "Sending message at: "<<(void*)ptrTask->getConnectionHandle());
-    
-    this->aConnectionHandle = ptrTask->getConnectionHandle();
-
-    uint8_t *pMessage = ptrTask->getMessage();
-    Memory::StreamBufferList sbl(pMessage);
-    Memory::StreamBufferList::Writer writer(sbl);
-
-    Memory::StreamBufferList sbl2(pListener->getContentPayload(ptrTask->getMessageHandle()));
-    Memory::StreamBufferList::Reader reader2(sbl2);
-
-    writer.write(reader2.getData(), reader2.getLength());
-    
-    Memory::StreamBufferList::Reader reader3(sbl);
-
-    WriteHandler::iovec.iov_base = reader3.getData();
-    WriteHandler::iovec.iov_len  = reader3.getLength();
-
-    IA20_LOG(true, "Sending Data: "
-        <<MiscTools::BinarytoHex(WriteHandler::iovec.iov_base, WriteHandler::iovec.iov_len));
-    
-    this->ptrTask = std::move(ptrTask);
-
-    WriteHandler::prepare();
+     if(queueTasks.size() == 1)
+        serveNextOutputTask();
 }
 /*************************************************************************/
 void Server::handleWrite(off_t iDataLen){
-    std::cerr<<"Written: ["<<iDataLen<<"]"<<std::endl;
-    ptrTask.release();
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Written: ["<<iDataLen<<"]");;
+    
+    if(ptrContextOutput->next()){
+        prepareWrite();
+        return;
+    }
+
+    if(queueTasks.front()->getCommand() == Listener::Task::CA_SendShared){
+        pListener->decUsageCount(queueTasks.front()->getMessageHandle());
+    }
+
+    queueTasks.pop_front();
+   
+    if(queueTasks.size())
+        serveNextOutputTask();
+
 }
 /*************************************************************************/
 void Server::handleShutdown(int iResult){
-    std::cerr<<"Shutdown: ["<<iResult<<"], msgs: "<<iMessages<<std::endl;
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Shutdown: ["<<iResult<<"], msgs: "<<iMessages);;
 }
 /*************************************************************************/
 }

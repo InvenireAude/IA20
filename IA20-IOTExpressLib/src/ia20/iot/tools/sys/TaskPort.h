@@ -49,17 +49,17 @@ public:
 	 }
   	
 	virtual bool enqueue(T v){
-		IA20_LOG(true, "enqueue: "<<(void*)this);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo, "enqueue: "<<(void*)this);
 		return ptrOutput->enqueue(v);
 	}
 
 	virtual void flush(){
-		IA20_LOG(true, "flush: "<<(void*)this);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo, "flush: "<<(void*)this);
 		ptrOutput->flush();
 	}
 
 	virtual void schedule(){
-		IA20_LOG(true, "schedule: "<<(void*)this);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo, "schedule: "<<(void*)this);
 		ptrInput->schedule();
 	}
 /*************************************************************************/
