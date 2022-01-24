@@ -68,7 +68,7 @@ void RingHandler::prepareRead(EventHandler* pEventHandler, int fd, struct iovec*
   io_uring_sqe *sqe = io_uring_get_sqe(&ring);
 
   if(!sqe)
-    IA20_THROW(URingException("io_uring_get_sqe",0));
+    IA20_THROW(URingException("io_uring_get_sqe",-1));
 
   io_uring_prep_readv(sqe, fd, iovec, 1, 0);
 
@@ -84,7 +84,7 @@ void RingHandler::prepareClose(EventHandler* pEventHandler, int fd){
   io_uring_sqe *sqe = io_uring_get_sqe(&ring);
 
   if(!sqe)
-    IA20_THROW(URingException("io_uring_get_sqe",0));
+    IA20_THROW(URingException("io_uring_get_sqe",-1));
 
   io_uring_prep_close(sqe, fd);
 
@@ -100,7 +100,7 @@ void RingHandler::prepareShutdown(EventHandler* pEventHandler, int fd, int how){
   io_uring_sqe *sqe = io_uring_get_sqe(&ring);
 
   if(!sqe)
-    IA20_THROW(URingException("io_uring_get_sqe",0));
+    IA20_THROW(URingException("io_uring_get_sqe",-1));
 
   io_uring_prep_shutdown(sqe, fd, how);
 
@@ -116,7 +116,7 @@ void RingHandler::prepareWrite(EventHandler* pEventHandler, int fd, struct iovec
   io_uring_sqe *sqe = io_uring_get_sqe(&ring);
 
   if(!sqe)
-    IA20_THROW(URingException("io_uring_get_sqe",0));
+    IA20_THROW(URingException("io_uring_get_sqe",-1));
 
   io_uring_prep_writev(sqe, fd, iovec, 1, 0);
 
@@ -132,7 +132,7 @@ void RingHandler::prepareAccept(EventHandler* pEventHandler, int fd, Net::Conn::
   io_uring_sqe *sqe = io_uring_get_sqe(&ring);
 
   if(!sqe)
-    IA20_THROW(URingException("io_uring_get_sqe",0));
+    IA20_THROW(URingException("io_uring_get_sqe",-1));
 
   io_uring_prep_accept(sqe, fd,
           (struct sockaddr *)&address.address, &address.iAddressLen, 0);

@@ -49,7 +49,7 @@ public:
                              uint8_t      iQoS);
 
     inline Activity* back()const{
-      
+
       if(lstPendingActivities.empty())
         IA20_THROW(ItemNotFoundException("iNumActivities == 0"));
 
@@ -68,6 +68,7 @@ public:
 
     inline void dispose(Activity *pActivity){
       //TODO ?? remove from pending list ??
+      iNumActivites--;
       new (pActivity)Activity();
     }
 
@@ -82,7 +83,7 @@ protected:
   ActivityList         lstPendingActivities;
 
   IndexType iNumActivites;
-  
+
   Activity::SequenceType  iNextSequence;
 
 };
