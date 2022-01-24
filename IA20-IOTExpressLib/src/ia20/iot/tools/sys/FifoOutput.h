@@ -43,7 +43,7 @@ public:
 
 	bool enqueue(T v){
 
-		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo|true, "enqueue: "<<(void*)v<<" "<<
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo, "enqueue: "<<(void*)v<<" "<<
 			iNumPending<<" ? "<<Fifo<T>::iBufferSize);
 
 		if(iNumPending == Fifo<T>::iBufferSize)
@@ -101,7 +101,7 @@ protected:
 		pIOWriteHead += iDataLen / sizeof(T);
 		iNumPending  -= iDataLen / sizeof(T);
 
-		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo|true, "Written: "<<iDataLen<<", IO offset: "
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo, "Written: "<<iDataLen<<", IO offset: "
 			<<(pIOWriteHead-Fifo<T>::tabBuffer)<<", iNumPending: "<<iNumPending);
 
 		if(pIOWriteHead >= Fifo<T>::pGuard){

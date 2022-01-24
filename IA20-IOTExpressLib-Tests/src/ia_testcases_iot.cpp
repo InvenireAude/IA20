@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 	    std::unique_ptr<TestSuite> ptrSuite(new TestSuite());
         ptrSuite->setVerbose();
 
-       	// TC::TCBasic         tcBasic(ptrSuite.get());
+       	TC::TCBasic         tcBasic(ptrSuite.get());
    		// TC::TCBasicMQTT     tcBasicMQTT(ptrSuite.get());
    		// TC::TCSubscriptions tcTCSubscriptions(ptrSuite.get());
 		TC::TCMQTTServer    tcMQTTServer(ptrSuite.get());

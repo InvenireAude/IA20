@@ -29,7 +29,7 @@ bool ContextOutputDirect::next(){
 }
 /*************************************************************************/
 uint8_t *ContextOutputDirect::getData(){
-	reader.getData();
+	return reader.getData();
 }
 /*************************************************************************/
 uint32_t ContextOutputDirect::getDataLength()const{

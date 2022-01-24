@@ -63,14 +63,14 @@ public:
     PacketIdentifierType addOutputActivity(Activity* pActivity){
         Activity** pEntry = tabOutputActivies.allocate(pActivity);
         *pEntry = pActivity;
-        IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo()|true, "Packet Identifier (add):    ["<<(int)getHandle()<<"]"<<(int)tabOutputActivies.pointerToIdx(pEntry) + 1);
+        IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo(), "Packet Identifier (add):    ["<<(int)getHandle()<<"]"<<(int)tabOutputActivies.pointerToIdx(pEntry) + 1);
         return tabOutputActivies.pointerToIdx(pEntry) + 1;
     }
 
     Activity* getOutputActivity(PacketIdentifierType iPacketId){
         Activity** pPtrActivity = tabOutputActivies.idxToPointer(iPacketId - 1);
 
-        IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo()|true, "Packet Identifier (get):    ["<<(int)getHandle()<<"]"<<iPacketId);
+        IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo(), "Packet Identifier (get):    ["<<(int)getHandle()<<"]"<<iPacketId);
 
         if(!pPtrActivity)
             IA20_THROW(ItemNotFoundException("Connection [")<<(void*)(long)mHandle<<"], packet: "<<iPacketId);
@@ -80,7 +80,7 @@ public:
 
     void removeOutputActivity(PacketIdentifierType iPacketId){
         tabOutputActivies.free(iPacketId - 1);
-        IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo()|true, "Packet Identifier (remove): ["<<(int)getHandle()<<"]"<<(int)iPacketId);
+        IA20_LOG(IOT::LogLevel::INSTANCE.isDetailedInfo(), "Packet Identifier (remove): ["<<(int)getHandle()<<"]"<<(int)iPacketId);
     }
 
     inline uint8_t getMaxQoS()const{

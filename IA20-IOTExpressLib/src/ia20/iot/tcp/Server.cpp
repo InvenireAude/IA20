@@ -91,7 +91,7 @@ void Server::handleRead(off_t iDataLen){
 
         }
 
-        IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo|true,"Check:"<<(int)ctx.getExpectedLength()<<" ? "<<(int)iBufferDataLength);
+        IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo,"Check:"<<(int)ctx.getExpectedLength()<<" ? "<<(int)iBufferDataLength);
 
         if(ctx.getExpectedLength() <= iBufferDataLength){             
                     

@@ -27,6 +27,7 @@ ContextOutputShared::ContextOutputShared(uint8_t *pMessage, uint8_t* pPayLoad):
 		Memory::StreamBufferList::Writer writer(sbl1);
 		IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Concatenate content: "<<reader1.getLength()<<" + "<<reader2.getLength());
 		writer.write(reader2.getData(), reader2.getLength() );
+		reader2.getNext();
 		new (&reader1)Memory::StreamBufferList::Reader(sbl1);
 	}
 

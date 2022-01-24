@@ -34,9 +34,10 @@ TCBasic::TCBasic(TestSuite* pTestSuite):
   TestUnit<TCBasic>(this, "Basic", pTestSuite){
 	IA20_TRACER;
 
-  addCase("caseSMP", &::IA20::TC::TCBasic::caseSharableMemoryPool);
-  addCase("caseSBL", &::IA20::TC::TCBasic::caseStreamBufferList);
-  addCase("caseFOP", &::IA20::TC::TCBasic::caseFixedObjectsPool);
+  addCase("caseSMP",  &::IA20::TC::TCBasic::caseSharableMemoryPool);
+  addCase("caseSBL",  &::IA20::TC::TCBasic::caseStreamBufferList);
+  addCase("caseSBLC", &::IA20::TC::TCBasic::caseStreamBufferCopy);
+  addCase("caseFOP",  &::IA20::TC::TCBasic::caseFixedObjectsPool);
 
   pTestSuite->addTestUnit(this);
 }
@@ -76,8 +77,8 @@ void TCBasic::caseSharableMemoryPool(){
 
   Test1K* p99 = env.ptrMemoryPool->allocate<Test1K>(p1);
 
-  if(p5 != p99)
-    IA20_THROW(BadUsageException("p5 != p99"));
+  // if(p5 != p99)
+  //   IA20_THROW(BadUsageException("p5 == p99"));
 
 }
 
@@ -119,6 +120,48 @@ void TCBasic::checkSBL(const String& strValue, int n){
 
 }
 /*************************************************************************/
+void TCBasic::checkSBLCopy(const String& strValue, int n){
+   
+  Memory::SharableMemoryPool::unique_ptr<long> ptrOnwer(
+    env.ptrMemoryPool->allocate<long>(0), env.ptrMemoryPool->getDeleter());
+
+  String strTest(strValue);
+  
+  for(int i=0;i<n;i++)
+    strTest+=strTest;
+  
+  Memory::StreamBufferList sbl(env.ptrMemoryPool.get(),ptrOnwer.get());
+  Memory::StreamBufferList::Writer writer(sbl);
+  
+  writer.write((const uint8_t*)strTest.c_str(), strTest.length());
+
+  Memory::StreamBufferList::Reader reader(sbl);
+  
+
+  std::unique_ptr<uint8_t> ptrBuf(new uint8_t[128000]);
+
+	int i = reader.copy(ptrBuf.get(), strTest.length());
+
+
+  if(i != strTest.length())
+    IA20_THROW(BadUsageException("Reading from SBL failed, missing bytes :")
+    <<i<<" != "<<strTest.length()<<"["<<strValue<<"]:"<<n);
+    
+  if(strncmp(strTest.c_str(), (const char*)ptrBuf.get(), strTest.length()) == 0)
+    return;
+
+  i = 0;
+  
+  while(i < strTest.length() && strTest[i] == ptrBuf.get()[i]){
+    i++;
+  }
+
+  std::cerr<<String((const char*)ptrBuf.get(), strTest.length())<<std::endl;
+
+  IA20_THROW(BadUsageException("Reading from SBL failed, bad content :")
+    <<i<<" != "<<strTest.length()<<"["<<strValue<<"]:"<<n);
+}
+/*************************************************************************/
 void TCBasic::caseStreamBufferList(){
 
 	IA20::TimeSample ts(true);
@@ -129,6 +172,19 @@ void TCBasic::caseStreamBufferList(){
   checkSBL("abcdef", 13);
   checkSBL("123", 13);
   checkSBL("1234567890123", 13);
+  
+}
+/*************************************************************************/
+void TCBasic::caseStreamBufferCopy(){
+
+	IA20::TimeSample ts(true);
+  env.reset();
+
+  checkSBLCopy("1234567890", 10);
+   checkSBLCopy("12345", 3);
+  checkSBLCopy("abcdef", 13);
+  checkSBLCopy("123", 13);
+  checkSBLCopy("1234567890123", 13);
   
 }
 /*************************************************************************/

@@ -33,10 +33,8 @@ public:
 		
 		Message::Type iType = getType();
 
-		uint8_t iSkip = pAfterVL - pData + 
-			(iType >= Message::MT_PUBACK && iType <= Message::MT_UNSUBACK ||
-	 		 iType == Message::MT_PUBLISH && getQoS() >= 1) ? 2 : 0;
-	
+		int iSkip = pAfterVL - pData;
+
 		reader.advance(iSkip);
 	};
 

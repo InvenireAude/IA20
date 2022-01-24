@@ -28,6 +28,21 @@ SharableMemoryPool::SharableMemoryPool():
 	IA20_TRACER;
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory,"SharableMemoryPool created");
   stats.reset();
+
+  const int iMaxSegments = 100;
+
+    //TODO provider class, temporary solution to get segmentsize rounded addressing ;)
+  SegmentList *pResult = reinterpret_cast<SegmentList*>(std::aligned_alloc(CSegmentSize, iMaxSegments*CSegmentSize));
+
+  IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "New memory at: "<<(void*)pResult<<", to "<<(void*)((uint8_t*)pResult+iMaxSegments*CSegmentSize));
+
+  for(int i = 0; i<iMaxSegments; i++){
+    SegmentList* pNew = GetSegmentAddress((uint8_t*)pResult + CSegmentSize * i);
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "New segment at: "<<(void*)pResult);
+    new(pNew) SegmentList();
+    freeSegment(pNew);
+  }
+
 }
 /*************************************************************************/
 SharableMemoryPool::~SharableMemoryPool() throw(){
@@ -54,13 +69,7 @@ SharableMemoryPool::SegmentList* SharableMemoryPool::allocateSegment(){
     return new(pResult) SegmentList();
   }
 
-  //TODO provider class, temporary solution to get segmentsize rounded addressing ;)
-  SegmentList *pResult = reinterpret_cast<SegmentList*>(new uint8_t[2*CSegmentSize]);
-  IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "New memory at: "<<(void*)pResult<<", to "<<(void*)((uint8_t*)pResult+2*CSegmentSize));
-  pResult = GetSegmentAddress((uint8_t*)pResult+CSegmentSize);
-
-  IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "New segment at: "<<(void*)pResult);
-  return new(pResult) SegmentList();
+  IA20_THROW(InternalException("out of memory in SMP"));
 }
 /*************************************************************************/
 void SharableMemoryPool::freeSegment(SharableMemoryPool::SegmentList* pSegment){

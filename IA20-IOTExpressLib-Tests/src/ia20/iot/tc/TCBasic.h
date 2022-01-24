@@ -41,6 +41,7 @@ public:
 
 	void caseSharableMemoryPool();
 	void caseStreamBufferList();
+  void caseStreamBufferCopy();
 	void caseFixedObjectsPool();
 
 protected:
@@ -54,6 +55,7 @@ protected:
   struct TestEnv env;
 
   void checkSBL(const String& strValue, int n);
+  void checkSBLCopy(const String& strValue, int n);
 
 };
 

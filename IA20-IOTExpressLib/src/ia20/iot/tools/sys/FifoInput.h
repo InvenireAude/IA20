@@ -57,7 +57,7 @@ public:
 			pCursor = Fifo<T>::tabBuffer;
 		}
 
-		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo|true, "dequeue: "<<(void*)v);
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo, "dequeue: "<<(void*)v);
 
 		return true;
 	}
@@ -104,7 +104,7 @@ protected:
 			pIOReadHead = Fifo<T>::tabBuffer;
 		}
 
-		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo|true , "Read: "<<iDataLen<<", IO offset: "
+		IA20_LOG(IOT::LogLevel::INSTANCE.bIsDetailedInfo , "Read: "<<iDataLen<<", IO offset: "
 			<<(pIOReadHead-Fifo<T>::tabBuffer)<<" Read offset: "
 			<<(pCursor-Fifo<T>::tabBuffer));
 

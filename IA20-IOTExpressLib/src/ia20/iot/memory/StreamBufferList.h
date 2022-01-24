@@ -110,6 +110,8 @@ public:
 
 		inline void advance(DataLengthType iStep){
 
+			IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "Consumed Bytes: "<<iConsumedBytes<<" "<<iStep);
+
 			if(iStep < iDataLength){
 				iDataLength -= iStep;
 				pData += iStep;
@@ -121,7 +123,7 @@ public:
 				IA20_THROW(InternalException("advance(iStep > iDataLenght)"));
 			}
 
-			IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "Consumed Bytes: "<<iConsumedBytes);
+			IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory, "Consumed Bytes: "<<iConsumedBytes<<" "<<iStep);
 		}
 
 		inline DataLengthType copy(uint8_t* pDst, DataLengthType iBytesToCopy = 10000){
@@ -130,19 +132,19 @@ public:
 
 			while(iLeft > 0 && hasData()){
 
-				DataLengthType iStepSize = iLeft;
+				DataLengthType iStepSize = iLeft;				
 
 				if(iStepSize > iDataLength){
 					iStepSize = iDataLength;
 				}
-
+				
 				memcpy(pDst, pData, iStepSize);
-
+				pDst  += iStepSize;
 				iLeft -= iStepSize;
 				iDataLength -= iStepSize;
 				iConsumedBytes += iStepSize;
 
-				if(iDataLength == 0){
+				if(iDataLength == 0){					
 					getNext();
 				}else{
 					pData += iStepSize;

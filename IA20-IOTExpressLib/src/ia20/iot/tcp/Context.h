@@ -45,6 +45,7 @@ class Context {
 		}
 		
 		inline void appendExpected(const uint8_t* pData){
+			IA20_LOG(true, "Appending expected: "<<(int)data.iExpectedLength);
 			data.writer.write(pData, data.iExpectedLength);
 			data.iExpectedLength = 0;
 		}
