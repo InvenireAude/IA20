@@ -177,7 +177,7 @@ void Listener::removeServer(Server* pServer){
 
 	Connection::HandleType aConnectionHandle = pServer->getConnectionHandle();
 
-	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo|true, "Remove server: "<<(void*)(long)aConnectionHandle);
+	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Remove server: "<<(void*)(long)aConnectionHandle);
 
 	 hmConnectionHandle.erase(aConnectionHandle);
 

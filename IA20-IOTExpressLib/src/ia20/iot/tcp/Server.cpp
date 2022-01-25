@@ -207,7 +207,7 @@ void Server::handleWrite(off_t iDataLen){
 }
 /*************************************************************************/
 void Server::handleShutdown(int iResult){
-    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo|true,"Shutdown: ["<<iResult<<"], msgs: "<<iMessages);;
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Shutdown: ["<<iResult<<"], msgs: "<<iMessages);;
     disposeMe();
 }
 /*************************************************************************/
