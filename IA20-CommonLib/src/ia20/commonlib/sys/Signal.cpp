@@ -140,14 +140,19 @@ void Signal::stopThreads(){
 
 	for(ThreadSet::const_iterator it=setThreadsToStop.begin();
 		it != setThreadsToStop.end(); it++){
-		IA20_LOG(LogLevel::INSTANCE.isSystem(), "stopping a thread");;
+		IA20_LOG(LogLevel::INSTANCE.isSystem() , "stopping a thread: "<<(*it));
 		(*it)->stop();
 	}
 }
 /*************************************************************************/
 void Signal::addThread(Thread* pThread){
 	IA20_TRACER;
+	
+	if(!pThread) /* possibly the main thread */
+		return;
+
 	Mutex::Locker locker(_SignalMutex);
+	IA20_LOG(LogLevel::INSTANCE.isSystem() , "adding a thread: "<<(void*)(pThread));
 	setThreadsToStop.insert(pThread);
 }
 /*************************************************************************/
