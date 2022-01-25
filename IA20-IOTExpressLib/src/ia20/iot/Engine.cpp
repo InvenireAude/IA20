@@ -26,6 +26,8 @@
 #include <ia20/iot/logger/LogLevel.h>
 #include <ia20/iot/tools/sys/TaskPort.h>
 
+#include <time.h>
+
 namespace IA20 {
 namespace IOT {
 
@@ -50,6 +52,23 @@ Engine::Engine(){
 /*************************************************************************/
 Engine::~Engine() throw(){
 	IA20_TRACER;
+}
+/*************************************************************************/
+inline void Engine::serveStats(){
+  IA20_TRACER;
+
+  static struct timespec tpLast;
+  static struct timespec tpNow;
+
+  clock_gettime(CLOCK_MONOTONIC_COARSE, &tpNow);
+
+  if(tpNow.tv_sec == tpLast.tv_sec)
+    return;
+
+  tpLast = tpNow;
+
+  std::cout<<stats<<std::endl;
+
 }
 /*************************************************************************/
 void Engine::serve(){
@@ -79,6 +98,7 @@ void Engine::serve(){
 
   ptrRingHandler->handle();
 
+  serveStats();
 }
 /*************************************************************************/
 Engine::Context::Context(Listener::Task* pTask, Memory::SharableMemoryPool::Deleter& deleter):
@@ -100,8 +120,12 @@ void Engine::serveLister(Engine::ListenerDetails& ld){
   Listener::Task *pTask;
   while(ld.ptrServerPort->dequeue(pTask)){
 
+    stats.iNumListenerInCmds++;
+    
     Context ctx(pTask, ld.pMemoryPool->getDeleter());
 
+    stats.tNumMessagesByType[ctx.headerReader.getType()]++;
+    
     switch (ctx.headerReader.getType()){
 
       case MQTT::Message::MT_PUBLISH:

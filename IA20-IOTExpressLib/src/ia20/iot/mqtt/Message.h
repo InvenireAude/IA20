@@ -27,6 +27,13 @@ public:
      //TODO tmp for prototyping only
   };
 
+  enum QoSType : uint8_t {
+    MQOS0    = 0,
+    MQOS1    = 1,
+    MQOS2    = 2,
+    MQOS_NUM_TYPES = 3
+  };
+
   enum Flag : uint8_t {
     MF_NONE    = 0,
     MF_RETAIN  = 1
@@ -48,7 +55,8 @@ public:
     MT_PINGREQ     = 12,
     MT_PINGRESP    = 13,
     MT_DISCONNECT  = 14,
-    MT_AUTH        = 15
+    MT_AUTH        = 15,
+    MT_NUM_TYPES        = 16
   };
 
   enum VersionType : uint8_t {

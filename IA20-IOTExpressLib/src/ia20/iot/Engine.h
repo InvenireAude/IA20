@@ -156,6 +156,51 @@ protected:
       uint8_t       iQoS;
   };
 
+
+  struct Stats{
+    
+    uint64_t tNumMessagesByType[MQTT::Message::MT_NUM_TYPES];
+    uint64_t iNumPublicationsByQoS[3];    
+    uint64_t iNumListenerInCmds;
+    uint64_t iNumListenerOutCmds;
+
+    Stats(){ 
+      reset();
+    }
+
+    inline void reset(){
+      
+      IA20_LOG(true, "size: "<<sizeof(Stats));
+      
+      for(int i=0; i<MQTT::Message::MT_NUM_TYPES; i++)
+        tNumMessagesByType[i] = 0L;
+      
+      for(int i=0; i<MQTT::Message::MQOS_NUM_TYPES; i++)  
+        iNumPublicationsByQoS[i] = 0L;
+
+     iNumListenerInCmds = iNumListenerOutCmds = 0L;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Stats& s){
+      
+      for(int i=0; i<MQTT::Message::MT_NUM_TYPES; i++)
+        os<<"\t NumMessagesByType["<<i<<"]:\t"<<s.tNumMessagesByType[i]<<std::endl;
+
+      for(int i=0; i<MQTT::Message::MQOS_NUM_TYPES; i++)  
+        os<<"\t NumPublicationsByQoS["<<i<<"]:\t"<<s.iNumPublicationsByQoS[i]<<std::endl;
+
+      os<<"\t NumListenerInCmds: \t"<<s.iNumListenerInCmds<<std::endl;
+      os<<"\t NumListenerOutCmds: \t"<<s.iNumListenerOutCmds<<std::endl;
+      os<<std::endl;
+
+      return os;
+    }
+
+  };
+
+  void serveStats();
+
+  Stats stats;
 };
 
 /*************************************************************************/
