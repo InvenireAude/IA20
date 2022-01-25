@@ -362,7 +362,7 @@ void Engine::Publisher::onSubscription(const Subscription* pSubscription){
                                     aNameHandle,
                                     pMessage->getHandle(),
                                     Listener::Task::CA_SendShared,
-                                    std::max(iQoS, pConnection->getMaxQoS()));
+                                    std::min(iQoS, pConnection->getMaxQoS()));
 
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "getListenerIdx: "<<(int)pConnection->getListenerIdx());
 
