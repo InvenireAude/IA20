@@ -87,7 +87,7 @@ public:
         return 1; // TODO client policy
     }
 
-
+ 
 protected:
 
     unsigned int iListener;
@@ -96,7 +96,7 @@ protected:
     wchar_t utfClientId[2 * CMaxClientIdLen + 1];
     MQTT::Message::VersionType iMQTTVersion;
 
-    static const int CMaxActivitesPerConnection = 10;
+    static const int CMaxActivitesPerConnection = 100;
 
     typedef Memory::FixedObjectsTable<Activity*> ActivityTable;
 

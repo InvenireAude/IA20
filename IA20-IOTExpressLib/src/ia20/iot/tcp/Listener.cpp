@@ -170,6 +170,26 @@ void Listener::decUsageCount(Message::HandleType aMessageHandle){
 		// IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, " ! content removed.");
 	}
 }
+
+/*************************************************************************/
+void Listener::removeServer(Server* pServer){
+
+
+	Connection::HandleType aConnectionHandle = pServer->getConnectionHandle();
+
+	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo|true, "Remove server: "<<(void*)(long)aConnectionHandle);
+
+	 hmConnectionHandle.erase(aConnectionHandle);
+
+	for(std::list< std::unique_ptr<Server> >::iterator it = lstServers.begin();
+		it != lstServers.end(); it++){
+			if( (*it)->getConnectionHandle() == aConnectionHandle){
+				lstServers.erase(it);
+				return;
+			}
+		}
+
+}
 /*************************************************************************/
   
 }

@@ -31,11 +31,12 @@ void WriteHandler::prepare(){
 	IA20_TRACER;
    iovecBackup = iovec;
    pRingHandler->prepareWrite(this, pFileHandle->iFileDescriptor, &iovec, 0);
+   bInProgress = true;
 }
 /*************************************************************************/
 void WriteHandler::handle(int iResult){
 	IA20_TRACER;
-
+  bInProgress = false;
   IA20_LOG(LogLevel::INSTANCE.isSystem(), "handle: res="<<iResult);
 
   if(iResult < 0)

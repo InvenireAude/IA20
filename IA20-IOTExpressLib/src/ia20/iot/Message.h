@@ -46,7 +46,8 @@ public:
                    uint8_t iQoS):
         iHandle(iHandle),
         iDataLength(iDataLength),
-        iQoS(iQoS){}
+        iQoS(iQoS),
+        iUsageCount(0){}
 
     inline uint8_t getQoS()const{
       return iQoS;
@@ -65,7 +66,7 @@ public:
     }
 
     inline uint32_t decUsageCount(){
-      return iUsageCount--;
+      return --iUsageCount;
     }
 
     inline uint32_t getUsageCount()const{

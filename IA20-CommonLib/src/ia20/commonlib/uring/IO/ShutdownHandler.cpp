@@ -32,7 +32,7 @@ void ShutdownHandler::prepare(int how){
 void ShutdownHandler::handle(int iResult){
 	IA20_TRACER;
 
-  IA20_LOG(LogLevel::INSTANCE.isSystem(), "handle: res="<<iResult);
+  IA20_LOG(LogLevel::INSTANCE.isSystem()|true, "handle: res="<<iResult);
 
   if(iResult < 0)
     IA20_THROW(URingException("Failure in ShutdownHandler", -iResult));

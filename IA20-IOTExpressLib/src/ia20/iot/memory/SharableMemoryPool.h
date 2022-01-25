@@ -75,16 +75,22 @@ public:
  struct Stats {
     uint64_t iMaxSegments;
     uint64_t iNumAllocations;
+    uint64_t iFreeSegments;
 
     void reset(){
       iMaxSegments = 0;
       iNumAllocations = 0;
+      iFreeSegments = 0;
     }
     
     friend
       std::ostream& operator<<(std::ostream& os, const Stats& s);
   };
 
+  inline const Stats& getStats()const{
+    return stats;
+  }
+  
 protected:
 
   Deleter mDeleter;

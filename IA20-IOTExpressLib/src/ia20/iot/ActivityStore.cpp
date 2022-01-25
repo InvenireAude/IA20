@@ -75,5 +75,9 @@ Activity* ActivityStore::createActivity( Subscription::HandleType   mSubscriptio
 	return pActivity;
 }
 /*************************************************************************/
+ void ActivityStore::dumpStats(std::ostream& os)const{
+	 os<<"Activity store size: "<<iNumActivites<<std::endl;
+ }
+/*************************************************************************/
 }
 }

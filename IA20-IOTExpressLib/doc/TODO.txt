@@ -2,12 +2,17 @@
 
 Development plan:
 
- *) pending task queue TCP::Listener, impove task memory reuse: try to fit shared message part to available space in SLB
+- InputMessage & OutputMessage parser/serializer + pretty printers
+
+- Refactor - FixedMemoryPool vs StreamBuffer::Chunk - note shared memory for listeners.
+
+
++ *) pending task queue TCP::Listener, impove task memory reuse: try to fit shared message part to available space in SLB
 --
 
- *) use "Packet Identifier" as specified - 
- table per connection (actions)
-  - inputs (waits for QoS)
+ +*) use "Packet Identifier" as specified - 
+ + table per connection (actions)
+ +  inputs (waits for QoS)
   - outputs - reconnects
  
  *) ContentWriter(s) - refactor engine class 

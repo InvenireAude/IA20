@@ -68,7 +68,10 @@ inline void Engine::serveStats(){
   tpLast = tpNow;
 
   std::cout<<stats<<std::endl;
-
+  ptrActivityStore->dumpStats(std::cout);
+  ptrMessageStore->dumpStats(std::cout);
+  std::cout<<this->tabListners[0].pMemoryPool->getStats();
+  std::cout<<std::endl;
 }
 /*************************************************************************/
 void Engine::serve(){
@@ -121,7 +124,7 @@ void Engine::serveLister(Engine::ListenerDetails& ld){
   while(ld.ptrServerPort->dequeue(pTask)){
 
     stats.iNumListenerInCmds++;
-    
+
     Context ctx(pTask, ld.pMemoryPool->getDeleter());
 
     stats.tNumMessagesByType[ctx.headerReader.getType()]++;
@@ -418,6 +421,7 @@ void Engine::Publisher::onSubscription(const Subscription* pSubscription){
         pOldRetained->setRetentionFlag(false);
         ptrMessageStore->disposeIfUnused(pOldRetained);
       }
+      pMessage->setRetentionFlag(true);
       pTopic->setRetained(pMessage->getHandle());
     }
 
@@ -511,6 +515,7 @@ void Engine::Publisher::onSubscription(const Subscription* pSubscription){
 
   try{
     Activity* pActivity = pConnection->getOutputActivity(iPacketIdentfier);
+    ptrMessageStore->decUsageAndDespose(ptrMessageStore->lookup(pActivity->getMessageHandle()));
     pConnection->removeOutputActivity(iPacketIdentfier);
     ptrActivityStore->dispose(pActivity);
   }catch(Exception& e){
@@ -566,8 +571,13 @@ void Engine::handleActivities(){
       Connection*   pConnection  = ptrConnectionsStore->get(pSubsciption->getConnectionHandle());
       Message*      pMessage     = ptrMessageStore->lookup(pActivity->getMessageHandle());
 
+    try{
       buildAndSendShared(&ld, pSubsciption, pConnection, pMessage, pActivity);
-
+    }catch(ItemNotFoundException& e){
+      //std::cerr<<"Cannot allocate memory - BETTER EXECEPTION"<<(void*)(long)pActivity->getMessageHandle()<<std::endl;
+      ptrActivityStore->dispose(pActivity);
+      stats.iNumFullConnections++;
+    }
       ptrActivityStore->next();
 
       if(pActivity->getQoS() == 0){

@@ -163,6 +163,7 @@ protected:
     uint64_t iNumPublicationsByQoS[3];    
     uint64_t iNumListenerInCmds;
     uint64_t iNumListenerOutCmds;
+    uint64_t iNumFullConnections;
 
     Stats(){ 
       reset();
@@ -171,7 +172,7 @@ protected:
     inline void reset(){
       
       IA20_LOG(true, "size: "<<sizeof(Stats));
-      
+
       for(int i=0; i<MQTT::Message::MT_NUM_TYPES; i++)
         tNumMessagesByType[i] = 0L;
       
@@ -179,6 +180,7 @@ protected:
         iNumPublicationsByQoS[i] = 0L;
 
      iNumListenerInCmds = iNumListenerOutCmds = 0L;
+     iNumFullConnections = 0L;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Stats& s){
@@ -189,8 +191,10 @@ protected:
       for(int i=0; i<MQTT::Message::MQOS_NUM_TYPES; i++)  
         os<<"\t NumPublicationsByQoS["<<i<<"]:\t"<<s.iNumPublicationsByQoS[i]<<std::endl;
 
-      os<<"\t NumListenerInCmds: \t"<<s.iNumListenerInCmds<<std::endl;
+      os<<"\t NumListenerInCmds:  \t"<<s.iNumListenerInCmds<<std::endl;
       os<<"\t NumListenerOutCmds: \t"<<s.iNumListenerOutCmds<<std::endl;
+      os<<"\t NumFullConnections: \t"<<s.iNumFullConnections<<std::endl;
+  
       os<<std::endl;
 
       return os;

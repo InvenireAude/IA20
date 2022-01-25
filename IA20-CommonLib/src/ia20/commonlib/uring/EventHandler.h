@@ -29,10 +29,16 @@ public:
 
   virtual void handle(int iResult) = 0;
 
+  inline bool isInProgress()const{
+    return bInProgress;    
+  }
+
   protected:
 
     EventHandler(RingHandler* pRingHandler);
     RingHandler* pRingHandler;
+
+  bool bInProgress;
 };
 /*************************************************************************/
 

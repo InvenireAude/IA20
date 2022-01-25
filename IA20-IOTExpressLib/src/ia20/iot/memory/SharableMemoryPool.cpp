@@ -29,7 +29,7 @@ SharableMemoryPool::SharableMemoryPool():
   IA20_LOG(IOT::LogLevel::INSTANCE.bIsMemory,"SharableMemoryPool created");
   stats.reset();
 
-  const int iMaxSegments = 100;
+  const int iMaxSegments = 1000;
 
     //TODO provider class, temporary solution to get segmentsize rounded addressing ;)
   SegmentList *pResult = reinterpret_cast<SegmentList*>(std::aligned_alloc(CSegmentSize, iMaxSegments*CSegmentSize));
@@ -66,10 +66,11 @@ SharableMemoryPool::SegmentList* SharableMemoryPool::allocateSegment(){
       pFreeSegments = pFreeSegments->getNext();
     }
 
+    stats.iFreeSegments--;
     return new(pResult) SegmentList();
   }
 
-  IA20_THROW(InternalException("out of memory in SMP"));
+  IA20_THROW(InternalException("out of memory in SMP")<<"free: ?? "<<stats.iFreeSegments);
 }
 /*************************************************************************/
 void SharableMemoryPool::freeSegment(SharableMemoryPool::SegmentList* pSegment){
@@ -83,6 +84,8 @@ void SharableMemoryPool::freeSegment(SharableMemoryPool::SegmentList* pSegment){
 
   pSegment->setNext(pFreeSegments ? pFreeSegments : pSegment);
   pFreeSegments = pNext;
+
+  stats.iFreeSegments++;
 }
 /*************************************************************************/
 void *SharableMemoryPool::allocate(void* pAddress, uint32_t iSize){
@@ -161,6 +164,7 @@ std::ostream& operator<<(std::ostream& os, const SharableMemoryPool::Stats& s){
   
   os<<"ShareableMemoryPool at:"<<(void*)&s<<std::endl;
   os<<"Allocations: \t"<<s.iNumAllocations<<std::endl;
+  os<<"FreeSegments: \t"<<s.iFreeSegments<<std::endl;
 
   return os;
  }

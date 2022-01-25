@@ -86,10 +86,12 @@ void MessageStore::dispose(Message* pMessage){
 void MessageStore::decUsageAndDespose(Message* pMessage){
 	IA20_TRACER;
 
+	uint32_t iUsageCount = pMessage->decUsageCount();
+
 	if(pMessage->getRetentionFlag())
 		return;
 
-	uint32_t iUsageCount = pMessage->decUsageCount();
+	//IA20_LOG(true, (int) pMessage->getHandle()<<" uc: "<<iUsageCount);
 
 	if(iUsageCount == 0)
 		dispose(pMessage);
@@ -103,6 +105,10 @@ void MessageStore::disposeIfUnused(Message* pMessage){
 	if(pMessage->getUsageCount() == 0)
 		dispose(pMessage);
 }
+/*************************************************************************/
+ void MessageStore::dumpStats(std::ostream& os)const{
+	 os<<"Message store size: "<<hmMessages.size()<<std::endl;
+ }
 /*************************************************************************/
 
 }

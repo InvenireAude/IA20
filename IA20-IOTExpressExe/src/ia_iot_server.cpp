@@ -13,9 +13,6 @@ using namespace std;
 
 int main(){
 
-	SYS::Signal::ThreadRegistration tr;
-
-
    unique_ptr<TCP::Listener> ptrListener(new TCP::Listener(1000));
 
    unique_ptr<Engine> ptrEngine(new Engine());

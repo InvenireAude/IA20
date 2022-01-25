@@ -38,6 +38,8 @@ RingHandler::~RingHandler() throw(){
 
   io_uring_queue_exit(&ring);
 
+  IA20_LOG(LogLevel::INSTANCE.isSystem(), "Ring handler is gone, this: "<<(void*)this);
+
 }
 /*************************************************************************/
 void RingHandler::onEvent(struct io_uring_cqe *cqe){

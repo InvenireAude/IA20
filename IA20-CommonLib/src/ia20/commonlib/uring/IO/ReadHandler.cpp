@@ -30,10 +30,13 @@ ReadHandler::~ReadHandler() throw(){
 void ReadHandler::prepare(){
 	IA20_TRACER;
    pRingHandler->prepareRead(this, pFileHandle->iFileDescriptor, &iovec, 0);
+   bInProgress = true;
 }
 /*************************************************************************/
 void ReadHandler::handle(int iResult){
 	IA20_TRACER;
+  
+  bInProgress = false;
 
   IA20_LOG(LogLevel::INSTANCE.isSystem(), "handle: res="<<iResult);
 

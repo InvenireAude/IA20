@@ -30,7 +30,8 @@ Server::Server(Net::Conn::TCP::FileHandle* pFileHandle,
       ShutdownHandler(pListener->getRingHandler(), pFileHandle),
 	  pListener(pListener),
 	  ctx(pListener->getMemoryPool()),
-      ptrFileHandle(pFileHandle){
+      ptrFileHandle(pFileHandle),
+      bShuttingDown(false){
 
 	ptrInputBuffer.reset((uint8_t*)malloc(4096));
 
@@ -42,6 +43,9 @@ Server::Server(Net::Conn::TCP::FileHandle* pFileHandle,
 /*************************************************************************/
 Server::~Server() throw(){
 	IA20_TRACER;
+
+	IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo, "Remove me: "<<(void*)(long)aConnectionHandle);
+
 }
 /*************************************************************************/
 void Server::prepareRead(){
@@ -61,8 +65,12 @@ void Server::handleRead(off_t iDataLen){
 
     if(iDataLen == 0){
        ShutdownHandler::prepare(SHUT_RDWR);
+       bShuttingDown = true;
        return;
     }
+
+    if(bShuttingDown)
+        disposeMe();
 
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Got data[read]: "<<iDataLen<<" "<<ctx.getExpectedLength());
 
@@ -178,7 +186,10 @@ void Server::sendMessage(Memory::SharableMemoryPool::unique_ptr<IOT::Listener::T
 /*************************************************************************/
 void Server::handleWrite(off_t iDataLen){
     IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Written: ["<<iDataLen<<"]");;
-    
+
+    if(bShuttingDown)
+        disposeMe();
+
     if(ptrContextOutput->next()){
         prepareWrite();
         return;
@@ -196,7 +207,18 @@ void Server::handleWrite(off_t iDataLen){
 }
 /*************************************************************************/
 void Server::handleShutdown(int iResult){
-    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo,"Shutdown: ["<<iResult<<"], msgs: "<<iMessages);;
+    IA20_LOG(IOT::LogLevel::INSTANCE.bIsInfo|true,"Shutdown: ["<<iResult<<"], msgs: "<<iMessages);;
+    disposeMe();
+}
+/*************************************************************************/
+void Server::disposeMe(){
+
+    IA20_LOG(true," ?? "<<bShuttingDown<<ReadHandler::bInProgress<<WriteHandler::bInProgress);
+
+    if(bShuttingDown && !ReadHandler::bInProgress && !WriteHandler::bInProgress){
+        pListener->removeServer(this);
+    }
+
 }
 /*************************************************************************/
 }

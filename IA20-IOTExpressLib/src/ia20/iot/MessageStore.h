@@ -39,6 +39,8 @@ public:
 
   void     disposeIfUnused(Message* pMessage);
 
+  void     dumpStats(std::ostream& os)const;
+  
 protected:
 
 

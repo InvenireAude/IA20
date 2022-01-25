@@ -51,12 +51,17 @@ class Server :
   size_t iMessages = 0;
 
   void sendMessage(Memory::SharableMemoryPool::unique_ptr<IOT::Listener::Task>&& ptrTask);
+
+  inline Connection::HandleType getConnectionHandle()const{
+    return aConnectionHandle;
+  }
   
   protected:
 
   virtual void handleRead(off_t iDataLen);
   virtual void handleWrite(off_t iDataLen);
   virtual void handleShutdown(int iResult);
+
 
  protected:
 
@@ -89,6 +94,11 @@ class Server :
 
   void prepareRead();
   void prepareWrite();
+
+  bool bShuttingDown;
+
+  void disposeMe();
+
 };
 /*************************************************************************/
 }

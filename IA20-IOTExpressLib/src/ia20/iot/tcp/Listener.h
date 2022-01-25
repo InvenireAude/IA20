@@ -55,6 +55,8 @@ public:
 
   void decUsageCount(Message::HandleType aMessageHandle);
 
+  void removeServer(Server* pServer);
+
 protected:
 
   std::unique_ptr<Memory::SharableMemoryPool> ptrMemoryPoolHolder;

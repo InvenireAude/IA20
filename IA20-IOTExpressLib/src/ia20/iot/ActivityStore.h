@@ -40,7 +40,7 @@ public:
 
 	virtual ~ActivityStore() throw();
 
-  ActivityStore(IndexType iSize = 1000);
+  ActivityStore(IndexType iSize = 10000);
 
    Activity* createActivity( Subscription::HandleType   mSubscriptionHandle,
                              Topic::FullTopicNameHandle aTopicNameHandle,
@@ -72,6 +72,8 @@ public:
       new (pActivity)Activity();
     }
 
+  void     dumpStats(std::ostream& os)const;
+  
 protected:
 
   Activity* tActivites;

@@ -47,7 +47,7 @@ public:
 
 protected:
 
-  static const int CDefaultSize = 32;
+  static const int CDefaultSize = 256;
 
   struct io_uring ring;
 
